@@ -8,9 +8,10 @@ import type {
   RouteDefinition,
 } from '../../src/index.ts';
 import { createOrva } from '../../src/index.ts';
-import { createRPC } from '../../src/rpc/index.ts';
+import { createRPC, type InferResponseType } from '../../src/rpc/index.ts';
 import { describeRoute } from '../../src/openapi/index.ts';
 import { zodOpenAPISchema } from '../../src/openapi/zod.ts';
+import { validator } from '../../src/validator/index.ts';
 import { zodValidator } from '../../src/validator/zod.ts';
 import type { OpenAPIOperationMetadata, SchemaContract } from '../../src/metadata.ts';
 
@@ -159,11 +160,75 @@ test('rpc can infer response bodies directly from c.json without openapi metadat
     },
   });
 
+  const listGetter = rpc.posts.$get;
+  const detailGetter = rpc.posts[':id'].$get;
+  type PostsBody = InferResponseType<typeof listGetter>;
+  type PostBody = InferResponseType<typeof detailGetter>;
+
+  const postsTypeCheck: PostsBody = [{ id: 1, title: 'Post 1' }];
+  const postTypeCheck: PostBody = { id: '123', title: 'Post details' };
+  void postsTypeCheck;
+  void postTypeCheck;
+  // @ts-expect-error rpc.posts.$get should not resolve to string
+  const invalidPostsType: PostsBody = 'bad';
+  // @ts-expect-error rpc.posts[':id'].$get should not resolve to number
+  const invalidPostType: PostBody = 1;
+  void invalidPostsType;
+  void invalidPostType;
+
   const posts = await rpc.posts.$get();
+  // @ts-expect-error typed rpc json body should not be assignable to string
+  const invalidPostsJson: string = await posts.json();
+  void invalidPostsJson;
   const postsValue: { id: number; title: string }[] = await posts.value();
   assert.deepEqual(postsValue, [{ id: 1, title: 'Post 1' }]);
 
   const post = await rpc.posts[':id'].$get({ param: { id: '123' } });
+  // @ts-expect-error typed rpc json body should not be assignable to number
+  const invalidPostJson: number = await post.json();
+  void invalidPostJson;
   const postValue: { id: string; title: string } = await post.json();
   assert.deepEqual(postValue, { id: '123', title: 'Post details' });
+});
+
+test('plain validator can contribute rpc request body shape when raw input is unknown', async () => {
+  const userValidation = validator('json', (value: any) => ({
+    name: value.name || '',
+    email: value.email || '',
+    age: value.age || 0,
+  }));
+
+  const app = createOrva().post('/users', userValidation, (c) => c.json({
+    message: 'User validated',
+    data: c.valid('json'),
+  }));
+
+  const rpc = createRPC<typeof app>({
+    baseURL: 'https://api.example.com',
+    fetch: async (_url, init) => new Response(String(init?.body ?? ''), {
+      status: 200,
+      headers: { 'content-type': 'application/json' },
+    }),
+  });
+
+  type CreateUserBody = Parameters<typeof rpc.users.$post>[0]['body'];
+  const validBody: CreateUserBody = {
+    name: 'orva',
+    email: 'team@example.com',
+    age: 1,
+  };
+  void validBody;
+  // @ts-expect-error body should include the inferred validator output shape
+  const invalidBody: CreateUserBody = {};
+  void invalidBody;
+
+  const response = await rpc.users.$post({
+    body: {
+      name: 'orva',
+      email: 'team@example.com',
+      age: 1,
+    },
+  });
+
+  assert.equal(response.status, 200);
 });

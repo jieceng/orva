@@ -23,10 +23,17 @@ export interface ValidatorValueMap {
 export type ValidatorInput<Target extends string> =
   Target extends keyof ValidatorValueMap ? ValidatorValueMap[Target] : unknown;
 
-type ValidatorRPCInputMapping<Target extends string, Input> =
-  Target extends 'json' ? { body: Input } :
-  Target extends 'form' ? { body: Input } :
-  Target extends 'text' ? { body: Input } :
+type IsAny<T> = 0 extends (1 & T) ? true : false;
+type IsExactlyUnknown<T> = IsAny<T> extends true ? false : unknown extends T ? ([T] extends [unknown] ? true : false) : false;
+type ValidatorRPCPayload<Input, Output> =
+  IsAny<Input> extends true ? Output :
+  IsExactlyUnknown<Input> extends true ? Output :
+  Input;
+
+type ValidatorRPCInputMapping<Target extends string, Input, Output> =
+  Target extends 'json' ? { body: ValidatorRPCPayload<Input, Output> } :
+  Target extends 'form' ? { body: ValidatorRPCPayload<Input, Output> } :
+  Target extends 'text' ? { body: ValidatorRPCPayload<Input, Output> } :
   Target extends 'query' ? { query?: Input } :
   Target extends 'param' ? { param?: Input } :
   Target extends 'header' ? { headers?: Input } :
@@ -47,7 +54,7 @@ export interface ValidatorHandler<
   Target extends string = string,
   Input = ValidatorInput<Target>,
   Output = unknown
-> extends TypedMiddlewareHandler<T, {}, {}, Record<Target, Output>, ValidatorRPCInputMapping<Target, Input>> {
+> extends TypedMiddlewareHandler<T, {}, {}, Record<Target, Output>, ValidatorRPCInputMapping<Target, Input, Output>> {
   readonly target: Target;
   readonly [VALIDATOR_METADATA]?: ValidatorContractMetadata<Target, Input, Output>;
 }
@@ -96,7 +103,7 @@ export function validator<
   parse: (value: Input, context: Context<T>) => Output | Promise<Output>,
   options: ValidatorOptions<T, Target, Input> & ValidatorMetadataOptions<Target, Input, Output> = {}
 ): ValidatorHandler<T, Target, Input, Output> {
-  const handler: TypedMiddlewareHandler<T, {}, {}, Record<Target, Output>, ValidatorRPCInputMapping<Target, Input>> = async (context, next) => {
+  const handler: TypedMiddlewareHandler<T, {}, {}, Record<Target, Output>, ValidatorRPCInputMapping<Target, Input, Output>> = async (context, next) => {
     try {
       const raw = options.value
         ? await options.value(context)

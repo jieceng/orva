@@ -88,6 +88,8 @@ type UnionToIntersection<U> = (
   U extends unknown ? (arg: U) => void : never
 ) extends ((arg: infer I) => void) ? I : never;
 type PrettifyIntersection<T> = Simplify<UnionToIntersection<T>>;
+type IsAny<T> = 0 extends (1 & T) ? true : false;
+type IsExactlyUnknown<T> = IsAny<T> extends true ? false : unknown extends T ? ([T] extends [unknown] ? true : false) : false;
 
 export interface RouteDefinition<
   Path extends string = string,
@@ -226,10 +228,15 @@ export function defineMiddleware<
   return handler as TypedMiddlewareHandler<any, any, AddedVars, AddedValidated, AddedRPCInput, AddedOperation>;
 }
 
-type ValidatorInputMapping<Target extends string, Input> =
-  Target extends 'json' ? { body: Input } :
-  Target extends 'form' ? { body: Input } :
-  Target extends 'text' ? { body: Input } :
+type ValidatorRPCPayload<Input, Output> =
+  IsAny<Input> extends true ? Output :
+  IsExactlyUnknown<Input> extends true ? Output :
+  Input;
+
+type ValidatorInputMapping<Target extends string, Input, Output> =
+  Target extends 'json' ? { body: ValidatorRPCPayload<Input, Output> } :
+  Target extends 'form' ? { body: ValidatorRPCPayload<Input, Output> } :
+  Target extends 'text' ? { body: ValidatorRPCPayload<Input, Output> } :
   Target extends 'query' ? { query?: Input } :
   Target extends 'param' ? { param?: Input } :
   Target extends 'header' ? { headers?: Input } :
@@ -240,8 +247,8 @@ type ExtractMiddlewareAddedRPCInput<M> = M extends MiddlewareTypeCarrier<any, an
   ? AddedRPCInput extends object ? AddedRPCInput : {}
   : {};
 type MiddlewareRPCInput<M> = keyof ExtractMiddlewareAddedRPCInput<M> extends never
-  ? M extends { readonly [VALIDATOR_METADATA]?: ValidatorContractMetadata<infer Target, infer Input, any> }
-    ? ValidatorInputMapping<Target, Input>
+  ? M extends { readonly [VALIDATOR_METADATA]?: ValidatorContractMetadata<infer Target, infer Input, infer Output> }
+    ? ValidatorInputMapping<Target, Input, Output>
     : {}
   : ExtractMiddlewareAddedRPCInput<M>;
 type MergeMiddlewareRPCInput<M extends readonly unknown[]> = Simplify<
@@ -269,16 +276,20 @@ type MergeOperationMetadata<M extends readonly unknown[]> =
 type TypedResponseMetadata<Response> = Response extends TypedResponse<infer Status, infer Body, infer Format>
   ? { status: Status; body: Body; format: Format }
   : never;
-type HandlerResponseMetadata<H extends (...args: any[]) => any> = TypedResponseMetadata<Awaited<ReturnType<H>>>;
-type HandlerResponseMap<H extends (...args: any[]) => any> = [HandlerResponseMetadata<H>] extends [never]
+type InferHandlerResult<H extends (...args: any[]) => unknown> =
+  Awaited<ReturnType<H>> extends Response | TypedResponse<any, any, any>
+    ? Awaited<ReturnType<H>>
+    : never;
+type HandlerResponseMetadata<Result> = TypedResponseMetadata<Awaited<Result>>;
+type HandlerResponseMap<Result> = [HandlerResponseMetadata<Result>] extends [never]
   ? {}
   : {
-      [S in HandlerResponseMetadata<H> extends { status: infer Status extends number } ? Status : never]:
-        Extract<HandlerResponseMetadata<H>, { status: S }> extends { body: infer Body } ? Body : never;
+      [S in HandlerResponseMetadata<Result> extends { status: infer Status extends number } ? Status : never]:
+        Extract<HandlerResponseMetadata<Result>, { status: S }> extends { body: infer Body } ? Body : never;
     };
-type RouteResponseMap<Operation, H extends (...args: any[]) => any> =
+type RouteResponseMap<Operation, Result> =
   [Operation] extends [undefined]
-    ? HandlerResponseMap<H>
+    ? HandlerResponseMap<Result>
     : OperationResponseOutputs<Operation>;
 type SuccessStatusKeys<Responses extends Record<number, unknown>> =
   keyof Responses extends infer Key
@@ -294,9 +305,9 @@ type InferRouteOutputFromOperation<Operation> =
   [Operation] extends [undefined]
     ? unknown
     : OperationOutput<Operation>;
-type InferRouteResponses<Operation, H extends (...args: any[]) => any> = RouteResponseMap<Operation, H>;
-type InferRouteOutput<Operation, H extends (...args: any[]) => any> = RouteOutputFromResponses<
-  InferRouteResponses<Operation, H>,
+type InferRouteResponses<Operation, Result> = RouteResponseMap<Operation, Result>;
+type InferRouteOutput<Operation, Result> = RouteOutputFromResponses<
+  InferRouteResponses<Operation, Result>,
   InferRouteOutputFromOperation<Operation>
 >;
 
@@ -1460,96 +1471,96 @@ export class Orva<
   get<
     Path extends string,
     const M extends readonly MiddlewareHandler<T, any>[],
-    H extends Handler<T, Simplify<V & MergeMiddlewareValidatedData<[...GM, ...M]>>>,
+    H extends (c: Context<T, Simplify<V & MergeMiddlewareValidatedData<[...GM, ...M]>>>) => unknown,
     Operation = MergeOperationMetadata<M>
   >(
     path: Path,
     ...handlers: [...M, H]
   ): Orva<T, V, Simplify<R & {
-    [K in RouteKey<'GET', Path>]: RouteDefinition<Path, 'GET', RouteInputWithPath<Path, MergeRPCInput<[...GM, ...M]>>, InferRouteOutput<Operation, H>, Operation, InferRouteResponses<Operation, H>>;
+    [K in RouteKey<'GET', Path>]: RouteDefinition<Path, 'GET', RouteInputWithPath<Path, MergeRPCInput<[...GM, ...M]>>, InferRouteOutput<Operation, InferHandlerResult<H>>, Operation, InferRouteResponses<Operation, InferHandlerResult<H>>>;
   }>, GM> {
     return this.addRoute('GET', path, handlers) as unknown as Orva<T, V, Simplify<R & {
-      [K in RouteKey<'GET', Path>]: RouteDefinition<Path, 'GET', RouteInputWithPath<Path, MergeRPCInput<[...GM, ...M]>>, InferRouteOutput<Operation, H>, Operation, InferRouteResponses<Operation, H>>;
+      [K in RouteKey<'GET', Path>]: RouteDefinition<Path, 'GET', RouteInputWithPath<Path, MergeRPCInput<[...GM, ...M]>>, InferRouteOutput<Operation, InferHandlerResult<H>>, Operation, InferRouteResponses<Operation, InferHandlerResult<H>>>;
     }>, GM>;
   }
 
   post<
     Path extends string,
     const M extends readonly MiddlewareHandler<T, any>[],
-    H extends Handler<T, Simplify<V & MergeMiddlewareValidatedData<[...GM, ...M]>>>,
+    H extends (c: Context<T, Simplify<V & MergeMiddlewareValidatedData<[...GM, ...M]>>>) => unknown,
     Operation = MergeOperationMetadata<M>
   >(
     path: Path,
     ...handlers: [...M, H]
   ): Orva<T, V, Simplify<R & {
-    [K in RouteKey<'POST', Path>]: RouteDefinition<Path, 'POST', RouteInputWithPath<Path, MergeRPCInput<[...GM, ...M]>>, InferRouteOutput<Operation, H>, Operation, InferRouteResponses<Operation, H>>;
+    [K in RouteKey<'POST', Path>]: RouteDefinition<Path, 'POST', RouteInputWithPath<Path, MergeRPCInput<[...GM, ...M]>>, InferRouteOutput<Operation, InferHandlerResult<H>>, Operation, InferRouteResponses<Operation, InferHandlerResult<H>>>;
   }>, GM> {
     return this.addRoute('POST', path, handlers) as unknown as Orva<T, V, Simplify<R & {
-      [K in RouteKey<'POST', Path>]: RouteDefinition<Path, 'POST', RouteInputWithPath<Path, MergeRPCInput<[...GM, ...M]>>, InferRouteOutput<Operation, H>, Operation, InferRouteResponses<Operation, H>>;
+      [K in RouteKey<'POST', Path>]: RouteDefinition<Path, 'POST', RouteInputWithPath<Path, MergeRPCInput<[...GM, ...M]>>, InferRouteOutput<Operation, InferHandlerResult<H>>, Operation, InferRouteResponses<Operation, InferHandlerResult<H>>>;
     }>, GM>;
   }
 
   put<
     Path extends string,
     const M extends readonly MiddlewareHandler<T, any>[],
-    H extends Handler<T, Simplify<V & MergeMiddlewareValidatedData<[...GM, ...M]>>>,
+    H extends (c: Context<T, Simplify<V & MergeMiddlewareValidatedData<[...GM, ...M]>>>) => unknown,
     Operation = MergeOperationMetadata<M>
   >(
     path: Path,
     ...handlers: [...M, H]
   ): Orva<T, V, Simplify<R & {
-    [K in RouteKey<'PUT', Path>]: RouteDefinition<Path, 'PUT', RouteInputWithPath<Path, MergeRPCInput<[...GM, ...M]>>, InferRouteOutput<Operation, H>, Operation, InferRouteResponses<Operation, H>>;
+    [K in RouteKey<'PUT', Path>]: RouteDefinition<Path, 'PUT', RouteInputWithPath<Path, MergeRPCInput<[...GM, ...M]>>, InferRouteOutput<Operation, InferHandlerResult<H>>, Operation, InferRouteResponses<Operation, InferHandlerResult<H>>>;
   }>, GM> {
     return this.addRoute('PUT', path, handlers) as unknown as Orva<T, V, Simplify<R & {
-      [K in RouteKey<'PUT', Path>]: RouteDefinition<Path, 'PUT', RouteInputWithPath<Path, MergeRPCInput<[...GM, ...M]>>, InferRouteOutput<Operation, H>, Operation, InferRouteResponses<Operation, H>>;
+      [K in RouteKey<'PUT', Path>]: RouteDefinition<Path, 'PUT', RouteInputWithPath<Path, MergeRPCInput<[...GM, ...M]>>, InferRouteOutput<Operation, InferHandlerResult<H>>, Operation, InferRouteResponses<Operation, InferHandlerResult<H>>>;
     }>, GM>;
   }
 
   delete<
     Path extends string,
     const M extends readonly MiddlewareHandler<T, any>[],
-    H extends Handler<T, Simplify<V & MergeMiddlewareValidatedData<[...GM, ...M]>>>,
+    H extends (c: Context<T, Simplify<V & MergeMiddlewareValidatedData<[...GM, ...M]>>>) => unknown,
     Operation = MergeOperationMetadata<M>
   >(
     path: Path,
     ...handlers: [...M, H]
   ): Orva<T, V, Simplify<R & {
-    [K in RouteKey<'DELETE', Path>]: RouteDefinition<Path, 'DELETE', RouteInputWithPath<Path, MergeRPCInput<[...GM, ...M]>>, InferRouteOutput<Operation, H>, Operation, InferRouteResponses<Operation, H>>;
+    [K in RouteKey<'DELETE', Path>]: RouteDefinition<Path, 'DELETE', RouteInputWithPath<Path, MergeRPCInput<[...GM, ...M]>>, InferRouteOutput<Operation, InferHandlerResult<H>>, Operation, InferRouteResponses<Operation, InferHandlerResult<H>>>;
   }>, GM> {
     return this.addRoute('DELETE', path, handlers) as unknown as Orva<T, V, Simplify<R & {
-      [K in RouteKey<'DELETE', Path>]: RouteDefinition<Path, 'DELETE', RouteInputWithPath<Path, MergeRPCInput<[...GM, ...M]>>, InferRouteOutput<Operation, H>, Operation, InferRouteResponses<Operation, H>>;
+      [K in RouteKey<'DELETE', Path>]: RouteDefinition<Path, 'DELETE', RouteInputWithPath<Path, MergeRPCInput<[...GM, ...M]>>, InferRouteOutput<Operation, InferHandlerResult<H>>, Operation, InferRouteResponses<Operation, InferHandlerResult<H>>>;
     }>, GM>;
   }
 
   patch<
     Path extends string,
     const M extends readonly MiddlewareHandler<T, any>[],
-    H extends Handler<T, Simplify<V & MergeMiddlewareValidatedData<[...GM, ...M]>>>,
+    H extends (c: Context<T, Simplify<V & MergeMiddlewareValidatedData<[...GM, ...M]>>>) => unknown,
     Operation = MergeOperationMetadata<M>
   >(
     path: Path,
     ...handlers: [...M, H]
   ): Orva<T, V, Simplify<R & {
-    [K in RouteKey<'PATCH', Path>]: RouteDefinition<Path, 'PATCH', RouteInputWithPath<Path, MergeRPCInput<[...GM, ...M]>>, InferRouteOutput<Operation, H>, Operation, InferRouteResponses<Operation, H>>;
+    [K in RouteKey<'PATCH', Path>]: RouteDefinition<Path, 'PATCH', RouteInputWithPath<Path, MergeRPCInput<[...GM, ...M]>>, InferRouteOutput<Operation, InferHandlerResult<H>>, Operation, InferRouteResponses<Operation, InferHandlerResult<H>>>;
   }>, GM> {
     return this.addRoute('PATCH', path, handlers) as unknown as Orva<T, V, Simplify<R & {
-      [K in RouteKey<'PATCH', Path>]: RouteDefinition<Path, 'PATCH', RouteInputWithPath<Path, MergeRPCInput<[...GM, ...M]>>, InferRouteOutput<Operation, H>, Operation, InferRouteResponses<Operation, H>>;
+      [K in RouteKey<'PATCH', Path>]: RouteDefinition<Path, 'PATCH', RouteInputWithPath<Path, MergeRPCInput<[...GM, ...M]>>, InferRouteOutput<Operation, InferHandlerResult<H>>, Operation, InferRouteResponses<Operation, InferHandlerResult<H>>>;
     }>, GM>;
   }
 
   options<
     Path extends string,
     const M extends readonly MiddlewareHandler<T, any>[],
-    H extends Handler<T, Simplify<V & MergeMiddlewareValidatedData<[...GM, ...M]>>>,
+    H extends (c: Context<T, Simplify<V & MergeMiddlewareValidatedData<[...GM, ...M]>>>) => unknown,
     Operation = MergeOperationMetadata<M>
   >(
     path: Path,
     ...handlers: [...M, H]
   ): Orva<T, V, Simplify<R & {
-    [K in RouteKey<'OPTIONS', Path>]: RouteDefinition<Path, 'OPTIONS', RouteInputWithPath<Path, MergeRPCInput<[...GM, ...M]>>, InferRouteOutput<Operation, H>, Operation, InferRouteResponses<Operation, H>>;
+    [K in RouteKey<'OPTIONS', Path>]: RouteDefinition<Path, 'OPTIONS', RouteInputWithPath<Path, MergeRPCInput<[...GM, ...M]>>, InferRouteOutput<Operation, InferHandlerResult<H>>, Operation, InferRouteResponses<Operation, InferHandlerResult<H>>>;
   }>, GM> {
     return this.addRoute('OPTIONS', path, handlers) as unknown as Orva<T, V, Simplify<R & {
-      [K in RouteKey<'OPTIONS', Path>]: RouteDefinition<Path, 'OPTIONS', RouteInputWithPath<Path, MergeRPCInput<[...GM, ...M]>>, InferRouteOutput<Operation, H>, Operation, InferRouteResponses<Operation, H>>;
+      [K in RouteKey<'OPTIONS', Path>]: RouteDefinition<Path, 'OPTIONS', RouteInputWithPath<Path, MergeRPCInput<[...GM, ...M]>>, InferRouteOutput<Operation, InferHandlerResult<H>>, Operation, InferRouteResponses<Operation, InferHandlerResult<H>>>;
     }>, GM>;
   }
 
