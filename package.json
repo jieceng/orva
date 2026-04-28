@@ -110,7 +110,15 @@
     "middleware",
     "validator"
   ],
-  "author": "",
+  "author": "jiecheng",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jieceng/orva.git"
+  },
+  "homepage": "https://github.com/jieceng/orva#readme",
+  "bugs": {
+    "url": "https://github.com/jieceng/orva/issues"
+  },
   "license": "MIT",
   "packageManager": "pnpm@10.24.0",
   "devDependencies": {
