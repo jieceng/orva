@@ -4,6 +4,8 @@ coverage/
 *.log
 *.tsbuildinfo
 
+.vitepress
+
 .DS_Store
 Thumbs.db
 
