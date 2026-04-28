@@ -133,6 +133,7 @@ const apiBase = process.env.API_BASE_URL ?? 'http://localhost:3000';
 部署工作流位于 `.github/workflows/docs.yml`，发布目录是 `docs/.vitepress/dist`。
 
 由于当前仓库路径是 `jieceng/orva`，GitHub Pages 会使用 `/orva/` 作为站点基础路径，所以生产构建时会自动注入对应的 VitePress `base` 配置。
+当前文档工作流使用 Node.js 24 构建。
 
 ## 常见部署策略
 
