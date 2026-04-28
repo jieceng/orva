@@ -24,7 +24,7 @@ const zodValidationIssueSchema = z.object({
   code: z.string(),
   message: z.string(),
   path: z.array(z.union([z.string(), z.number()])),
-}).passthrough();
+}).loose();
 
 const zodValidationErrorSchema = z.object({
   error: z.string(),

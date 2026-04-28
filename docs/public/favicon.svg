@@ -1,6 +1,6 @@
 <svg width="128" height="128" viewBox="0 0 128 128" fill="none" xmlns="http://www.w3.org/2000/svg">
   <defs>
-    <linearGradient id="orva-favicon-gradient" x1="25" y1="24" x2="98" y2="99" gradientUnits="userSpaceOnUse">
+    <linearGradient id="orva-favicon-gradient" x1="24" y1="22" x2="102" y2="102" gradientUnits="userSpaceOnUse">
       <stop stop-color="#14B8A6"/>
       <stop offset="0.52" stop-color="#38BDF8"/>
       <stop offset="1" stop-color="#FB923C"/>
@@ -11,8 +11,8 @@
     </linearGradient>
   </defs>
   <rect x="10" y="10" width="108" height="108" rx="28" fill="#09111F"/>
-  <rect x="11" y="11" width="106" height="106" rx="27" stroke="rgba(148, 163, 184, 0.2)"/>
+  <rect x="11" y="11" width="106" height="106" rx="27" stroke="#334155" stroke-opacity="0.34"/>
   <circle cx="34" cy="34" r="5" fill="url(#orva-favicon-accent)"/>
-  <path d="M55 34C38.9837 34 26 46.9837 26 63C26 79.0163 38.9837 92 55 92C71.0163 92 84 79.0163 84 63C84 46.9837 71.0163 34 55 34ZM55 48C63.2843 48 70 54.7157 70 63C70 71.2843 63.2843 78 55 78C46.7157 78 40 71.2843 40 63C40 54.7157 46.7157 48 55 48Z" fill="url(#orva-favicon-gradient)"/>
-  <path d="M88 40H102L88 88H74L88 40Z" fill="url(#orva-favicon-gradient)"/>
+  <path d="M49 34C32.9837 34 20 46.9837 20 63C20 79.0163 32.9837 92 49 92C65.0163 92 78 79.0163 78 63C78 46.9837 65.0163 34 49 34ZM49 48C57.2843 48 64 54.7157 64 63C64 71.2843 57.2843 78 49 78C40.7157 78 34 71.2843 34 63C34 54.7157 40.7157 48 49 48Z" fill="url(#orva-favicon-gradient)"/>
+  <path d="M72 43H85L94 66L103 43H116L97 87H91L72 43Z" fill="url(#orva-favicon-gradient)"/>
 </svg>
