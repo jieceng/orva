@@ -59,7 +59,7 @@ body {
 
 .VPFeature,
 .vp-doc div[class*='language-'],
-.vp-doc table,
+.vp-doc .orva-table-wrap,
 .vp-doc .custom-block,
 .nano-card {
   border: 1px solid rgba(15, 23, 42, 0.08);
@@ -74,7 +74,7 @@ body {
 
 .dark .VPFeature,
 .dark .vp-doc div[class*='language-'],
-.dark .vp-doc table,
+.dark .vp-doc .orva-table-wrap,
 .dark .vp-doc .custom-block,
 .dark .nano-card {
   border-color: rgba(148, 163, 184, 0.16);
@@ -106,20 +106,43 @@ body {
   vertical-align: middle;
 }
 
-.vp-doc table {
-  display: table;
-  width: 100%;
-  overflow: hidden;
+.vp-doc .orva-table-wrap {
+  margin: 22px 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
   border-radius: 20px;
   background: rgba(255, 255, 255, 0.82);
 }
 
-.dark .vp-doc table {
+.dark .vp-doc .orva-table-wrap {
   background: rgba(15, 23, 42, 0.72);
+}
+
+.vp-doc .orva-table-wrap > table {
+  display: table;
+  width: 100%;
+  min-width: max-content;
+  margin: 0;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  background: transparent;
 }
 
 .vp-doc th {
   background: rgba(15, 118, 110, 0.08);
+}
+
+.vp-doc th,
+.vp-doc td {
+  vertical-align: top;
+}
+
+.vp-doc th code,
+.vp-doc td code {
+  white-space: nowrap;
 }
 
 .vp-doc div[class*='language-'] {

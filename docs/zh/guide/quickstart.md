@@ -9,9 +9,12 @@ pnpm add orva
 pnpm add -D typescript tsx
 ```
 
-如果你准备同时运行文档站：
+已发布的 `orva` npm 包只包含 `dist`、`README.md` 和 `LICENSE`。如果你要本地运行文档站，需要先获取完整仓库：
 
 ```bash
+git clone https://github.com/jieceng/orva.git
+cd orva
+pnpm install
 pnpm docs:dev
 ```
 

@@ -30,14 +30,12 @@ features:
 
 ## Why orva
 
-`orva` is built for teams that want a small request-handling model without giving up the parts that usually show up right after the first demo:
+`orva` is not trying to be only a thin router. It is aimed at teams that want a low-overhead mental model while still shipping a production TypeScript server workflow:
 
-- composable routing and middleware
-- validator-backed contracts
-- typed RPC clients
-- OpenAPI generation
-- clean subpath exports
-- multi-runtime deployment
+- routing, `Context`, and middleware stay direct without forcing large abstractions
+- validator, RPC, and OpenAPI share route metadata instead of duplicating interface descriptions
+- export boundaries stay explicit, which fits monorepos, templates, SDKs, and shared infra
+- stable entry points exist for Node and mainstream serverless or edge platforms
 
 <OrvaContractPipeline />
 
@@ -62,10 +60,10 @@ serveNode(app, { port: 3000 });
 
 | Scenario | Why it fits |
 | --- | --- |
-| APIs and BFFs | Straightforward routing plus contract tooling |
-| Platform gateways | Rich middleware and reusable OpenAPI metadata |
-| Multi-runtime services | The same app can move across Node, Edge, and serverless targets |
-| Internal templates and shared infra | Subpath exports keep boundaries predictable |
+| APIs and BFFs | Straightforward routing, validator support, and typed response workflows fit interface-heavy services |
+| Platform gateways | Middleware breadth plus reusable OpenAPI metadata supports governance layers |
+| Multi-runtime services | The same app code can move across Node, edge, and serverless targets |
+| Templates and shared infrastructure | Granular submodules keep exports stable and easier to package |
 
 ## Reading path
 
@@ -85,3 +83,13 @@ serveNode(app, { port: 3000 });
 | Validation | built-in `validator()` and `zodValidator()` |
 | Contracts | `createRPC()` `createRPCMetadata()` `createOpenAPIDocument()` |
 | Adapters | Node / Bun / Deno / Cloudflare / Vercel / Netlify / Azure / AWS Lambda |
+
+## Adoption guidance
+
+::: tip Team profile
+If your team wants a stronger type and contract story than a traditional Express stack, but does not want to buy into a much heavier framework model, `orva` is a balanced middle ground.
+:::
+
+::: info Docs site
+This site ships with multilingual docs, reusable demo components, brand assets, and Algolia search wiring. When Algolia credentials are not configured, it falls back to local search automatically.
+:::

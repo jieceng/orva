@@ -1,7 +1,9 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
+import { useData } from 'vitepress';
 
 const mode = ref<'bundle' | 'subpath'>('subpath');
+const { lang } = useData();
 
 const snippets = {
   bundle: `import { cors, requestId, secureHeaders } from 'orva/middlewares';`,
@@ -9,14 +11,27 @@ const snippets = {
 import { requestId } from 'orva/middlewares/request-id';
 import { secureHeaders } from 'orva/middlewares/secure-headers';`,
 } as const;
+
+const copy = {
+  en: {
+    title: 'Import Strategy Demo',
+    description: 'Compare aggregate imports and granular submodule imports in a real app setup.',
+  },
+  zh: {
+    title: 'Import Strategy Demo',
+    description: '在应用内快速比较聚合导入和细粒度子模块导入。',
+  },
+} as const;
+
+const localizedCopy = computed(() => lang.value.startsWith('zh') ? copy.zh : copy.en);
 </script>
 
 <template>
   <div class="nano-card playground">
     <div class="playground-head">
       <div>
-        <strong>Import Strategy Demo</strong>
-        <p>在应用内快速比较聚合导入和细粒度子模块导入。</p>
+        <strong>{{ localizedCopy.title }}</strong>
+        <p>{{ localizedCopy.description }}</p>
       </div>
       <div class="playground-actions">
         <button

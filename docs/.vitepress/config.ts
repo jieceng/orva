@@ -1,7 +1,5 @@
 import { defineConfig } from 'vitepress';
 
-const latestVersion = 'v3.x';
-const snapshotVersion = 'v3.1';
 const repoUrl = 'https://github.com/jieceng/orva';
 
 const algoliaEnabled = Boolean(
@@ -99,22 +97,6 @@ function createSearchConfig(locale: 'zh' | 'en') {
   };
 }
 
-function createVersionNav(base: '' | '/zh') {
-  return {
-    text: latestVersion,
-    items: [
-      {
-        text: base === '' ? 'Current release docs' : '当前主线文档',
-        link: `${base}/guide/introduction`,
-      },
-      {
-        text: `${snapshotVersion} Snapshot`,
-        link: `${base}/v3/`,
-      },
-    ],
-  };
-}
-
 function createZhSidebar(prefix = '/zh') {
   return [
     {
@@ -185,10 +167,8 @@ function createZhThemeConfig() {
       { text: 'OpenAPI', link: '/zh/openapi' },
       { text: '适配器', link: '/zh/adapters' },
       { text: '导出', link: '/zh/exports' },
-      createVersionNav('/zh'),
     ],
     sidebar: {
-      '/zh/v3/': createZhSidebar('/zh/v3'),
       '/zh/': createZhSidebar('/zh'),
     },
     search: createSearchConfig('zh'),
@@ -225,10 +205,8 @@ function createEnThemeConfig() {
       { text: 'OpenAPI', link: '/openapi' },
       { text: 'Adapters', link: '/adapters' },
       { text: 'Exports', link: '/exports' },
-      createVersionNav(''),
     ],
     sidebar: {
-      '/v3/': createEnSidebar('/v3'),
       '/': createEnSidebar(''),
     },
     search: createSearchConfig('en'),
@@ -266,6 +244,26 @@ export default defineConfig({
       dangerLabel: '警告',
       infoLabel: '信息',
       detailsLabel: '详情',
+    },
+    config(md) {
+      const defaultTableOpen = md.renderer.rules.table_open;
+      const defaultTableClose = md.renderer.rules.table_close;
+
+      md.renderer.rules.table_open = (tokens, idx, options, env, self) => {
+        const tableOpen = defaultTableOpen
+          ? defaultTableOpen(tokens, idx, options, env, self)
+          : self.renderToken(tokens, idx, options);
+
+        return `<div class="orva-table-wrap">${tableOpen}`;
+      };
+
+      md.renderer.rules.table_close = (tokens, idx, options, env, self) => {
+        const tableClose = defaultTableClose
+          ? defaultTableClose(tokens, idx, options, env, self)
+          : self.renderToken(tokens, idx, options);
+
+        return `${tableClose}</div>`;
+      };
     },
   },
   head: [

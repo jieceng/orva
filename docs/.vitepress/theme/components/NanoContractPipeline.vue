@@ -1,28 +1,55 @@
 <script setup lang="ts">
-const items = [
-  {
-    title: 'Request',
-    body: '统一以 Fetch API Request 进入应用，平台适配器只负责把宿主请求桥接进来。',
-  },
-  {
-    title: 'Validator',
-    body: 'json / form / query / param / header / cookie / text 输入统一进入类型安全校验链。',
-  },
-  {
-    title: 'Route',
-    body: 'Context、Middleware、路由组合保持直观，业务逻辑集中在 handler 层。',
-  },
-  {
-    title: 'Contracts',
-    body: '校验元数据继续流向 RPC 与 OpenAPI，减少客户端、文档和运行时代码漂移。',
-  },
-];
+import { computed } from 'vue';
+import { useData } from 'vitepress';
+
+const { lang } = useData();
+
+const items = {
+  en: [
+    {
+      title: 'Request',
+      body: 'Every request enters through the Fetch API shape, and adapters only bridge host-specific request objects into that model.',
+    },
+    {
+      title: 'Validator',
+      body: 'JSON, form, query, param, header, cookie, and text inputs can all flow through one type-safe validation path.',
+    },
+    {
+      title: 'Route',
+      body: 'Context, middleware, and route composition stay readable, so business logic can stay concentrated inside handlers.',
+    },
+    {
+      title: 'Contracts',
+      body: 'Validation metadata can keep flowing into RPC and OpenAPI, reducing drift between runtime code, docs, and clients.',
+    },
+  ],
+  zh: [
+    {
+      title: 'Request',
+      body: '统一以 Fetch API Request 进入应用，平台适配器只负责把宿主请求桥接进来。',
+    },
+    {
+      title: 'Validator',
+      body: 'json / form / query / param / header / cookie / text 输入统一进入类型安全校验链。',
+    },
+    {
+      title: 'Route',
+      body: 'Context、Middleware、路由组合保持直观，业务逻辑集中在 handler 层。',
+    },
+    {
+      title: 'Contracts',
+      body: '校验元数据继续流向 RPC 与 OpenAPI，减少客户端、文档和运行时代码漂移。',
+    },
+  ],
+} as const;
+
+const localizedItems = computed(() => lang.value.startsWith('zh') ? items.zh : items.en);
 </script>
 
 <template>
   <div class="nano-card pipeline">
     <div
-      v-for="(item, index) in items"
+      v-for="(item, index) in localizedItems"
       :key="item.title"
       class="pipeline-item"
     >
