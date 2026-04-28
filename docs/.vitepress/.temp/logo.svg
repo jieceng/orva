@@ -1,0 +1,14 @@
+<svg width="520" height="160" viewBox="0 0 520 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="nano-gradient" x1="40" y1="30" x2="470" y2="130" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#0F766E"/>
+      <stop offset="0.55" stop-color="#0EA5E9"/>
+      <stop offset="1" stop-color="#F97316"/>
+    </linearGradient>
+  </defs>
+  <rect x="10" y="16" width="500" height="128" rx="34" fill="#0B1323"/>
+  <path d="M88 111V53H104L154 102V53H173V111H157L107 62V111H88Z" fill="url(#nano-gradient)"/>
+  <path d="M252 53C285.689 53 308 77.036 308 82C308 86.964 285.689 111 252 111C218.311 111 196 86.964 196 82C196 77.036 218.311 53 252 53ZM252 69C229.229 69 214 77.606 214 82C214 86.394 229.229 95 252 95C274.771 95 290 86.394 290 82C290 77.606 274.771 69 252 69Z" fill="url(#nano-gradient)"/>
+  <path d="M329 111V53H345L395 102V53H414V111H398L348 62V111H329Z" fill="url(#nano-gradient)"/>
+  <path d="M463 53C496.689 53 519 77.036 519 82C519 86.964 496.689 111 463 111C429.311 111 407 86.964 407 82C407 77.036 429.311 53 463 53ZM463 69C440.229 69 425 77.606 425 82C425 86.394 440.229 95 463 95C485.771 95 501 86.394 501 82C501 77.606 485.771 69 463 69Z" fill="url(#nano-gradient)"/>
+</svg>

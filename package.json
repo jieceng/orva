@@ -1,0 +1,117 @@
+{
+  "name": "nano",
+  "version": "3.1.0",
+  "description": "Ultra-lightweight Web Framework based on Fetch API",
+  "type": "module",
+  "sideEffects": false,
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./validator": {
+      "import": "./dist/validator/index.js",
+      "types": "./dist/validator/index.d.ts"
+    },
+    "./validator/zod": {
+      "import": "./dist/validator/zod.js",
+      "types": "./dist/validator/zod.d.ts"
+    },
+    "./openapi": {
+      "import": "./dist/openapi/index.js",
+      "types": "./dist/openapi/index.d.ts"
+    },
+    "./openapi/zod": {
+      "import": "./dist/openapi/zod.js",
+      "types": "./dist/openapi/zod.d.ts"
+    },
+    "./rpc": {
+      "import": "./dist/rpc/index.js",
+      "types": "./dist/rpc/index.d.ts"
+    },
+    "./adapters": {
+      "import": "./dist/adapters/index.js",
+      "types": "./dist/adapters/index.d.ts"
+    },
+    "./adapters/node": {
+      "import": "./dist/adapters/node.js",
+      "types": "./dist/adapters/node.d.ts"
+    },
+    "./adapters/deno": {
+      "import": "./dist/adapters/deno.js",
+      "types": "./dist/adapters/deno.d.ts"
+    },
+    "./adapters/bun": {
+      "import": "./dist/adapters/bun.js",
+      "types": "./dist/adapters/bun.d.ts"
+    },
+    "./adapters/aws-lambda": {
+      "import": "./dist/adapters/aws-lambda.js",
+      "types": "./dist/adapters/aws-lambda.d.ts"
+    },
+    "./adapters/netlify": {
+      "import": "./dist/adapters/netlify.js",
+      "types": "./dist/adapters/netlify.d.ts"
+    },
+    "./adapters/azure": {
+      "import": "./dist/adapters/azure.js",
+      "types": "./dist/adapters/azure.d.ts"
+    },
+    "./adapters/cloudflare": {
+      "import": "./dist/adapters/cloudflare.js",
+      "types": "./dist/adapters/cloudflare.d.ts"
+    },
+    "./adapters/vercel": {
+      "import": "./dist/adapters/vercel.js",
+      "types": "./dist/adapters/vercel.d.ts"
+    },
+    "./middlewares": {
+      "import": "./dist/middlewares/index.js",
+      "types": "./dist/middlewares/index.d.ts"
+    },
+    "./middlewares/*": {
+      "import": "./dist/middlewares/*.js",
+      "types": "./dist/middlewares/*.d.ts"
+    }
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "dev": "tsx --watch example.ts",
+    "docs:dev": "vitepress dev docs",
+    "docs:build": "vitepress build docs",
+    "docs:preview": "vitepress preview docs",
+    "test": "tsx --test test/**/*.test.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "keywords": [
+    "web",
+    "framework",
+    "http",
+    "router",
+    "fetch",
+    "nano"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "esbuild": "^0.28.0",
+    "tsx": "^4.21.0",
+    "typescript": "^5.3.0",
+    "vitepress": "^1.6.4",
+    "zod": "^4.3.6"
+  },
+  "peerDependencies": {
+    "zod": "^4.3.6"
+  },
+  "peerDependenciesMeta": {
+    "zod": {
+      "optional": true
+    }
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
