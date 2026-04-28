@@ -88,7 +88,7 @@ app.group('/api/v1', (api: Orva<AppVariables>) => {
 app.get('/old', (c) => c.redirect('/new', 301));
 app.get('/new', (c) => c.text('New Page'));
 
-// SSE 流 - 使用新的语义化方法
+// SSE stream using the semantic helper
 app.get('/events', (c) => {
   const stream = new ReadableStream({
     start(controller) {
@@ -105,7 +105,7 @@ app.get('/events', (c) => {
   return c.sse(stream);
 });
 
-// 文件下载 - 使用新的语义化方法
+// File download using the semantic helper
 app.get('/download', (c) => {
   const stream = new ReadableStream({
     start(controller) {

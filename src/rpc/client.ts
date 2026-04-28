@@ -1,4 +1,4 @@
-// ============ RPC 客户端实现 ============
+// ============ RPC client implementation ============
 
 import type { OrvaRPC, RPCRequestOptions } from './types.js';
 import type { Orva } from '../orva.js';
@@ -83,21 +83,21 @@ export function createRPC<T extends Orva<any>>(
   function createPathProxy(currentPath: string): any {
     return new Proxy(() => {}, {
       get(_target, prop: string) {
-        // 处理 HTTP 方法（$get, $post, $put, $delete, $patch）
+        // Handle HTTP methods ($get, $post, $put, $delete, $patch)
         if (prop.startsWith('$')) {
           const httpMethod = prop.slice(1).toUpperCase();
           
           return async (requestOptions: RPCRequestOptions = {}) => {
             let url = `${baseURL}${currentPath}`;
             
-            // 替换路径参数
+            // Replace path parameters
             if (requestOptions.param) {
               Object.entries(requestOptions.param).forEach(([key, value]) => {
                 url = url.replace(`:${key}`, encodeURIComponent(String(value)));
               });
             }
             
-            // 添加查询参数
+            // Append query parameters
             if (requestOptions.query) {
               const searchParams = new URLSearchParams();
               Object.entries(requestOptions.query).forEach(([key, value]) => {
@@ -106,7 +106,7 @@ export function createRPC<T extends Orva<any>>(
               url += `?${searchParams.toString()}`;
             }
             
-            // 构建请求头
+            // Build request headers
             const headers = new Headers(defaultHeaders);
             if (requestOptions.headers) {
               Object.entries(requestOptions.headers).forEach(([key, value]) => {
@@ -122,7 +122,7 @@ export function createRPC<T extends Orva<any>>(
               }
             }
             
-            // 构建请求体
+            // Build the request body
             const body = serializeRequestBody(requestOptions.body, headers);
             
             const response = await customFetch(url, {
@@ -144,7 +144,7 @@ export function createRPC<T extends Orva<any>>(
           };
         }
         
-        // 处理路径段
+        // Handle path segments
         return createPathProxy(`${currentPath}/${prop}`);
       },
     });

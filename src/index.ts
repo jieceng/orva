@@ -1,4 +1,4 @@
-// ============ 核心框架导出 ============
+// ============ Core framework exports ============
 export {
   Orva,
   createOrva,

@@ -18,11 +18,11 @@ import {
   type DeleteCookieOptions,
 } from './cookies.js';
 
-// 扩展 HTTPMethod 以支持现代 Web 标准和自定义方法
+// Extend HTTPMethod to support modern web standards and custom methods
 export type HTTPMethod =
   | 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH' 
   | 'HEAD' | 'OPTIONS' | 'CONNECT' | 'TRACE'
-  | (string & {}); // 允许扩展自定义方法
+  | (string & {}); // Allow custom method extensions
 
 export type StatusCode = number;
 
@@ -132,7 +132,7 @@ export interface Context<
 
 export type Next = () => Promise<void>;
 
-// 支持洋葱模型的中间件定义
+// Middleware definition supporting the onion model
 export type MiddlewareHandler<
   T extends object = Record<string, unknown>,
   V extends ValidatedData = {}
@@ -1385,7 +1385,7 @@ export class Orva<
     return this.composeHandlers([...allMiddlewares, finalHandler] as [...AnyMiddlewareHandler<T>[], Handler<T, any>]);
   }
 
-  // HTTP 方法注册 - 保持简洁风格
+  // HTTP method registration with a compact API
   get<
     Path extends string,
     M extends AnyMiddlewareHandler<T>[],

@@ -1,4 +1,4 @@
-// ============ RPC 类型工具 ============
+// ============ RPC type utilities ============
 
 import type { Orva, RouteDefinition } from '../orva.js';
 
@@ -94,7 +94,7 @@ export type OrvaRPC<T extends Orva<any, any, any>> = RPCPathProxy<RoutesFromOrva
 
 export type RPCClient<T extends Orva<any, any, any>> = OrvaRPC<T>;
 
-// 辅助类型：从路由字符串提取参数名
+// Helper type: extract parameter names from a route string
 export type ExtractParamNames<T extends string> =
   T extends `${infer _}:${infer P}/${infer R}`
     ? P | ExtractParamNames<`/${R}`>
@@ -102,10 +102,10 @@ export type ExtractParamNames<T extends string> =
       ? P
       : never;
 
-// 辅助类型：构建 params 对象类型
+// Helper type: build the params object type
 export type ParamsFromPath<T extends string> = {
   [K in ExtractParamNames<T>]: string;
 };
 
-// 辅助类型：提取路由参数（简化版）
+// Helper type: extract route params (simplified)
 export type RouteParams<T extends string> = ParamsFromPath<T>;
