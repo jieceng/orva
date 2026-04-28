@@ -1,6 +1,6 @@
 {
   "name": "orvajs",
-  "version": "3.1.1",
+  "version": "3.1.2",
   "description": "Lightweight Fetch API web framework with typed middleware, RPC, validator, OpenAPI and multi-runtime adapters",
   "type": "module",
   "sideEffects": false,
