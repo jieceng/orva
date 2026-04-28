@@ -99,12 +99,12 @@ function createSearchConfig(locale: 'zh' | 'en') {
   };
 }
 
-function createVersionNav(base: '' | '/en') {
+function createVersionNav(base: '' | '/zh') {
   return {
     text: latestVersion,
     items: [
       {
-        text: base === '' ? '当前主线文档' : 'Current release docs',
+        text: base === '' ? 'Current release docs' : '当前主线文档',
         link: `${base}/guide/introduction`,
       },
       {
@@ -115,7 +115,7 @@ function createVersionNav(base: '' | '/en') {
   };
 }
 
-function createZhSidebar(prefix = '') {
+function createZhSidebar(prefix = '/zh') {
   return [
     {
       text: '开始',
@@ -144,7 +144,7 @@ function createZhSidebar(prefix = '') {
   ];
 }
 
-function createEnSidebar(prefix = '/en') {
+function createEnSidebar(prefix = '') {
   return [
     {
       text: 'Get Started',
@@ -178,18 +178,18 @@ function createZhThemeConfig() {
     logo: '/logo.svg',
     siteTitle: 'orva',
     nav: [
-      { text: '指南', link: '/guide/introduction' },
-      { text: '中间件', link: '/middlewares' },
-      { text: '验证', link: '/validator' },
-      { text: 'RPC', link: '/rpc' },
-      { text: 'OpenAPI', link: '/openapi' },
-      { text: '适配器', link: '/adapters' },
-      { text: '导出', link: '/exports' },
-      createVersionNav(''),
+      { text: '指南', link: '/zh/guide/introduction' },
+      { text: '中间件', link: '/zh/middlewares' },
+      { text: '验证', link: '/zh/validator' },
+      { text: 'RPC', link: '/zh/rpc' },
+      { text: 'OpenAPI', link: '/zh/openapi' },
+      { text: '适配器', link: '/zh/adapters' },
+      { text: '导出', link: '/zh/exports' },
+      createVersionNav('/zh'),
     ],
     sidebar: {
-      '/v3/': createZhSidebar('/v3'),
-      '/': createZhSidebar(''),
+      '/zh/v3/': createZhSidebar('/zh/v3'),
+      '/zh/': createZhSidebar('/zh'),
     },
     search: createSearchConfig('zh'),
     outline: {
@@ -218,18 +218,18 @@ function createEnThemeConfig() {
     logo: '/logo.svg',
     siteTitle: 'orva',
     nav: [
-      { text: 'Guide', link: '/en/guide/introduction' },
-      { text: 'Middleware', link: '/en/middlewares' },
-      { text: 'Validator', link: '/en/validator' },
-      { text: 'RPC', link: '/en/rpc' },
-      { text: 'OpenAPI', link: '/en/openapi' },
-      { text: 'Adapters', link: '/en/adapters' },
-      { text: 'Exports', link: '/en/exports' },
-      createVersionNav('/en'),
+      { text: 'Guide', link: '/guide/introduction' },
+      { text: 'Middleware', link: '/middlewares' },
+      { text: 'Validator', link: '/validator' },
+      { text: 'RPC', link: '/rpc' },
+      { text: 'OpenAPI', link: '/openapi' },
+      { text: 'Adapters', link: '/adapters' },
+      { text: 'Exports', link: '/exports' },
+      createVersionNav(''),
     ],
     sidebar: {
-      '/en/v3/': createEnSidebar('/en/v3'),
-      '/en/': createEnSidebar('/en'),
+      '/v3/': createEnSidebar('/v3'),
+      '/': createEnSidebar(''),
     },
     search: createSearchConfig('en'),
     outline: {
@@ -255,7 +255,7 @@ function createEnThemeConfig() {
 
 export default defineConfig({
   title: 'orva',
-  description: '面向 Fetch API 的轻量 TypeScript Web 框架，提供 typed middleware、validator、RPC、OpenAPI 与多运行时适配。',
+  description: 'A lightweight Fetch API web framework with typed middleware, validator, RPC, OpenAPI and multi-runtime adapters.',
   cleanUrls: true,
   lastUpdated: true,
   appearance: true,
@@ -272,25 +272,25 @@ export default defineConfig({
     ['meta', { name: 'theme-color', content: '#0f766e' }],
     ['meta', { property: 'og:type', content: 'website' }],
     ['meta', { property: 'og:title', content: 'orva' }],
-    ['meta', { property: 'og:description', content: '轻量、typed、可组合的 Fetch API Web 框架。' }],
+    ['meta', { property: 'og:description', content: 'A lightweight, typed, composable Fetch API web framework.' }],
     ['link', { rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' }],
     ['link', { rel: 'mask-icon', href: '/favicon.svg', color: '#0f766e' }],
   ],
   locales: {
     root: {
-      label: '简体中文',
-      lang: 'zh-CN',
-      title: 'orva',
-      description: '面向 Fetch API 的轻量 TypeScript Web 框架，提供 typed middleware、validator、RPC、OpenAPI 与多运行时适配。',
-      themeConfig: createZhThemeConfig(),
-    },
-    en: {
       label: 'English',
       lang: 'en-US',
-      link: '/en/',
       title: 'orva',
       description: 'A lightweight Fetch API web framework with typed middleware, validator, RPC, OpenAPI and multi-runtime adapters.',
       themeConfig: createEnThemeConfig(),
+    },
+    zh: {
+      label: '简体中文',
+      lang: 'zh-CN',
+      link: '/zh/',
+      title: 'orva',
+      description: '面向 Fetch API 的轻量 TypeScript Web 框架，提供 typed middleware、validator、RPC、OpenAPI 与多运行时适配。',
+      themeConfig: createZhThemeConfig(),
     },
   },
 });

@@ -1,9 +1,7 @@
-# Context 与响应
-
+# Context 与响�?
 <OrvaVersionBanner version="v3.1" channel="Stable snapshot" updated="2026-04" />
 
-v3.1 上下文仍然统一暴露：
-
+v3.1 上下文仍然统一暴露�?
 - `c.req`
 - `c.url`
 - `c.params`
