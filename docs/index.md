@@ -37,6 +37,10 @@ features:
 - export boundaries stay explicit, which fits monorepos, templates, SDKs, and shared infra
 - stable entry points exist for Node and mainstream serverless or edge platforms
 
+::: info Official docs URL
+GitHub Pages deployment address: `https://jieceng.github.io/orva/`
+:::
+
 <OrvaContractPipeline />
 
 ## Minimal runnable example

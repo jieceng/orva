@@ -1,6 +1,10 @@
 # orva
 
+[中文 README](./README.zh-CN.md) | [Chinese docs](https://jieceng.github.io/orva/zh/)
+
 Lightweight Fetch API web framework with typed middleware, validator, RPC, OpenAPI and multi-runtime adapters.
+
+Documentation site: `https://jieceng.github.io/orva/`
 
 ## Install
 
@@ -104,6 +108,12 @@ const app = createOrva().group('/api', (group) => {
 ## Documentation
 
 The project ships with a VitePress documentation site in [`docs/`](./docs/).
+
+Live docs:
+
+- `https://jieceng.github.io/orva/`
+- English guide: `https://jieceng.github.io/orva/guide/introduction`
+- Chinese guide: `https://jieceng.github.io/orva/zh/guide/introduction`
 
 ```bash
 pnpm docs:dev

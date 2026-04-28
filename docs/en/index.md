@@ -39,6 +39,10 @@ features:
 - clean subpath exports
 - multi-runtime deployment
 
+::: info Official docs URL
+GitHub Pages deployment address: `https://jieceng.github.io/orva/`
+:::
+
 <OrvaContractPipeline />
 
 ## Minimal runnable example

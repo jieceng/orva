@@ -134,6 +134,7 @@ const apiBase = process.env.API_BASE_URL ?? 'http://localhost:3000';
 
 由于当前仓库路径是 `jieceng/orva`，GitHub Pages 会使用 `/orva/` 作为站点基础路径，所以生产构建时会自动注入对应的 VitePress `base` 配置。
 当前文档工作流使用 Node.js 24 构建。
+正式文档地址是 `https://jieceng.github.io/orva/`。
 
 ## 常见部署策略
 

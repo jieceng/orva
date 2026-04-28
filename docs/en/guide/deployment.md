@@ -43,3 +43,4 @@ The workflow lives at `.github/workflows/docs.yml` and publishes `docs/.vitepres
 
 For this repository, the Pages site will be served under the `/orva/` base path, so the VitePress config sets the production base automatically during CI.
 The workflow currently builds with Node.js 24.
+The published docs URL is `https://jieceng.github.io/orva/`.

@@ -37,6 +37,10 @@ features:
 - 导出结构清晰，适合多包仓库、CLI 模板、SDK、基建层复用。
 - 对 Node 和主流 Serverless / Edge 平台都有稳定入口。
 
+::: info 文档站地址
+GitHub Pages 正式地址：`https://jieceng.github.io/orva/`
+:::
+
 <OrvaContractPipeline />
 
 ## 一段最小可运行示例
