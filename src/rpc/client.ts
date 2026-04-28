@@ -1,7 +1,7 @@
 // ============ RPC 客户端实现 ============
 
-import type { NanoRPC, RPCRequestOptions } from './types.js';
-import type { Nano } from '../nano.js';
+import type { OrvaRPC, RPCRequestOptions } from './types.js';
+import type { Orva } from '../orva.js';
 
 export interface RPCClientOptions {
   baseURL: string;
@@ -75,9 +75,9 @@ function serializeRequestBody(
   return JSON.stringify(body);
 }
 
-export function createRPC<T extends Nano<any>>(
+export function createRPC<T extends Orva<any>>(
   options: RPCClientOptions
-): NanoRPC<T> {
+): OrvaRPC<T> {
   const { baseURL, headers: defaultHeaders = {}, fetch: customFetch = fetch } = options;
 
   function createPathProxy(currentPath: string): any {

@@ -2,13 +2,13 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { brotliDecompressSync, gunzipSync } from 'node:zlib';
 
-import { createNano } from '../../src/index.ts';
+import { createOrva } from '../../src/index.ts';
 import { compress } from '../../src/middlewares/compress.ts';
 
 test('compress applies gzip to compressible responses when accepted', async () => {
-  const app = createNano()
+  const app = createOrva()
     .use(compress({ threshold: 1 }))
-    .get('/text', (c) => c.text('nano '.repeat(100)));
+    .get('/text', (c) => c.text('orva '.repeat(100)));
 
   const response = await app.fetch(new Request('https://example.com/text', {
     headers: {
@@ -22,11 +22,11 @@ test('compress applies gzip to compressible responses when accepted', async () =
 
   const body = new Uint8Array(await response.arrayBuffer());
   const decompressed = gunzipSync(body).toString('utf-8');
-  assert.equal(decompressed, 'nano '.repeat(100));
+  assert.equal(decompressed, 'orva '.repeat(100));
 });
 
 test('compress skips small or unsupported responses', async () => {
-  const app = createNano()
+  const app = createOrva()
     .use(compress({ threshold: 1000 }))
     .get('/small', (c) => c.text('tiny'))
     .get('/binary', () => new Response(new Uint8Array([1, 2, 3]), {
@@ -47,7 +47,7 @@ test('compress skips small or unsupported responses', async () => {
 });
 
 test('compress prefers brotli when supported by the client', async () => {
-  const app = createNano()
+  const app = createOrva()
     .use(compress({ threshold: 1, encodings: ['br', 'gzip'] }))
     .get('/text', (c) => c.text('brotli '.repeat(100)));
 

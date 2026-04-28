@@ -22,7 +22,7 @@ test('createRPC builds url, query, headers and json body', async () => {
     param: { id: 'a/b' },
     query: { page: '2', filter: 'yes' },
     headers: { 'x-trace': '1' },
-    body: { name: 'nano' },
+    body: { name: 'orva' },
   });
 
   assert.deepEqual(result, { ok: true });
@@ -37,12 +37,12 @@ test('createRPC builds url, query, headers and json body', async () => {
   assert.equal(headers.get('authorization'), 'Bearer base');
   assert.equal(headers.get('x-trace'), '1');
   assert.equal(headers.get('content-type'), 'application/json');
-  assert.equal(calls[0].init?.body, JSON.stringify({ name: 'nano' }));
+  assert.equal(calls[0].init?.body, JSON.stringify({ name: 'orva' }));
 });
 
 test('createRPC preserves FormData and throws on non-ok responses', async () => {
   const form = new FormData();
-  form.set('file', 'nano');
+  form.set('file', 'orva');
 
   const rpc = createRPC({
     baseURL: 'https://api.example.com',

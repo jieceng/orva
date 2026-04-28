@@ -1,6 +1,6 @@
 # 路由与组合
 
-<NanoVersionBanner version="v3.1" channel="Stable snapshot" updated="2026-04" />
+<OrvaVersionBanner version="v3.1" channel="Stable snapshot" updated="2026-04" />
 
 v3.1 的路由模型保持：
 

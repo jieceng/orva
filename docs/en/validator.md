@@ -1,6 +1,6 @@
 # Validator
 
-The validator layer in `nano` does two things:
+The validator layer in `orva` does two things:
 
 1. read and normalize request input at runtime
 2. expose parsed output to downstream handlers through `c.valid()`
@@ -18,10 +18,10 @@ The validator layer in `nano` does two things:
 ## Basic example
 
 ```ts
-import { createNano } from 'nano';
-import { validator } from 'nano/validator';
+import { createOrva } from 'orva';
+import { validator } from 'orva/validator';
 
-const app = createNano().post(
+const app = createOrva().post(
   '/users',
   validator('json', (value: { name?: string }) => {
     if (!value.name) throw new Error('name is required');

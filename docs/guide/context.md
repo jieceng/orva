@@ -78,7 +78,7 @@ app.get('/jump', (c) => c.redirect('/login'));
 ```ts
 app.use(async (c, next) => {
   c.after((response) => {
-    response.headers.set('x-served-by', 'nano');
+    response.headers.set('x-served-by', 'orva');
     return response;
   });
   await next();

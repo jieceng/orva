@@ -1,11 +1,11 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 
-import { createNano } from '../../src/index.ts';
+import { createOrva } from '../../src/index.ts';
 import { basicAuth } from '../../src/middlewares/index.ts';
 
 test('basicAuth rejects requests without valid credentials', async () => {
-  const app = createNano();
+  const app = createOrva();
 
   app.get('/protected', basicAuth({ users: { admin: 'secret' } }), (c) => c.text('ok'));
 
@@ -20,7 +20,7 @@ test('basicAuth rejects requests without valid credentials', async () => {
 });
 
 test('basicAuth allows requests with valid credentials', async () => {
-  const app = createNano();
+  const app = createOrva();
 
   app.get('/protected', basicAuth({ users: { admin: 'secret' } }), (c) => c.text('ok'));
 

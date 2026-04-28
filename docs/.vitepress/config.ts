@@ -4,9 +4,9 @@ const latestVersion = 'v3.x';
 const snapshotVersion = 'v3.1';
 
 const algoliaEnabled = Boolean(
-  process.env.NANO_DOCSEARCH_APP_ID
-  && process.env.NANO_DOCSEARCH_API_KEY
-  && process.env.NANO_DOCSEARCH_INDEX_NAME
+  process.env.ORVA_DOCSEARCH_APP_ID
+  && process.env.ORVA_DOCSEARCH_API_KEY
+  && process.env.ORVA_DOCSEARCH_INDEX_NAME
 );
 
 function createSearchConfig(locale: 'zh' | 'en') {
@@ -14,9 +14,9 @@ function createSearchConfig(locale: 'zh' | 'en') {
     return {
       provider: 'algolia' as const,
       options: {
-        appId: process.env.NANO_DOCSEARCH_APP_ID!,
-        apiKey: process.env.NANO_DOCSEARCH_API_KEY!,
-        indexName: process.env.NANO_DOCSEARCH_INDEX_NAME!,
+        appId: process.env.ORVA_DOCSEARCH_APP_ID!,
+        apiKey: process.env.ORVA_DOCSEARCH_API_KEY!,
+        indexName: process.env.ORVA_DOCSEARCH_INDEX_NAME!,
         locales: {
           zh: {
             placeholder: '搜索文档',
@@ -63,10 +63,10 @@ function createSearchConfig(locale: 'zh' | 'en') {
             placeholder: 'Search docs',
           },
         },
-        ...(process.env.NANO_DOCSEARCH_ASSISTANT_ID
+        ...(process.env.ORVA_DOCSEARCH_ASSISTANT_ID
           ? {
               askAi: {
-                assistantId: process.env.NANO_DOCSEARCH_ASSISTANT_ID,
+                assistantId: process.env.ORVA_DOCSEARCH_ASSISTANT_ID,
               },
             }
           : {}),
@@ -124,6 +124,9 @@ function createZhSidebar(prefix = '') {
         { text: '路由与组合', link: `${prefix}/guide/routing` },
         { text: 'Context 与响应', link: `${prefix}/guide/context` },
         { text: '中间件与类型累积', link: `${prefix}/guide/production` },
+        { text: '测试与质量', link: `${prefix}/guide/testing` },
+        { text: '部署与运行时', link: `${prefix}/guide/deployment` },
+        { text: '常见问题', link: `${prefix}/guide/faq` },
       ],
     },
     {
@@ -150,6 +153,9 @@ function createEnSidebar(prefix = '/en') {
         { text: 'Routing and Composition', link: `${prefix}/guide/routing` },
         { text: 'Context and Responses', link: `${prefix}/guide/context` },
         { text: 'Middleware and Type Accumulation', link: `${prefix}/guide/production` },
+        { text: 'Testing and Quality', link: `${prefix}/guide/testing` },
+        { text: 'Deployment and Runtimes', link: `${prefix}/guide/deployment` },
+        { text: 'FAQ', link: `${prefix}/guide/faq` },
       ],
     },
     {
@@ -169,7 +175,7 @@ function createEnSidebar(prefix = '/en') {
 function createZhThemeConfig() {
   return {
     logo: '/logo.svg',
-    siteTitle: 'nano',
+    siteTitle: 'orva',
     nav: [
       { text: '指南', link: '/guide/introduction' },
       { text: '中间件', link: '/middlewares' },
@@ -199,7 +205,7 @@ function createZhThemeConfig() {
 function createEnThemeConfig() {
   return {
     logo: '/logo.svg',
-    siteTitle: 'nano',
+    siteTitle: 'orva',
     nav: [
       { text: 'Guide', link: '/en/guide/introduction' },
       { text: 'Middleware', link: '/en/middlewares' },
@@ -227,7 +233,7 @@ function createEnThemeConfig() {
 }
 
 export default defineConfig({
-  title: 'nano',
+  title: 'orva',
   description: '面向 Fetch API 的轻量 TypeScript Web 框架，提供 typed middleware、validator、RPC、OpenAPI 与多运行时适配。',
   cleanUrls: true,
   lastUpdated: true,
@@ -244,7 +250,7 @@ export default defineConfig({
   head: [
     ['meta', { name: 'theme-color', content: '#0f766e' }],
     ['meta', { property: 'og:type', content: 'website' }],
-    ['meta', { property: 'og:title', content: 'nano' }],
+    ['meta', { property: 'og:title', content: 'orva' }],
     ['meta', { property: 'og:description', content: '轻量、typed、可组合的 Fetch API Web 框架。' }],
     ['link', { rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' }],
     ['link', { rel: 'mask-icon', href: '/favicon.svg', color: '#0f766e' }],
@@ -253,7 +259,7 @@ export default defineConfig({
     root: {
       label: '简体中文',
       lang: 'zh-CN',
-      title: 'nano',
+      title: 'orva',
       description: '面向 Fetch API 的轻量 TypeScript Web 框架，提供 typed middleware、validator、RPC、OpenAPI 与多运行时适配。',
       themeConfig: createZhThemeConfig(),
     },
@@ -261,7 +267,7 @@ export default defineConfig({
       label: 'English',
       lang: 'en-US',
       link: '/en/',
-      title: 'nano',
+      title: 'orva',
       description: 'A lightweight Fetch API web framework with typed middleware, validator, RPC, OpenAPI and multi-runtime adapters.',
       themeConfig: createEnThemeConfig(),
     },

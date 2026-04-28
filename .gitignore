@@ -3,8 +3,12 @@ dist/
 coverage/
 *.log
 *.tsbuildinfo
+*.tgz
 
 .vitepress
+docs/.vitepress/.temp/
+docs/.vitepress/dist/
+docs/.vitepress/cache/
 
 .DS_Store
 Thumbs.db

@@ -3,11 +3,11 @@ import assert from 'node:assert/strict';
 
 import { z } from 'zod';
 
-import { createNano } from '../../src/index.ts';
+import { createOrva } from '../../src/index.ts';
 import { zValidator, zodValidator } from '../../src/validator/zod.ts';
 
 test('zodValidator parses data, preserves output types, and returns default errors', async () => {
-  const app = createNano();
+  const app = createOrva();
 
   const schema = z.object({
     name: z.string().min(1).transform((value) => value.trim()),
@@ -32,10 +32,10 @@ test('zodValidator parses data, preserves output types, and returns default erro
   const ok = await app.fetch(new Request('https://example.com/users', {
     method: 'POST',
     headers: { 'content-type': 'application/json' },
-    body: JSON.stringify({ name: ' nano ', age: '18' }),
+    body: JSON.stringify({ name: ' orva ', age: '18' }),
   }));
   assert.equal(ok.status, 201);
-  assert.deepEqual(await ok.json(), { name: 'nano', age: 18 });
+  assert.deepEqual(await ok.json(), { name: 'orva', age: 18 });
 
   const bad = await app.fetch(new Request('https://example.com/users', {
     method: 'POST',
@@ -50,7 +50,7 @@ test('zodValidator parses data, preserves output types, and returns default erro
 });
 
 test('zValidator alias supports custom zod error handling', async () => {
-  const app = createNano();
+  const app = createOrva();
 
   app.get(
     '/session',

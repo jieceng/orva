@@ -5,7 +5,7 @@ export {
 export { createRPCMetadata, type RPCReadable, type RPCRouteMetadata } from './metadata.js';
 
 export type {
-  NanoRPC,
+  OrvaRPC,
   RPCClient,
   RPCMethod,
   RPCRouteDefinition,

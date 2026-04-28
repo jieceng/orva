@@ -1,11 +1,11 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 
-import { createNano } from '../../src/index.ts';
+import { createOrva } from '../../src/index.ts';
 import { createAWSLambdaHandler } from '../../src/adapters/index.ts';
 
-test('aws lambda adapter maps api gateway v2 event to nano fetch', async () => {
-  const app = createNano();
+test('aws lambda adapter maps api gateway v2 event to orva fetch', async () => {
+  const app = createOrva();
 
   app.post('/users/:id', async (c) => {
     const body = await c.req.json();
@@ -31,7 +31,7 @@ test('aws lambda adapter maps api gateway v2 event to nano fetch', async () => {
       domainName: 'api.example.com',
       http: { method: 'POST' },
     },
-    body: JSON.stringify({ name: 'nano' }),
+    body: JSON.stringify({ name: 'orva' }),
     isBase64Encoded: false,
   });
 
@@ -40,13 +40,13 @@ test('aws lambda adapter maps api gateway v2 event to nano fetch', async () => {
   assert.deepEqual(JSON.parse(response.body || '{}'), {
     id: '42',
     q: 'test',
-    body: { name: 'nano' },
+    body: { name: 'orva' },
     cookie: 'session=abc',
   });
 });
 
 test('aws lambda adapter base64 encodes binary responses', async () => {
-  const app = createNano();
+  const app = createOrva();
   app.get('/bin', () => new Response(new Uint8Array([1, 2, 3]), {
     headers: { 'content-type': 'application/octet-stream' },
   }));

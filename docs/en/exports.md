@@ -1,19 +1,19 @@
 # Exports
 
-`nano` keeps the root entry focused and pushes non-core features into explicit subpaths.
+`orva` keeps the root entry focused and pushes non-core features into explicit subpaths.
 
 ## Core
 
 ```ts
-import { Nano, createNano, defineMiddleware } from 'nano';
+import { Orva, createOrva, defineMiddleware } from 'orva';
 ```
 
 ## Subpaths
 
 ```ts
-import { validator } from 'nano/validator';
-import { createRPC } from 'nano/rpc';
-import { createOpenAPIDocument } from 'nano/openapi';
-import { serveNode } from 'nano/adapters/node';
-import { cors } from 'nano/middlewares/cors';
+import { validator } from 'orva/validator';
+import { createRPC } from 'orva/rpc';
+import { createOpenAPIDocument } from 'orva/openapi';
+import { serveNode } from 'orva/adapters/node';
+import { cors } from 'orva/middlewares/cors';
 ```

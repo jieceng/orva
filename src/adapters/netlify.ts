@@ -1,4 +1,4 @@
-import { Nano } from '../nano.js';
+import { Orva } from '../orva.js';
 import {
   AdapterBinaryOptions,
   appendHeaderValues,
@@ -49,7 +49,7 @@ function createRequest(event: NetlifyFunctionEvent, options: NetlifyFunctionOpti
 }
 
 export function createNetlifyFunctionHandler<T extends object>(
-  app: Nano<T>,
+  app: Orva<T>,
   options: NetlifyFunctionOptions = {}
 ): (event: NetlifyFunctionEvent, context?: NetlifyFunctionContext) => Promise<NetlifyFunctionResponse> {
   return async (event: NetlifyFunctionEvent, _context?: NetlifyFunctionContext) => {
@@ -66,7 +66,7 @@ export function createNetlifyFunctionHandler<T extends object>(
 }
 
 export function createNetlifyEdgeHandler<T extends object>(
-  app: Nano<T>
+  app: Orva<T>
 ): (request: Request) => Promise<Response> {
   return (request: Request) => Promise.resolve(app.fetch(request));
 }

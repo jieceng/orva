@@ -1,11 +1,11 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 
-import { createNano } from '../../src/index.ts';
+import { createOrva } from '../../src/index.ts';
 import { secureHeaders } from '../../src/middlewares/index.ts';
 
 test('secureHeaders applies a baseline set of security headers', async () => {
-  const app = createNano();
+  const app = createOrva();
 
   app.use(secureHeaders());
   app.get('/secure', (c) => c.text('ok'));

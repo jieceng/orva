@@ -1,6 +1,6 @@
 # Adapters
 
-`nano` standardizes everything on `app.fetch(request)`, then adapts that entrypoint to each runtime.
+`orva` standardizes everything on `app.fetch(request)`, then adapts that entrypoint to each runtime.
 
 ## Supported runtimes
 
@@ -16,10 +16,10 @@
 ## Node.js
 
 ```ts
-import { createNano } from 'nano';
-import { serveNode } from 'nano/adapters/node';
+import { createOrva } from 'orva';
+import { serveNode } from 'orva/adapters/node';
 
-const app = createNano().get('/', (c) => c.text('hello from node'));
+const app = createOrva().get('/', (c) => c.text('hello from node'));
 
 serveNode(app, { port: 3000 });
 ```

@@ -1,11 +1,11 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 
-import { createNano } from '../../src/index.ts';
+import { createOrva } from '../../src/index.ts';
 import { createNetlifyFunctionHandler } from '../../src/adapters/index.ts';
 
-test('netlify function adapter maps event to nano fetch', async () => {
-  const app = createNano();
+test('netlify function adapter maps event to orva fetch', async () => {
+  const app = createOrva();
 
   app.post('/submit', async (c) => {
     const body = await c.req.json();

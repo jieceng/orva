@@ -1,7 +1,7 @@
 import type {
   Context,
   TypedMiddlewareHandler,
-} from '../nano.js';
+} from '../orva.js';
 import { parseCookieHeader } from '../cookies.js';
 import {
   VALIDATOR_METADATA,

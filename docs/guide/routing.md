@@ -2,10 +2,10 @@
 
 ## HTTP 方法
 
-`nano` 提供常见 HTTP 方法与 `all()`：
+`orva` 提供常见 HTTP 方法与 `all()`：
 
 ```ts
-const app = createNano();
+const app = createOrva();
 
 app.get('/posts', (c) => c.json([]));
 app.post('/posts', (c) => c.text('created', 201));
@@ -25,7 +25,7 @@ app.get('/files/*', (c) => c.text(c.params['*']));
 ## 分组
 
 ```ts
-const app = createNano().group('/api', (api) => {
+const app = createOrva().group('/api', (api) => {
   return api
     .get('/ping', (c) => c.json({ ok: true }))
     .get('/version', (c) => c.text('v1'));
@@ -35,11 +35,11 @@ const app = createNano().group('/api', (api) => {
 ## 路由挂载
 
 ```ts
-const users = createNano()
+const users = createOrva()
   .get('/users', (c) => c.json([]))
   .get('/users/:id', (c) => c.json({ id: c.params.id }));
 
-const app = createNano().route('/api', users);
+const app = createOrva().route('/api', users);
 ```
 
 这类写法对于 RPC 类型推导尤其友好，因为子应用的路由注册表会被保留下来。
@@ -47,7 +47,7 @@ const app = createNano().route('/api', users);
 ## 路由级中间件
 
 ```ts
-import { basicAuth } from 'nano/middlewares';
+import { basicAuth } from 'orva/middlewares';
 
 app.get(
   '/admin',
@@ -59,7 +59,7 @@ app.get(
 ## 错误处理与 404
 
 ```ts
-const app = createNano()
+const app = createOrva()
   .notFound((c) => c.json({ error: 'Not Found' }, 404))
   .onError((err, c) => c.json({ error: err.message }, 500));
 ```

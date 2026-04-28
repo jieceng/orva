@@ -1,11 +1,11 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 
-import { createNano } from '../../src/index.ts';
+import { createOrva } from '../../src/index.ts';
 import { createAzureFunctionHandler } from '../../src/adapters/index.ts';
 
 test('azure function adapter accepts request-like objects', async () => {
-  const app = createNano();
+  const app = createOrva();
 
   app.put('/items/:id', async (c) => {
     const body = await c.req.json();
@@ -21,7 +21,7 @@ test('azure function adapter accepts request-like objects', async () => {
     method: 'PUT',
     url: 'https://fn.example.com/items/9?mode=edit',
     headers: { 'content-type': 'application/json' },
-    text: async () => JSON.stringify({ framework: 'nano' }),
+    text: async () => JSON.stringify({ framework: 'orva' }),
   });
 
   assert.equal(response.status, 200);
@@ -29,6 +29,6 @@ test('azure function adapter accepts request-like objects', async () => {
   assert.deepEqual(JSON.parse(response.body || '{}'), {
     id: '9',
     query: 'edit',
-    body: { framework: 'nano' },
+    body: { framework: 'orva' },
   });
 });

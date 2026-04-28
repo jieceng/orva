@@ -1,18 +1,18 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 
-import { createNano } from '../../src/index.ts';
+import { createOrva } from '../../src/index.ts';
 import { rateLimit } from '../../src/middlewares/index.ts';
 
 test('rateLimit adds headers and enforces limits', async () => {
-  const app = createNano();
+  const app = createOrva();
 
   app.use(rateLimit({
     limit: 1,
     windowMs: 60_000,
     keyGenerator: () => 'test-key',
   }));
-  app.get('/asset', (c) => c.text('nano'));
+  app.get('/asset', (c) => c.text('orva'));
 
   const first = await app.fetch(new Request('https://example.com/asset'));
   assert.equal(first.status, 200);

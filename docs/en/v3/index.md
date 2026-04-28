@@ -1,24 +1,84 @@
-# nano v3.1
+---
+layout: home
 
-<NanoVersionBanner
-  version="v3.1"
-  channel="Snapshot"
-  updated="2026-04"
-  summary="This section is the frozen v3.1 docs line for existing projects and durable internal links."
-/>
+hero:
+  name: orva
+  text: A production-ready Fetch API web framework
+  tagline: Keep a Hono-like mental model while shipping typed middleware, validator, RPC, OpenAPI, and multi-runtime adapters in one cohesive server stack.
+  actions:
+    - theme: brand
+      text: Start in 5 minutes
+      link: /en/guide/quickstart
+    - theme: alt
+      text: Production guide
+      link: /en/guide/production
+    - theme: alt
+      text: Middleware catalog
+      link: /en/middlewares
 
-## Snapshot notes
+features:
+  - title: Small core, explicit exports
+    details: The root entry stays focused on the framework core. RPC, adapters, middlewares, validator, and openapi ship through subpaths that are easier to tree-shake and publish.
+  - title: End-to-end type flow
+    details: app.use() accumulation, validator output, RPC input inference, and OpenAPI metadata can move through the same contract chain instead of drifting apart.
+  - title: Ready for deployment
+    details: Node, Bun, Deno, Cloudflare, Vercel, Netlify, Azure, and AWS Lambda are covered, with common middleware for auth, security headers, rate limits, static assets, cookies, and compression.
+---
 
-- This snapshot tracks the `nano@3.1.x` release line.
-- New capability explanations continue in the current docs.
-- Existing teams can pin internal references to this versioned entrypoint.
+## Why orva
 
-## Entry points
+`orva` is built for teams that want a small request-handling model without giving up the parts that usually show up right after the first demo:
 
-- [Introduction](/en/v3/guide/introduction)
-- [Quickstart](/en/v3/guide/quickstart)
-- [Middleware](/en/v3/middlewares)
-- [Validator](/en/v3/validator)
-- [RPC](/en/v3/rpc)
-- [OpenAPI](/en/v3/openapi)
-- [Adapters](/en/v3/adapters)
+- composable routing and middleware
+- validator-backed contracts
+- typed RPC clients
+- OpenAPI generation
+- clean subpath exports
+- multi-runtime deployment
+
+<OrvaContractPipeline />
+
+## Minimal runnable example
+
+```ts
+import { createOrva } from 'orva';
+import { serveNode } from 'orva/adapters/node';
+import { cors, requestId, secureHeaders } from 'orva/middlewares';
+
+const app = createOrva()
+  .use(requestId(), cors(), secureHeaders())
+  .get('/health', (c) => c.json({
+    ok: true,
+    requestId: c.get('requestId'),
+  }));
+
+serveNode(app, { port: 3000 });
+```
+
+## Best fit
+
+| Scenario | Why it fits |
+| --- | --- |
+| APIs and BFFs | Straightforward routing plus contract tooling |
+| Platform gateways | Rich middleware and reusable OpenAPI metadata |
+| Multi-runtime services | The same app can move across Node, Edge, and serverless targets |
+| Internal templates and shared infra | Subpath exports keep boundaries predictable |
+
+## Reading path
+
+1. Start with [Quickstart](/en/guide/quickstart).
+2. Read [Routing and Composition](/en/guide/routing) and [Context and Responses](/en/guide/context).
+3. Connect [Validator](/en/validator), [RPC](/en/rpc), and [OpenAPI](/en/openapi).
+4. Move to [Middleware and Type Accumulation](/en/guide/production), [Testing and Quality](/en/guide/testing), and [Deployment and Runtimes](/en/guide/deployment).
+5. Use [FAQ](/en/guide/faq) for positioning and migration questions.
+
+## Capability map
+
+| Area | Current coverage |
+| --- | --- |
+| Core | `createOrva()` `group()` `route()` `onError()` `notFound()` |
+| Context | `req` `params` `query` `cookie` `after()` `text/json/html/stream/sse/download` |
+| Middleware | 50+ middleware exports and `orva/middlewares/*` subpaths |
+| Validation | built-in `validator()` and `zodValidator()` |
+| Contracts | `createRPC()` `createRPCMetadata()` `createOpenAPIDocument()` |
+| Adapters | Node / Bun / Deno / Cloudflare / Vercel / Netlify / Azure / AWS Lambda |

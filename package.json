@@ -1,11 +1,16 @@
 {
-  "name": "nano",
+  "name": "orva",
   "version": "3.1.0",
-  "description": "Ultra-lightweight Web Framework based on Fetch API",
+  "description": "Lightweight Fetch API web framework with typed middleware, RPC, validator, OpenAPI and multi-runtime adapters",
   "type": "module",
   "sideEffects": false,
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
   "exports": {
     ".": {
       "import": "./dist/index.js",
@@ -82,8 +87,15 @@
     "docs:dev": "vitepress dev docs",
     "docs:build": "vitepress build docs",
     "docs:preview": "vitepress preview docs",
+    "prepack": "pnpm build",
+    "prepublishOnly": "pnpm typecheck && pnpm test && pnpm build",
+    "pack:check": "npm pack --dry-run",
+    "release:check": "pnpm typecheck && pnpm test && pnpm build && npm pack --dry-run",
     "test": "tsx --test test/**/*.test.ts",
     "typecheck": "tsc --noEmit"
+  },
+  "publishConfig": {
+    "access": "public"
   },
   "keywords": [
     "web",
@@ -91,10 +103,15 @@
     "http",
     "router",
     "fetch",
-    "nano"
+    "orva",
+    "rpc",
+    "openapi",
+    "middleware",
+    "validator"
   ],
   "author": "",
   "license": "MIT",
+  "packageManager": "pnpm@10.24.0",
   "devDependencies": {
     "@types/node": "^20.0.0",
     "esbuild": "^0.28.0",

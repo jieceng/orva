@@ -1,4 +1,4 @@
-import { Nano } from '../nano.js';
+import { Orva } from '../orva.js';
 
 export interface BunServeOptions {
   port?: number;
@@ -42,7 +42,7 @@ declare global {
 }
 
 export function serveBun<T extends object>(
-  app: Nano<T>,
+  app: Orva<T>,
   options: BunServeOptions = {}
 ): BunServer {
   const { port = 3000, hostname = '0.0.0.0', development = false, maxRequestBodySize, error } = options;
@@ -53,7 +53,7 @@ export function serveBun<T extends object>(
     maxRequestBodySize,
     fetch: (request: Request) => app.fetch(request),
     error: error || ((err: Error) => {
-      console.error('[Nano] Bun server error:', err);
+      console.error('[Orva] Bun server error:', err);
       return new Response(JSON.stringify({ error: 'Internal Server Error' }), {
         status: 500,
         headers: { 'Content-Type': 'application/json' },
@@ -61,13 +61,13 @@ export function serveBun<T extends object>(
     }),
   });
 
-  console.log(`🚀 Nano server running on http://${server.hostname}:${server.port}`);
+  console.log(`🚀 Orva server running on http://${server.hostname}:${server.port}`);
   
   return server as unknown as BunServer;
 }
 
 export function createBunHandler<T extends object>(
-  app: Nano<T>
+  app: Orva<T>
 ): (request: Request) => Response | Promise<Response> {
   return (request: Request) => app.fetch(request);
 }

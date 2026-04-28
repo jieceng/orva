@@ -1,6 +1,6 @@
 # Routing and Composition
 
-<NanoVersionBanner version="v3.1" channel="Stable snapshot" updated="2026-04" />
+<OrvaVersionBanner version="v3.1" channel="Stable snapshot" updated="2026-04" />
 
 The v3.1 line keeps the same route model:
 

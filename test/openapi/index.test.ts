@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 
 import { z } from 'zod';
 
-import { createNano } from '../../src/index.ts';
+import { createOrva } from '../../src/index.ts';
 import {
   createOpenAPIDocument,
   defineComponent,
@@ -25,7 +25,7 @@ import { zodValidator } from '../../src/validator/zod.ts';
 
 test('openapi contract generates request and response schemas from route metadata', () => {
   const userSchema = z.object({ id: z.string(), name: z.string() });
-  const app = createNano().post(
+  const app = createOrva().post(
     '/users/:id',
     zodValidator('json', z.object({ name: z.string() })),
     zodValidator('param', z.object({ id: z.string() })),
@@ -44,7 +44,7 @@ test('openapi contract generates request and response schemas from route metadat
   );
 
   const document = createOpenAPIDocument(app, {
-    info: { title: 'Nano API', version: '1.0.0' },
+    info: { title: 'Orva API', version: '1.0.0' },
   });
 
   const paths = document.paths as Record<string, Record<string, any>>;
@@ -79,7 +79,7 @@ test('openapi components reuse named parameters, responses, and security schemes
     schema: zodOpenAPISchema(userSchema, { componentName: 'User' }),
   } as const;
 
-  const app = createNano()
+  const app = createOrva()
     .get(
       '/users/:id',
       zodValidator('param', z.object({ id: z.string() })),
@@ -115,7 +115,7 @@ test('openapi components reuse named parameters, responses, and security schemes
     );
 
   const document = createOpenAPIDocument(app, {
-    info: { title: 'Nano API', version: '1.0.0' },
+    info: { title: 'Orva API', version: '1.0.0' },
     schemaComponentStrategy: 'named',
     validationErrorResponses: false,
   });
@@ -145,7 +145,7 @@ test('openapi components reuse named parameters, responses, and security schemes
 });
 
 test('openapi schema component strategy can limit refs to named schemas only', () => {
-  const app = createNano().post(
+  const app = createOrva().post(
     '/users',
     zodValidator('json', z.object({ name: z.string() })),
     describeRoute({
@@ -160,7 +160,7 @@ test('openapi schema component strategy can limit refs to named schemas only', (
   );
 
   const document = createOpenAPIDocument(app, {
-    info: { title: 'Nano API', version: '1.0.0' },
+    info: { title: 'Orva API', version: '1.0.0' },
     schemaComponentStrategy: 'named',
     validationErrorResponses: false,
   });
@@ -271,7 +271,7 @@ test('openapi supports richer headers, callbacks, links, examples, and validator
     },
   });
 
-  const app = createNano().post(
+  const app = createOrva().post(
     '/events/:id',
     validator('query', (value) => value, {
       schema: {
@@ -283,8 +283,8 @@ test('openapi supports richer headers, callbacks, links, examples, and validator
               type: 'string',
               minLength: 2,
               description: 'Search query',
-              example: 'nano',
-              examples: ['nano', 'micro'],
+              example: 'orva',
+              examples: ['orva', 'micro'],
             },
           },
           required: ['search'],
@@ -375,11 +375,11 @@ test('openapi supports richer headers, callbacks, links, examples, and validator
 
   const document = createOpenAPIDocument(app, {
     info: {
-      title: 'Nano API',
+      title: 'Orva API',
       version: '1.0.0',
       termsOfService: 'https://example.com/terms',
       contact: {
-        name: 'Nano Team',
+        name: 'Orva Team',
         email: 'team@example.com',
       },
       license: {
@@ -426,8 +426,8 @@ test('openapi supports richer headers, callbacks, links, examples, and validator
   assert.equal(searchParameter.description, 'Search query');
   assert.equal(searchParameter.required, true);
   assert.equal(searchParameter.schema.minLength, 2);
-  assert.equal(searchParameter.example, 'nano');
-  assert.equal(searchParameter.examples.example1.value, 'nano');
+  assert.equal(searchParameter.example, 'orva');
+  assert.equal(searchParameter.examples.example1.value, 'orva');
 
   assert.equal(traceHeader.$ref, '#/components/parameters/TraceIdHeaderParam');
 
@@ -513,8 +513,8 @@ test('openapi supports component conflict policies, custom naming, and webhook p
     description: 'Second response',
   });
 
-  const document = createOpenAPIDocument(createNano(), {
-    info: { title: 'Nano API', version: '1.0.0' },
+  const document = createOpenAPIDocument(createOrva(), {
+    info: { title: 'Orva API', version: '1.0.0' },
     responseComponents: [sharedResponse, conflictingResponse],
     pathItemComponents: [webhookComponent],
     resolveComponentName: ({ sanitizedName, attempt }) => (
@@ -547,8 +547,8 @@ test('openapi supports component conflict policies, custom naming, and webhook p
   assert.equal(components.responses.SharedResult_variant_1.description, 'Second response');
 
   assert.throws(() => {
-    createOpenAPIDocument(createNano(), {
-      info: { title: 'Nano API', version: '1.0.0' },
+    createOpenAPIDocument(createOrva(), {
+      info: { title: 'Orva API', version: '1.0.0' },
       componentConflicts: 'error',
       responseComponents: [sharedResponse, conflictingResponse],
     });
@@ -556,13 +556,13 @@ test('openapi supports component conflict policies, custom naming, and webhook p
 });
 
 test('openapi infers auth security and 401 responses from middleware metadata', () => {
-  const app = createNano()
+  const app = createOrva()
     .get('/basic', basicAuth({ users: { admin: 'secret' } }), (c) => c.text('ok'))
     .get('/bearer', bearerAuth({ token: 'token' }), (c) => c.text('ok'))
     .get('/key', apiKeyAuth({ key: 'key' }), (c) => c.text('ok'));
 
   const document = createOpenAPIDocument(app, {
-    info: { title: 'Nano API', version: '1.0.0' },
+    info: { title: 'Orva API', version: '1.0.0' },
   });
 
   const paths = document.paths as Record<string, Record<string, any>>;

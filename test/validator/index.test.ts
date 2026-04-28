@@ -1,11 +1,11 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 
-import { createNano } from '../../src/index.ts';
+import { createOrva } from '../../src/index.ts';
 import { getValidatedData, setValidatedData, validator } from '../../src/validator/index.ts';
 
 test('validator parses request data and exposes typed validated values to handlers', async () => {
-  const app = createNano();
+  const app = createOrva();
 
   app.post(
     '/users/:id',
@@ -30,18 +30,18 @@ test('validator parses request data and exposes typed validated values to handle
   const response = await app.fetch(new Request('https://example.com/users/7', {
     method: 'POST',
     headers: { 'content-type': 'application/json' },
-    body: JSON.stringify({ name: ' nano ' }),
+    body: JSON.stringify({ name: ' orva ' }),
   }));
 
   assert.equal(response.status, 201);
   assert.deepEqual(await response.json(), {
     id: '7',
-    name: 'nano',
+    name: 'orva',
   });
 });
 
 test('validator supports custom sources and custom error responses', async () => {
-  const app = createNano();
+  const app = createOrva();
 
   app.get(
     '/session',

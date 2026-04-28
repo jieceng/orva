@@ -1,4 +1,4 @@
-import type { MiddlewareHandler } from '../nano.js';
+import type { MiddlewareHandler } from '../orva.js';
 import {
   OPENAPI_METADATA,
   type OpenAPICallbackComponent,
@@ -80,7 +80,7 @@ export type {
 
 const HTTP_METHODS = ['get', 'put', 'post', 'delete', 'options', 'head', 'patch', 'trace'] as const;
 const DEFAULT_VALIDATION_ERROR_SCHEMA: SchemaContract = {
-  provider: 'nano',
+  provider: 'orva',
   componentName: 'ValidationError',
   schema: {
     type: 'object',

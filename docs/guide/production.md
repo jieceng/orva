@@ -1,19 +1,26 @@
 # 中间件与类型累积
 
+这一页关注的是 `orva` 在真实服务里的用法，而不是单一路由 demo。
+
 ## `app.use()` 不只是运行时链路
 
-在 `nano` 中，`app.use()` 还承担类型累积职责。中间件引入的 `var` 和 validator 产生的已验证数据，都会继续流向后续路由。
+在 `orva` 中，`app.use()` 同时承担：
+
+- 运行时中间件编排
+- `var` 类型累积
+- validator 产物向后续路由传播
+- OpenAPI / 安全元数据的间接来源
 
 ```ts
-import { createNano, defineMiddleware } from 'nano';
-import { validator } from 'nano/validator';
+import { createOrva, defineMiddleware } from 'orva';
+import { validator } from 'orva/validator';
 
 const session = defineMiddleware<{ session: { id: string; role: string } }>(async (c, next) => {
   c.set('session', { id: 'u_1', role: 'admin' });
   await next();
 });
 
-const app = createNano()
+const app = createOrva()
   .use(session)
   .use(validator('header', (headers: Record<string, string>) => ({
     authorization: headers.authorization ?? '',
@@ -34,7 +41,7 @@ app.get('/me', (c) => {
 适合内部项目、原型或中小型应用：
 
 ```ts
-import { cors, secureHeaders, requestId } from 'nano/middlewares';
+import { cors, secureHeaders, requestId } from 'orva/middlewares';
 ```
 
 ### 细粒度导入
@@ -42,12 +49,12 @@ import { cors, secureHeaders, requestId } from 'nano/middlewares';
 适合 npm 包、模板仓库、共享基建和对 tree-shaking 敏感的项目：
 
 ```ts
-import { cors } from 'nano/middlewares/cors';
-import { secureHeaders } from 'nano/middlewares/secure-headers';
-import { requestId } from 'nano/middlewares/request-id';
+import { cors } from 'orva/middlewares/cors';
+import { secureHeaders } from 'orva/middlewares/secure-headers';
+import { requestId } from 'orva/middlewares/request-id';
 ```
 
-<NanoImportPlayground />
+<OrvaImportPlayground />
 
 ## 推荐的生产默认栈
 
@@ -59,7 +66,7 @@ import {
   requestId,
   responseTime,
   secureHeaders,
-} from 'nano/middlewares';
+} from 'orva/middlewares';
 
 app.use(
   requestId(),
@@ -71,7 +78,7 @@ app.use(
 );
 ```
 
-按需再补：
+按需继续补：
 
 - `basicAuth()` / `bearerAuth()` / `apiKeyAuth()`
 - `rateLimit()`
@@ -79,9 +86,88 @@ app.use(
 - `serveStatic()`
 - `compress()`
 
+## 一个更完整的 API 入口示例
+
+```ts
+import { createOrva } from 'orva';
+import { zodValidator } from 'orva/validator/zod';
+import {
+  basicAuth,
+  bodyLimit,
+  logger,
+  requestId,
+  responseTime,
+  secureHeaders,
+} from 'orva/middlewares';
+import { z } from 'zod';
+
+const app = createOrva()
+  .use(requestId(), logger(), secureHeaders(), bodyLimit({ maxSize: 1024 * 1024 }), responseTime())
+  .use(basicAuth({ username: 'admin', password: 'secret' }))
+  .post(
+    '/admin/users',
+    zodValidator('json', z.object({
+      name: z.string().min(1),
+      role: z.enum(['admin', 'editor', 'viewer']),
+    })),
+    (c) => c.json({
+      createdBy: c.get('requestId'),
+      user: c.valid('json'),
+    }, 201),
+  );
+```
+
+## 中间件顺序建议
+
+推荐把中间件按照下面的顺序思考：
+
+1. 请求标识与日志：`requestId()` `logger()`
+2. 访问控制与安全：`cors()` `secureHeaders()` `basicAuth()` `requireOrigin()`
+3. 输入限制：`bodyLimit()` `timeout()` `rateLimit()`
+4. 响应修饰：`etag()` `compress()` `cacheControl()`
+5. 观测与尾处理：`responseTime()` `serverTiming()` `after()`
+
+## 错误处理建议
+
+统一在应用层设置 `onError()`，避免错误风格四散：
+
+```ts
+const app = createOrva().onError((err, c) => {
+  return c.json({
+    error: 'INTERNAL_ERROR',
+    message: err.message,
+    requestId: c.get('requestId'),
+  }, 500);
+});
+```
+
+对于校验失败，优先在 validator 层就近返回 `400` / `422`，其余未预期异常再回到 `onError()`。
+
+## 响应后处理建议
+
+`c.after()` 适合处理：
+
+- 追加响应头
+- 写审计日志
+- 打点与 tracing
+- 条件压缩或响应变换
+
+```ts
+app.use(async (c, next) => {
+  c.after((response) => {
+    response.headers.set('x-request-id', c.get('requestId') ?? 'unknown');
+    return response;
+  });
+  await next();
+});
+```
+
 ## 团队实践建议
 
 - 所有跨服务可复用契约尽量进入 validator / OpenAPI / RPC 统一链路。
 - 不要从根入口导入 adapters、RPC 或中间件。
 - 中间件工厂优先无副作用、纯配置化。
-- 对外发布的生态包优先使用 `nano/middlewares/*` 子模块路径。
+- 对外发布的生态包优先使用 `orva/middlewares/*` 子模块路径。
+- 静态资源、压缩、缓存头一类能力尽量收敛在边界层，不要分散进业务 handler。
+
+下一步建议继续看 [测试与质量](/guide/testing) 和 [部署与运行时](/guide/deployment)。

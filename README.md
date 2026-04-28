@@ -1,92 +1,63 @@
-# nano
+# orva
 
-Ultra-lightweight Web Framework based on the Fetch API.
+Lightweight Fetch API web framework with typed middleware, validator, RPC, OpenAPI and multi-runtime adapters.
 
-## Documentation
-
-The project ships with a VitePress documentation site in [`docs/`](./docs/).
+## Install
 
 ```bash
-pnpm docs:dev
-pnpm docs:build
-pnpm docs:preview
+pnpm add orva
 ```
 
-Algolia DocSearch can be enabled by providing these environment variables at build time:
+## Quick Start
 
-```bash
-NANO_DOCSEARCH_APP_ID=
-NANO_DOCSEARCH_API_KEY=
-NANO_DOCSEARCH_INDEX_NAME=
-NANO_DOCSEARCH_ASSISTANT_ID=
+```ts
+import { createOrva } from 'orva';
+import { serveNode } from 'orva/adapters/node';
+import { cors, requestId, secureHeaders } from 'orva/middlewares';
+
+const app = createOrva()
+  .use(requestId(), cors(), secureHeaders())
+  .get('/health', (c) => c.json({ ok: true, requestId: c.get('requestId') }));
+
+serveNode(app, { port: 3000 });
 ```
 
-If they are not set, the docs site automatically falls back to VitePress local search.
+## Package Structure
+
+The root `orva` entry only exports the framework core.
+
+Use subpaths for ecosystem modules:
+
+```ts
+import { createOrva, defineMiddleware } from 'orva';
+import { validator } from 'orva/validator';
+import { zodValidator } from 'orva/validator/zod';
+import { createRPC } from 'orva/rpc';
+import { createOpenAPIDocument } from 'orva/openapi';
+import { serveNode } from 'orva/adapters/node';
+import { cors } from 'orva/middlewares/cors';
+```
+
+Backward-compatible aliases remain available during migration:
+
+```ts
+import { Orva, createOrva } from 'orva';
+```
 
 ## Middleware Imports
 
-`nano` now ships with 57 built-in middleware factories. You can import them in three ways:
+Aggregate imports are convenient for apps:
 
 ```ts
-import { cors, requestId, secureHeaders } from 'nano/middlewares';
+import { cors, requestId, secureHeaders } from 'orva/middlewares';
 ```
 
-```ts
-import { cors } from 'nano/middlewares/cors';
-import { requestId } from 'nano/middlewares/request-id';
-import { secureHeaders } from 'nano/middlewares/secure-headers';
-```
-
-The third form is the most tree-shaking-friendly and is the recommended style for published apps, templates, and plugins.
-
-The root `nano` entry only exports the framework core. Use subpaths for everything else:
+Fine-grained imports are better for libraries, templates and tree-shaking-sensitive builds:
 
 ```ts
-import { createRPC } from 'nano/rpc';
-import { serveNode } from 'nano/adapters/node';
-import { cors } from 'nano/middlewares/cors';
-import { validator } from 'nano/validator';
-import { zodValidator } from 'nano/validator/zod';
-import {
-  describeRoute,
-  createOpenAPIDocument,
-  defineSecurityScheme,
-  requireSecurity,
-} from 'nano/openapi';
-```
-
-## Typed Usage
-
-Built-in middleware factories are compatible with `createNano<AppVars>()` by default:
-
-```ts
-import { createNano } from 'nano';
-import { cors, requestId, secureHeaders } from 'nano/middlewares';
-
-type AppVars = {
-  requestId: string;
-  user?: { id: string; role: string };
-};
-
-const app = createNano<AppVars>();
-
-app.use(
-  requestId(),
-  cors(),
-  secureHeaders()
-);
-```
-
-If you need typed middleware option callbacks, pass the app vars generic explicitly:
-
-```ts
-import { logger } from 'nano/middlewares/logger';
-
-app.use(logger<AppVars>({
-  log(message, c) {
-    console.log(c.get('requestId'), message);
-  },
-}));
+import { cors } from 'orva/middlewares/cors';
+import { requestId } from 'orva/middlewares/request-id';
+import { secureHeaders } from 'orva/middlewares/secure-headers';
 ```
 
 ## Typed `app.use()`
@@ -94,15 +65,15 @@ app.use(logger<AppVars>({
 You can accumulate route-visible types through `app.use()` with `defineMiddleware()` and validator middleware:
 
 ```ts
-import { createNano, defineMiddleware } from 'nano';
-import { validator } from 'nano/validator';
+import { createOrva, defineMiddleware } from 'orva';
+import { validator } from 'orva/validator';
 
 const session = defineMiddleware<{ session: string }>(async (c, next) => {
   c.set('session', 'session-1');
   await next();
 });
 
-const app = createNano()
+const app = createOrva()
   .use(session)
   .use(validator('header', (value: Record<string, string>) => ({
     authorization: value.authorization ?? '',
@@ -120,22 +91,66 @@ app.get('/me', (c) => {
 For route registry inference across grouped apps, prefer one of these patterns:
 
 ```ts
-const users = createNano().get('/users/:id', (c) => c.json({ id: c.params.id }));
-const app = createNano().route('/api', users);
+const users = createOrva().get('/users/:id', (c) => c.json({ id: c.params.id }));
+const app = createOrva().route('/api', users);
 ```
 
 ```ts
-const app = createNano().group('/api', (group) => {
+const app = createOrva().group('/api', (group) => {
   return group.get('/ping', (c) => c.json({ ok: true }));
 });
 ```
 
-## Docs
+## Documentation
 
-Detailed middleware categories, API notes, and examples live in [docs/middlewares.md](./docs/middlewares.md).
+The project ships with a VitePress documentation site in [`docs/`](./docs/).
 
-Adapter usage notes and platform examples live in [docs/adapters.md](./docs/adapters.md).
+```bash
+pnpm docs:dev
+pnpm docs:build
+pnpm docs:preview
+```
 
-Validator contract and third-party integration notes live in [docs/validator.md](./docs/validator.md).
+Algolia DocSearch can be enabled by providing these environment variables at build time:
 
-OpenAPI metadata and document generation notes live in [docs/openapi.md](./docs/openapi.md).
+```bash
+ORVA_DOCSEARCH_APP_ID=
+ORVA_DOCSEARCH_API_KEY=
+ORVA_DOCSEARCH_INDEX_NAME=
+ORVA_DOCSEARCH_ASSISTANT_ID=
+```
+
+If they are not set, the docs site automatically falls back to VitePress local search.
+
+## Publishing to npm
+
+The package is configured to publish only the minimal public surface:
+
+- `dist/`
+- `README.md`
+- `LICENSE`
+
+Release-related scripts:
+
+```bash
+pnpm typecheck
+pnpm test
+pnpm build
+pnpm pack:check
+pnpm release:check
+```
+
+Typical publish flow:
+
+```bash
+pnpm install
+pnpm release:check
+npm login
+npm publish --access public
+```
+
+`prepublishOnly` already runs `typecheck`, `test` and `build`, and `publishConfig.access` is set to `public`.
+
+## License
+
+[MIT](./LICENSE)

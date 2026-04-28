@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 
 import { z } from 'zod';
 
-import { createNano } from '../../src/index.ts';
+import { createOrva } from '../../src/index.ts';
 import { createRPC } from '../../src/rpc/index.ts';
 import { createRPCMetadata } from '../../src/rpc/metadata.ts';
 import { describeRoute } from '../../src/openapi/index.ts';
@@ -19,7 +19,7 @@ test('rpc types and metadata read validator and schema contracts', async () => {
     name: z.string(),
   });
 
-  const app = createNano().post(
+  const app = createOrva().post(
     '/users/:id',
     zodValidator('json', requestSchema),
     zodValidator('param', z.object({ id: z.string() })),
@@ -52,10 +52,10 @@ test('rpc types and metadata read validator and schema contracts', async () => {
 
   const resultPromise = rpc.users[':id'].$post({
     param: { id: '42' },
-    body: { name: 'nano' },
+    body: { name: 'orva' },
   });
   const result: Promise<{ id: string; name: string }> = resultPromise;
-  assert.deepEqual(await result, { id: '42', name: 'nano' });
+  assert.deepEqual(await result, { id: '42', name: 'orva' });
 
   const metadata = createRPCMetadata(app);
   assert.equal(metadata[0]?.validators[0]?.provider, 'zod');

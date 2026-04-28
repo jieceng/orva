@@ -1,6 +1,6 @@
 # Validator
 
-`nano` 的 validator 中间件负责两件事：
+`orva` 的 validator 中间件负责两件事：
 
 1. 在运行时读取并解析请求输入
 2. 把解析后的结果以类型安全方式暴露给 `c.valid()`
@@ -20,10 +20,10 @@
 ## 基础用法
 
 ```ts
-import { createNano } from 'nano';
-import { validator } from 'nano/validator';
+import { createOrva } from 'orva';
+import { validator } from 'orva/validator';
 
-const app = createNano().post(
+const app = createOrva().post(
   '/users',
   validator('json', (value: { name?: string }) => {
     if (!value.name) throw new Error('name is required');
@@ -36,7 +36,7 @@ const app = createNano().post(
 ## 多目标组合
 
 ```ts
-const app = createNano().get(
+const app = createOrva().get(
   '/users/:id',
   validator('param', (value: Record<string, string>) => ({ id: Number(value.id) })),
   validator('query', (value: Record<string, string>) => ({ expand: value.expand === '1' })),
@@ -73,15 +73,15 @@ validator('json', parseBody, {
 
 ```ts
 import { z } from 'zod';
-import { createNano } from 'nano';
-import { zodValidator } from 'nano/validator/zod';
+import { createOrva } from 'orva';
+import { zodValidator } from 'orva/validator/zod';
 
 const createUserSchema = z.object({
   name: z.string().min(1),
   email: z.string().email(),
 });
 
-const app = createNano().post(
+const app = createOrva().post(
   '/users',
   zodValidator('json', createUserSchema),
   (c) => c.json(c.valid('json'), 201),

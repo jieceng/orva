@@ -1,21 +1,21 @@
 # OpenAPI
 
-`nano/openapi` 提供的是一套“从路由出发”的文档生成能力，而不是单独维护一份 YAML。
+`orva/openapi` 提供的是一套“从路由出发”的文档生成能力，而不是单独维护一份 YAML。
 
 ## 最小示例
 
 ```ts
 import { z } from 'zod';
-import { createNano } from 'nano';
-import { zodValidator } from 'nano/validator/zod';
-import { createOpenAPIDocument, describeRoute } from 'nano/openapi';
+import { createOrva } from 'orva';
+import { zodValidator } from 'orva/validator/zod';
+import { createOpenAPIDocument, describeRoute } from 'orva/openapi';
 
 const userSchema = z.object({
   id: z.string(),
   name: z.string(),
 });
 
-const app = createNano().post(
+const app = createOrva().post(
   '/users/:id',
   zodValidator('param', z.object({ id: z.string() })),
   zodValidator('json', z.object({ name: z.string() })),
@@ -39,7 +39,7 @@ const app = createNano().post(
 
 const document = createOpenAPIDocument(app, {
   info: {
-    title: 'Nano API',
+    title: 'Orva API',
     version: '1.0.0',
   },
 });
@@ -64,7 +64,7 @@ const document = createOpenAPIDocument(app, {
 
 ## 组件化 helper
 
-为了把文档站和 API 网关常用的 `components.*` 补齐，`nano/openapi` 提供了统一 helper API：
+为了把文档站和 API 网关常用的 `components.*` 补齐，`orva/openapi` 提供了统一 helper API：
 
 - `defineParameter()`
 - `defineRequestBody()`
@@ -79,7 +79,7 @@ const document = createOpenAPIDocument(app, {
 ### 复用安全方案
 
 ```ts
-import { defineSecurityScheme, requireSecurity } from 'nano/openapi';
+import { defineSecurityScheme, requireSecurity } from 'orva/openapi';
 
 const bearer = defineSecurityScheme('BearerAuth', {
   type: 'http',
@@ -125,7 +125,7 @@ describeRoute({
 
 ```ts
 const document = createOpenAPIDocument(app, {
-  info: { title: 'Nano API', version: '1.0.0' },
+  info: { title: 'Orva API', version: '1.0.0' },
   componentConflicts: {
     schemas: 'rename',
     responses: 'reuse',

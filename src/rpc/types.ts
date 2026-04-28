@@ -1,6 +1,6 @@
 // ============ RPC 类型工具 ============
 
-import type { Nano, RouteDefinition } from '../nano.js';
+import type { Orva, RouteDefinition } from '../orva.js';
 
 type UnionToIntersection<U> = (
   U extends unknown ? (arg: U) => void : never
@@ -25,8 +25,8 @@ export interface RPCRouteDefinition<
   Output = unknown,
 > extends RouteDefinition<Path, Method, Input, Output> {}
 
-type RoutesFromNano<T extends Nano<any, any, any>> =
-  T extends Nano<any, any, infer Routes, any> ? Routes[keyof Routes] : never;
+type RoutesFromOrva<T extends Orva<any, any, any>> =
+  T extends Orva<any, any, infer Routes, any> ? Routes[keyof Routes] : never;
 
 type StripLeadingSlash<Path extends string> = Path extends `/${infer Rest}` ? Rest : Path;
 type ChildSegment<Path extends string> =
@@ -90,9 +90,9 @@ export type RPCPathProxy<Routes, Current extends string = ''> =
     [Segment in ChildRouteSegments<Routes, Current>]: RPCPathProxy<Routes, NextPath<Current, Segment>>;
   };
 
-export type NanoRPC<T extends Nano<any, any, any>> = RPCPathProxy<RoutesFromNano<T>>;
+export type OrvaRPC<T extends Orva<any, any, any>> = RPCPathProxy<RoutesFromOrva<T>>;
 
-export type RPCClient<T extends Nano<any, any, any>> = NanoRPC<T>;
+export type RPCClient<T extends Orva<any, any, any>> = OrvaRPC<T>;
 
 // 辅助类型：从路由字符串提取参数名
 export type ExtractParamNames<T extends string> =

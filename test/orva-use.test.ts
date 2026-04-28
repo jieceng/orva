@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 
-import { createNano, defineMiddleware } from '../src/index.ts';
+import { createOrva, defineMiddleware } from '../src/index.ts';
 import { validator } from '../src/validator/index.ts';
 
 test('app.use can accumulate vars and validated data types for downstream routes', async () => {
@@ -15,7 +15,7 @@ test('app.use can accumulate vars and validated data types for downstream routes
     (value: Record<string, string>) => ({ authorization: value.authorization ?? '' })
   );
 
-  const app = createNano()
+  const app = createOrva()
     .use(sessionMiddleware)
     .use(authHeaderValidator);
 
@@ -41,7 +41,7 @@ test('app.use can accumulate vars and validated data types for downstream routes
 });
 
 test('group can promote route registry when callback returns the grouped app', async () => {
-  const app = createNano().group('/api', (group) => {
+  const app = createOrva().group('/api', (group) => {
     return group.get('/ping', (c) => c.json({ ok: true }));
   });
 

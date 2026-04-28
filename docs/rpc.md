@@ -1,17 +1,17 @@
 # RPC
 
-`nano/rpc` 让你基于服务端路由定义构建 typed client，而不需要再手写一层接口描述。
+`orva/rpc` 让你基于服务端路由定义构建 typed client，而不需要再手写一层接口描述。
 
 ## 创建客户端
 
 ```ts
-import { createRPC } from 'nano/rpc';
+import { createRPC } from 'orva/rpc';
 import type { app } from '../src/app';
 
 const client = createRPC<typeof app>({
   baseURL: 'https://api.example.com',
   headers: {
-    'x-client': 'dashboard',
+    'x-client': 'orva-dashboard',
   },
 });
 ```
@@ -79,7 +79,7 @@ try {
 如果你需要把路由契约暴露给前端工具链、代码生成器或平台治理层，可以读取 RPC 元数据：
 
 ```ts
-import { createRPCMetadata } from 'nano/rpc';
+import { createRPCMetadata } from 'orva/rpc';
 
 const routes = createRPCMetadata(app);
 ```

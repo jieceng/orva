@@ -1,6 +1,6 @@
 # Context 与响应
 
-<NanoVersionBanner version="v3.1" channel="Stable snapshot" updated="2026-04" />
+<OrvaVersionBanner version="v3.1" channel="Stable snapshot" updated="2026-04" />
 
 v3.1 上下文仍然统一暴露：
 

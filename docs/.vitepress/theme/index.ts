@@ -8,6 +8,9 @@ import './custom.css';
 export default {
   extends: DefaultTheme,
   enhanceApp({ app }) {
+    app.component('OrvaContractPipeline', NanoContractPipeline);
+    app.component('OrvaImportPlayground', NanoImportPlayground);
+    app.component('OrvaVersionBanner', NanoVersionBanner);
     app.component('NanoContractPipeline', NanoContractPipeline);
     app.component('NanoImportPlayground', NanoImportPlayground);
     app.component('NanoVersionBanner', NanoVersionBanner);

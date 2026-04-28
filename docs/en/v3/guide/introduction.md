@@ -1,10 +1,74 @@
 # Introduction
 
-<NanoVersionBanner
-  version="v3.1"
-  channel="Stable snapshot"
-  updated="2026-04"
-  summary="This page preserves the design summary of the v3.1 documentation line."
-/>
+`orva` is a TypeScript web framework built around the Fetch API. It keeps the request model small while filling in the layers most production services need:
 
-`nano v3.1` keeps the same Fetch API centered model with typed middleware, validator, RPC, OpenAPI and multi-runtime adapters.
+- composable routing and middleware
+- app-level type accumulation
+- validator and zod validator support
+- typed RPC clients generated from the route registry
+- OpenAPI generation with reusable component metadata
+- adapters for Node, Bun, Deno, Cloudflare, Vercel, Netlify, Azure, and AWS Lambda
+
+## Design goals
+
+`orva` is trying to do three things well:
+
+1. Keep request handling easy to read.
+2. Keep validation, types, clients, and docs close to the same route contract.
+3. Keep export boundaries explicit enough for packages, templates, and ecosystem code.
+
+## Good fits
+
+- API services
+- BFFs
+- serverless and edge services
+- internal platforms that need OpenAPI or typed clients
+- teams that want contract tooling without a heavy framework model
+
+## Core design
+
+### 1. The root entry exports only the core
+
+```ts
+import { createOrva, defineMiddleware } from 'orva';
+```
+
+Everything else comes from subpaths:
+
+```ts
+import { createRPC } from 'orva/rpc';
+import { serveNode } from 'orva/adapters/node';
+import { cors } from 'orva/middlewares/cors';
+import { validator } from 'orva/validator';
+import { zodValidator } from 'orva/validator/zod';
+import { createOpenAPIDocument } from 'orva/openapi';
+```
+
+### 2. Middleware types are part of the contract
+
+```ts
+import { createOrva, defineMiddleware } from 'orva';
+
+const session = defineMiddleware<{ session: { userId: string; role: string } }>(async (c, next) => {
+  c.set('session', { userId: 'u_1', role: 'admin' });
+  await next();
+});
+
+const app = createOrva()
+  .use(session)
+  .get('/me', (c) => c.json({
+    userId: c.get('session')?.userId,
+    role: c.get('session')?.role,
+  }));
+```
+
+### 3. Contracts should be reused
+
+The same route definition can feed:
+
+- runtime validation
+- type inference
+- RPC clients
+- OpenAPI documents
+
+That is the main reason `orva` is more than a thin router layer.

@@ -1,10 +1,10 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 
-import { createNano } from '../src/index.ts';
+import { createOrva } from '../src/index.ts';
 
 test('matches static, param, wildcard routes and supports HEAD fallback', async () => {
-  const app = createNano();
+  const app = createOrva();
 
   app.get('/hello', (c) => c.text('world'));
   app.get('/users/:id', (c) => c.json({ id: c.params.id, q: c.query.q ?? null }));
@@ -29,7 +29,7 @@ test('matches static, param, wildcard routes and supports HEAD fallback', async 
 });
 
 test('runs middleware in order and supports early responses', async () => {
-  const app = createNano<{ trace: string[] }>();
+  const app = createOrva<{ trace: string[] }>();
   const order: string[] = [];
 
   app.use(async (c, next) => {
@@ -81,8 +81,26 @@ test('runs middleware in order and supports early responses', async () => {
   assert.equal(order.includes('should not run'), false);
 });
 
+test('middleware pipeline rejects multiple next calls', async () => {
+  const app = createOrva();
+
+  app.onError((err, c) => c.json({ message: err.message }, 500));
+  app.get(
+    '/double-next',
+    async (_c, next) => {
+      await next();
+      await next();
+    },
+    (c) => c.text('ok'),
+  );
+
+  const response = await app.fetch(new Request('https://example.com/double-next'));
+  assert.equal(response.status, 500);
+  assert.deepEqual(await response.json(), { message: 'next() called multiple times' });
+});
+
 test('applies grouped prefixes and inherited middleware', async () => {
-  const app = createNano<{ scope: string[] }>();
+  const app = createOrva<{ scope: string[] }>();
 
   app.use(async (c, next) => {
     c.set('scope', ['root']);
@@ -104,7 +122,7 @@ test('applies grouped prefixes and inherited middleware', async () => {
 });
 
 test('supports custom notFound and onError handlers', async () => {
-  const app = createNano();
+  const app = createOrva();
 
   app.notFound((c) => c.text('missing', 404));
   app.onError((err, c) => c.json({ message: err.message }, 500));
@@ -122,7 +140,7 @@ test('supports custom notFound and onError handlers', async () => {
 });
 
 test('caches parsed request bodies and exposes response helpers', async () => {
-  const app = createNano();
+  const app = createOrva();
 
   app.post('/body', async (c) => {
     const first = await c.req.json();
@@ -130,9 +148,9 @@ test('caches parsed request bodies and exposes response helpers', async () => {
     return c.json({ sameReference: first === second, payload: first });
   });
 
-  app.get('/html', (c) => c.html('<h1>nano</h1>'));
+  app.get('/html', (c) => c.html('<h1>orva</h1>'));
   app.get('/jump', (c) => c.redirect('/target', 307));
-  app.get('/download', (c) => c.download(['hello ', 'nano'], 'file name.txt'));
+  app.get('/download', (c) => c.download(['hello ', 'orva'], 'file name.txt'));
 
   const body = await app.fetch(new Request('https://example.com/body', {
     method: 'POST',
@@ -147,7 +165,7 @@ test('caches parsed request bodies and exposes response helpers', async () => {
 
   const html = await app.fetch(new Request('https://example.com/html'));
   assert.equal(html.headers.get('content-type'), 'text/html; charset=utf-8');
-  assert.equal(await html.text(), '<h1>nano</h1>');
+  assert.equal(await html.text(), '<h1>orva</h1>');
 
   const redirect = await app.fetch(new Request('https://example.com/jump'));
   assert.equal(redirect.status, 307);
@@ -160,5 +178,86 @@ test('caches parsed request bodies and exposes response helpers', async () => {
     download.headers.get('content-disposition'),
     'attachment; filename="file%20name.txt"'
   );
-  assert.equal(await download.text(), 'hello nano');
+  assert.equal(await download.text(), 'hello orva');
+});
+
+test('fast responses still support response finalizers and multiple cookies', async () => {
+  const app = createOrva();
+
+  app.use(async (c, next) => {
+    c.after((response) => {
+      response.headers.set('x-after', 'applied');
+      return response;
+    });
+    await next();
+  });
+
+  app.get('/fast', (c) => {
+    c.setCookie('theme', 'dark', { path: '/' });
+    c.setCookie('session', 'abc', { httpOnly: true, path: '/' });
+    return c.json({ ok: true });
+  });
+
+  const response = await app.fetch(new Request('https://example.com/fast'));
+  assert.equal(response.status, 200);
+  assert.deepEqual(await response.json(), { ok: true });
+  assert.equal(response.headers.get('x-after'), 'applied');
+
+  const setCookies = response.headers.getSetCookie();
+  assert.equal(setCookies.length, 2);
+  assert.match(setCookies[0], /theme=dark/);
+  assert.match(setCookies[1], /session=abc/);
+});
+
+test('early fast responses still run upstream finalizers', async () => {
+  const app = createOrva();
+
+  app.use(async (c, next) => {
+    c.after((response) => {
+      response.headers.set('x-upstream', 'true');
+      return response;
+    });
+    await next();
+  });
+
+  app.get(
+    '/early-fast',
+    () => new Response('blocked', { status: 401 }),
+    () => {
+      throw new Error('should not run');
+    },
+  );
+
+  app.get(
+    '/early-fast-context',
+    (c) => c.text('blocked', 401),
+    () => {
+      throw new Error('should not run');
+    },
+  );
+
+  const nativeBlocked = await app.fetch(new Request('https://example.com/early-fast'));
+  assert.equal(nativeBlocked.status, 401);
+  assert.equal(nativeBlocked.headers.get('x-upstream'), 'true');
+
+  const contextBlocked = await app.fetch(new Request('https://example.com/early-fast-context'));
+  assert.equal(contextBlocked.status, 401);
+  assert.equal(await contextBlocked.text(), 'blocked');
+  assert.equal(contextBlocked.headers.get('x-upstream'), 'true');
+});
+
+test('query and params stay lazily decoded until accessed', async () => {
+  const app = createOrva();
+
+  app.get('/lazy/:id/:bad', (c) => c.json({
+    id: c.params.id,
+    q: c.query.q,
+  }));
+
+  const response = await app.fetch(new Request('https://example.com/lazy/a%2Fb/%E0%A4%A?q=42&broken=%E0%A4%A'));
+  assert.equal(response.status, 200);
+  assert.deepEqual(await response.json(), {
+    id: 'a/b',
+    q: '42',
+  });
 });

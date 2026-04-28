@@ -1,6 +1,6 @@
 # OpenAPI
 
-<NanoVersionBanner version="v3.1" channel="Stable snapshot" updated="2026-04" />
+<OrvaVersionBanner version="v3.1" channel="Stable snapshot" updated="2026-04" />
 
 v3.1 文档线已经具备：
 

@@ -1,4 +1,4 @@
-import { Nano } from '../nano.js';
+import { Orva } from '../orva.js';
 import {
   AdapterBinaryOptions,
   appendHeaderValues,
@@ -88,7 +88,7 @@ function createRequest(request: Request | AzureHttpRequest): Promise<Request> | 
 }
 
 export function createAzureFunctionHandler<T extends object>(
-  app: Nano<T>,
+  app: Orva<T>,
   options: AzureFunctionOptions = {}
 ): (request: Request | AzureHttpRequest, context?: AzureInvocationContext) => Promise<AzureHttpResponseInit> {
   return async (request: Request | AzureHttpRequest, _context?: AzureInvocationContext) => {
@@ -105,7 +105,7 @@ export function createAzureFunctionHandler<T extends object>(
 }
 
 export function createAzureFetchHandler<T extends object>(
-  app: Nano<T>
+  app: Orva<T>
 ): (request: Request) => Promise<Response> {
   return (request: Request) => Promise.resolve(app.fetch(request));
 }

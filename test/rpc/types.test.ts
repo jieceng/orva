@@ -3,14 +3,14 @@ import assert from 'node:assert/strict';
 
 import { z } from 'zod';
 
-import { createNano } from '../../src/index.ts';
+import { createOrva } from '../../src/index.ts';
 import { createRPC } from '../../src/rpc/index.ts';
 import { describeRoute } from '../../src/openapi/index.ts';
 import { zodOpenAPISchema } from '../../src/openapi/zod.ts';
 import { zodValidator } from '../../src/validator/zod.ts';
 
 test('rpc typing requires path params and body validators as request inputs', async () => {
-  const app = createNano().post(
+  const app = createOrva().post(
     '/users/:id',
     zodValidator('json', z.object({ name: z.string() })),
     (c) => c.json({ ok: c.valid('json').name, id: c.params.id })
@@ -30,15 +30,15 @@ test('rpc typing requires path params and body validators as request inputs', as
   const typedMethod: (options: { body: { name: string }; param: { id: string } }) => Promise<{ ok: string; id: string }> =
     rpc.users[':id'].$post;
   const result = await typedMethod({
-    body: { name: 'nano' },
+    body: { name: 'orva' },
     param: { id: '7' },
   });
 
-  assert.deepEqual(result, { ok: 'nano', id: '7' });
+  assert.deepEqual(result, { ok: 'orva', id: '7' });
 });
 
 test('route(prefix, subApp) preserves route registry for rpc typing', async () => {
-  const users = createNano().get(
+  const users = createOrva().get(
     '/users/:id',
     describeRoute({
       responses: {
@@ -51,7 +51,7 @@ test('route(prefix, subApp) preserves route registry for rpc typing', async () =
     (c) => c.json({ id: c.params.id })
   );
 
-  const app = createNano().route('/api', users);
+  const app = createOrva().route('/api', users);
 
   const rpc = createRPC<typeof app>({
     baseURL: 'https://api.example.com',

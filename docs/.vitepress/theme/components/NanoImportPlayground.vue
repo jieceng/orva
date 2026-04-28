@@ -4,10 +4,10 @@ import { ref } from 'vue';
 const mode = ref<'bundle' | 'subpath'>('subpath');
 
 const snippets = {
-  bundle: `import { cors, requestId, secureHeaders } from 'nano/middlewares';`,
-  subpath: `import { cors } from 'nano/middlewares/cors';
-import { requestId } from 'nano/middlewares/request-id';
-import { secureHeaders } from 'nano/middlewares/secure-headers';`,
+  bundle: `import { cors, requestId, secureHeaders } from 'orva/middlewares';`,
+  subpath: `import { cors } from 'orva/middlewares/cors';
+import { requestId } from 'orva/middlewares/request-id';
+import { secureHeaders } from 'orva/middlewares/secure-headers';`,
 } as const;
 </script>
 

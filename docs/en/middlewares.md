@@ -1,17 +1,17 @@
 # Middleware Catalog
 
-`nano` ships with a production-oriented middleware set and fine-grained subpath exports.
+`orva` ships with a production-oriented middleware set and fine-grained subpath exports.
 
 ## Import styles
 
 ```ts
-import { cors, requestId, secureHeaders } from 'nano/middlewares';
+import { cors, requestId, secureHeaders } from 'orva/middlewares';
 ```
 
 ```ts
-import { cors } from 'nano/middlewares/cors';
-import { requestId } from 'nano/middlewares/request-id';
-import { secureHeaders } from 'nano/middlewares/secure-headers';
+import { cors } from 'orva/middlewares/cors';
+import { requestId } from 'orva/middlewares/request-id';
+import { secureHeaders } from 'orva/middlewares/secure-headers';
 ```
 
 Use subpath imports for libraries, templates and published infrastructure packages.

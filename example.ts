@@ -1,4 +1,4 @@
-import { createNano, Next, Nano, MiddlewareHandler } from './src/index.js';
+import { createOrva, Next, Orva, MiddlewareHandler } from './src/index.js';
 import { serveNode } from './src/adapters/node.js';
 
 interface AppVariables {
@@ -7,7 +7,7 @@ interface AppVariables {
   startTime: number;
 }
 
-const app = createNano<AppVariables>();
+const app = createOrva<AppVariables>();
 
 app.onError((err, c) => {
   console.error(`[${c.get('requestId')}] Error:`, err);
@@ -52,7 +52,7 @@ app.get('/api/health', (c) => c.json({
   timestamp: new Date().toISOString() 
 }));
 
-app.group('/api/v1', (api: Nano<AppVariables>) => {
+app.group('/api/v1', (api: Orva<AppVariables>) => {
   
   api.get('/users', (c) => {
     return c.json([{ id: 1, name: 'Alice' }, { id: 2, name: 'Bob' }]);
@@ -117,5 +117,5 @@ app.get('/download', (c) => {
 });
 
 serveNode(app, 5000, () => {
-  console.log('🚀 Nano v3.2 running on http://localhost:5000');
+  console.log('🚀 Orva v3.2 running on http://localhost:5000');
 });

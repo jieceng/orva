@@ -1,4 +1,4 @@
-import type { MiddlewareHandler } from '../nano.js';
+import type { MiddlewareHandler } from '../orva.js';
 import type {
   CORSOptions,
   HeaderValueOptions,
@@ -14,7 +14,7 @@ import {
   sha1,
 } from './shared.js';
 
-export function poweredBy<T extends object = MiddlewareVars>(value = 'nano'): MiddlewareHandler<T> {
+export function poweredBy<T extends object = MiddlewareVars>(value = 'orva'): MiddlewareHandler<T> {
   return createStaticHeaderMiddleware<T>('X-Powered-By', value);
 }
 

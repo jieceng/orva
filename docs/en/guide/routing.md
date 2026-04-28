@@ -3,7 +3,7 @@
 ## HTTP methods
 
 ```ts
-const app = createNano();
+const app = createOrva();
 
 app.get('/posts', (c) => c.json([]));
 app.post('/posts', (c) => c.text('created', 201));
@@ -23,7 +23,7 @@ app.get('/files/*', (c) => c.text(c.params['*']));
 ## Groups
 
 ```ts
-const app = createNano().group('/api', (api) => {
+const app = createOrva().group('/api', (api) => {
   return api
     .get('/ping', (c) => c.json({ ok: true }))
     .get('/version', (c) => c.text('v1'));
@@ -33,9 +33,9 @@ const app = createNano().group('/api', (api) => {
 ## Mounted apps
 
 ```ts
-const users = createNano()
+const users = createOrva()
   .get('/users', (c) => c.json([]))
   .get('/users/:id', (c) => c.json({ id: c.params.id }));
 
-const app = createNano().route('/api', users);
+const app = createOrva().route('/api', users);
 ```

@@ -1,21 +1,21 @@
 # 中间件目录
 
-`nano` 的中间件设计目标很明确：提供生产常用能力，同时保持细粒度子模块导出，方便 tree-shaking、生态发布和模板复用。
+`orva` 的中间件设计目标很明确：提供生产常用能力，同时保持细粒度子模块导出，方便 tree-shaking、生态发布和模板复用。
 
 ## 导入方式
 
 ### 聚合导入
 
 ```ts
-import { cors, requestId, secureHeaders } from 'nano/middlewares';
+import { cors, requestId, secureHeaders } from 'orva/middlewares';
 ```
 
 ### 细粒度导入
 
 ```ts
-import { cors } from 'nano/middlewares/cors';
-import { requestId } from 'nano/middlewares/request-id';
-import { secureHeaders } from 'nano/middlewares/secure-headers';
+import { cors } from 'orva/middlewares/cors';
+import { requestId } from 'orva/middlewares/request-id';
+import { secureHeaders } from 'orva/middlewares/secure-headers';
 ```
 
 推荐对外发布代码、脚手架和共享包使用第二种方式。
@@ -23,7 +23,7 @@ import { secureHeaders } from 'nano/middlewares/secure-headers';
 ## 常见组合
 
 ```ts
-import { createNano } from 'nano';
+import { createOrva } from 'orva';
 import {
   bodyLimit,
   cors,
@@ -31,9 +31,9 @@ import {
   requestId,
   responseTime,
   secureHeaders,
-} from 'nano/middlewares';
+} from 'orva/middlewares';
 
-const app = createNano().use(
+const app = createOrva().use(
   requestId(),
   logger(),
   cors(),
@@ -58,7 +58,7 @@ const app = createNano().use(
 ## Authentication
 
 ```ts
-import { basicAuth, bearerAuth, apiKeyAuth } from 'nano/middlewares';
+import { basicAuth, bearerAuth, apiKeyAuth } from 'orva/middlewares';
 
 app.get('/admin', basicAuth({ username: 'admin', password: 'secret' }), (c) => c.text('ok'));
 app.get('/api', bearerAuth({ token: 'token-1' }), (c) => c.text('ok'));
@@ -162,7 +162,7 @@ app.use(
 ### 静态资源
 
 ```ts
-import { serveStatic } from 'nano/middlewares/serve-static';
+import { serveStatic } from 'orva/middlewares/serve-static';
 
 app.get('/assets/*', serveStatic({
   root: 'public',
@@ -175,7 +175,7 @@ app.get('/assets/*', serveStatic({
 ### 压缩
 
 ```ts
-import { compress } from 'nano/middlewares/compress';
+import { compress } from 'orva/middlewares/compress';
 
 app.use(compress({
   gzip: true,
@@ -189,7 +189,7 @@ app.use(compress({
 Cookie 读取与写入能力已经集成进 `Context`，此外还提供纯工具函数：
 
 ```ts
-import { getCookie, serializeCookie } from 'nano/middlewares';
+import { getCookie, serializeCookie } from 'orva/middlewares';
 
 const session = getCookie(request, 'session');
 const header = serializeCookie('theme', 'dark', { httpOnly: true, sameSite: 'Lax' });

@@ -1,4 +1,4 @@
-import { Nano } from '../nano.js';
+import { Orva } from '../orva.js';
 import {
   AdapterBinaryOptions,
   appendHeaderValues,
@@ -115,7 +115,7 @@ function createRequest(event: AWSLambdaEvent, options: AWSLambdaHandlerOptions):
 }
 
 export function createAWSLambdaHandler<T extends object>(
-  app: Nano<T>,
+  app: Orva<T>,
   options: AWSLambdaHandlerOptions = {}
 ): (event: AWSLambdaEvent, context?: AWSLambdaContext) => Promise<APIGatewayProxyStructuredResultV2> {
   return async (event: AWSLambdaEvent, _context?: AWSLambdaContext) => {

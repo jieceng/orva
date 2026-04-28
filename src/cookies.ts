@@ -18,26 +18,78 @@ export interface DeleteCookieOptions {
   partitioned?: boolean;
 }
 
+function decodeCookieComponent(value: string): string {
+  try {
+    return decodeURIComponent(value);
+  } catch {
+    return value;
+  }
+}
+
 export function parseCookieHeader(header: string | null): Record<string, string> {
   if (!header) return {};
 
   const parsed: Record<string, string> = {};
-  for (const entry of header.split(';')) {
-    const index = entry.indexOf('=');
-    if (index < 0) continue;
+  let start = 0;
 
-    const rawName = entry.slice(0, index).trim();
-    const rawValue = entry.slice(index + 1).trim();
-    if (!rawName) continue;
+  while (start < header.length) {
+    let end = header.indexOf(';', start);
+    if (end < 0) end = header.length;
 
-    try {
-      parsed[decodeURIComponent(rawName)] = decodeURIComponent(rawValue);
-    } catch {
-      parsed[rawName] = rawValue;
+    let separator = header.indexOf('=', start);
+    if (separator >= 0 && separator < end) {
+      while (start < separator && header.charCodeAt(start) === 32) start += 1;
+      let nameEnd = separator;
+      while (nameEnd > start && header.charCodeAt(nameEnd - 1) === 32) nameEnd -= 1;
+
+      if (nameEnd > start) {
+        let valueStart = separator + 1;
+        while (valueStart < end && header.charCodeAt(valueStart) === 32) valueStart += 1;
+        let valueEnd = end;
+        while (valueEnd > valueStart && header.charCodeAt(valueEnd - 1) === 32) valueEnd -= 1;
+
+        const rawName = header.slice(start, nameEnd);
+        const rawValue = header.slice(valueStart, valueEnd);
+        parsed[decodeCookieComponent(rawName)] = decodeCookieComponent(rawValue);
+      }
     }
+
+    start = end + 1;
   }
 
   return parsed;
+}
+
+export function getCookieFromHeader(header: string | null, name: string): string | undefined {
+  if (!header) return undefined;
+
+  let start = 0;
+  while (start < header.length) {
+    let end = header.indexOf(';', start);
+    if (end < 0) end = header.length;
+
+    let separator = header.indexOf('=', start);
+    if (separator >= 0 && separator < end) {
+      while (start < separator && header.charCodeAt(start) === 32) start += 1;
+      let nameEnd = separator;
+      while (nameEnd > start && header.charCodeAt(nameEnd - 1) === 32) nameEnd -= 1;
+
+      if (nameEnd > start) {
+        const candidate = decodeCookieComponent(header.slice(start, nameEnd));
+        if (candidate === name) {
+          let valueStart = separator + 1;
+          while (valueStart < end && header.charCodeAt(valueStart) === 32) valueStart += 1;
+          let valueEnd = end;
+          while (valueEnd > valueStart && header.charCodeAt(valueEnd - 1) === 32) valueEnd -= 1;
+          return decodeCookieComponent(header.slice(valueStart, valueEnd));
+        }
+      }
+    }
+
+    start = end + 1;
+  }
+
+  return undefined;
 }
 
 export function getCookie(
@@ -49,7 +101,7 @@ export function getCookie(
     : input instanceof Request
       ? input.headers.get('cookie')
       : input.get('cookie');
-  return parseCookieHeader(header)[name];
+  return getCookieFromHeader(header, name);
 }
 
 export function serializeCookie(

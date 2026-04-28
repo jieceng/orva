@@ -1,4 +1,4 @@
-import { Nano } from '../nano.js';
+import { Orva } from '../orva.js';
 
 export interface CloudflareWorkerEnv {
   [key: string]: unknown;
@@ -25,7 +25,7 @@ export interface CloudflarePagesFunction {
 }
 
 export function createCloudflareWorker<T extends object>(
-  app: Nano<T>
+  app: Orva<T>
 ): CloudflareWorkerModule {
   return {
     fetch: async (request: Request, _env: CloudflareWorkerEnv, _ctx: ExecutionContext) => {
@@ -35,7 +35,7 @@ export function createCloudflareWorker<T extends object>(
 }
 
 export function createCloudflareWorkerWithEnv<T extends object>(
-  app: Nano<T>,
+  app: Orva<T>,
   _envInjector?: (env: CloudflareWorkerEnv, ctx: ExecutionContext) => Partial<T>
 ): CloudflareWorkerModule {
   return {
@@ -46,7 +46,7 @@ export function createCloudflareWorkerWithEnv<T extends object>(
 }
 
 export function createPagesFunction<T extends object>(
-  app: Nano<T>
+  app: Orva<T>
 ): CloudflarePagesFunction {
   return async (context: CloudflarePagesContext) => {
     return app.fetch(context.request);
@@ -54,7 +54,7 @@ export function createPagesFunction<T extends object>(
 }
 
 export function createDefaultWorker<T extends object>(
-  app: Nano<T>
+  app: Orva<T>
 ): CloudflareWorkerModule {
   return createCloudflareWorker(app);
 }

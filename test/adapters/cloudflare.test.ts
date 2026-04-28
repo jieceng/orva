@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 
-import { createNano } from '../../src/index.ts';
+import { createOrva } from '../../src/index.ts';
 import {
   createCloudflareWorker,
   createCloudflareWorkerWithEnv,
@@ -9,7 +9,7 @@ import {
 } from '../../src/adapters/index.ts';
 
 test('cloudflare adapters proxy requests to app.fetch', async () => {
-  const app = createNano();
+  const app = createOrva();
   app.get('/edge', (c) => c.text(`edge:${c.query.from ?? 'none'}`));
 
   const worker = createCloudflareWorker(app);

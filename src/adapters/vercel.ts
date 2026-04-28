@@ -1,4 +1,4 @@
-import { Nano } from '../nano.js';
+import { Orva } from '../orva.js';
 
 export interface VercelEdgeContext {
   params?: Record<string, string>;
@@ -13,13 +13,13 @@ export interface VercelRouteHandlers {
 }
 
 export function createVercelEdgeHandler<T extends object>(
-  app: Nano<T>
+  app: Orva<T>
 ): (request: Request) => Response | Promise<Response> {
   return (request: Request) => app.fetch(request);
 }
 
 export function createAppRouteHandler<T extends object>(
-  app: Nano<T>
+  app: Orva<T>
 ): VercelRouteHandlers {
   const handler = (request: Request) => Promise.resolve(app.fetch(request));
   

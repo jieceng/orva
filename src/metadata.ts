@@ -1,6 +1,6 @@
-export const VALIDATOR_METADATA = Symbol('nano.validator.metadata');
-export const OPENAPI_METADATA = Symbol('nano.openapi.metadata');
-export const OPENAPI_MIDDLEWARE_METADATA = Symbol('nano.openapi.middleware.metadata');
+export const VALIDATOR_METADATA = Symbol('orva.validator.metadata');
+export const OPENAPI_METADATA = Symbol('orva.openapi.metadata');
+export const OPENAPI_MIDDLEWARE_METADATA = Symbol('orva.openapi.middleware.metadata');
 
 export interface SchemaContract<Input = unknown, Output = Input> {
   provider: string;

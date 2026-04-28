@@ -1,14 +1,14 @@
 # OpenAPI
 
-`nano/openapi` gives you route-first OpenAPI generation instead of a separate hand-maintained YAML file.
+`orva/openapi` gives you route-first OpenAPI generation instead of a separate hand-maintained YAML file.
 
 ## Minimal example
 
 ```ts
 import { z } from 'zod';
-import { createNano } from 'nano';
-import { zodValidator } from 'nano/validator/zod';
-import { createOpenAPIDocument, describeRoute } from 'nano/openapi';
+import { createOrva } from 'orva';
+import { zodValidator } from 'orva/validator/zod';
+import { createOpenAPIDocument, describeRoute } from 'orva/openapi';
 ```
 
 ## Helpers

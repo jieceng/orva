@@ -1,60 +1,74 @@
 # Introduction
 
-`nano` is a Fetch API based TypeScript web framework. It keeps the request handling model small, while filling in the layers production services usually need:
+`orva` is a TypeScript web framework built around the Fetch API. It keeps the request model small while filling in the layers most production services need:
 
 - composable routing and middleware
-- `app.use()` type accumulation
-- validator and zod validator
-- typed RPC clients driven by server routes
-- OpenAPI generation with reusable components
-- adapters for Node, Bun, Deno, Cloudflare, Vercel, Netlify, Azure and AWS Lambda
+- app-level type accumulation
+- validator and zod validator support
+- typed RPC clients generated from the route registry
+- OpenAPI generation with reusable component metadata
+- adapters for Node, Bun, Deno, Cloudflare, Vercel, Netlify, Azure, and AWS Lambda
 
-## Good fit
+## Design goals
+
+`orva` is trying to do three things well:
+
+1. Keep request handling easy to read.
+2. Keep validation, types, clients, and docs close to the same route contract.
+3. Keep export boundaries explicit enough for packages, templates, and ecosystem code.
+
+## Good fits
 
 - API services
 - BFFs
-- serverless and edge backends
-- teams that want stronger contracts without dragging in a large framework surface
+- serverless and edge services
+- internal platforms that need OpenAPI or typed clients
+- teams that want contract tooling without a heavy framework model
 
-## Design principles
+## Core design
 
-### 1. The root entry stays small
+### 1. The root entry exports only the core
 
 ```ts
-import { createNano, defineMiddleware } from 'nano';
+import { createOrva, defineMiddleware } from 'orva';
 ```
 
-Everything else lives in subpaths:
+Everything else comes from subpaths:
 
 ```ts
-import { createRPC } from 'nano/rpc';
-import { serveNode } from 'nano/adapters/node';
-import { cors } from 'nano/middlewares/cors';
-import { validator } from 'nano/validator';
-import { zodValidator } from 'nano/validator/zod';
-import { createOpenAPIDocument } from 'nano/openapi';
+import { createRPC } from 'orva/rpc';
+import { serveNode } from 'orva/adapters/node';
+import { cors } from 'orva/middlewares/cors';
+import { validator } from 'orva/validator';
+import { zodValidator } from 'orva/validator/zod';
+import { createOpenAPIDocument } from 'orva/openapi';
 ```
 
-### 2. Middleware types are part of the architecture
+### 2. Middleware types are part of the contract
 
 ```ts
-import { createNano, defineMiddleware } from 'nano';
+import { createOrva, defineMiddleware } from 'orva';
 
-const session = defineMiddleware<{ session: { userId: string } }>(async (c, next) => {
-  c.set('session', { userId: 'u_1' });
+const session = defineMiddleware<{ session: { userId: string; role: string } }>(async (c, next) => {
+  c.set('session', { userId: 'u_1', role: 'admin' });
   await next();
 });
 
-const app = createNano()
+const app = createOrva()
   .use(session)
-  .get('/me', (c) => c.json({ userId: c.get('session')?.userId }));
+  .get('/me', (c) => c.json({
+    userId: c.get('session')?.userId,
+    role: c.get('session')?.role,
+  }));
 ```
 
-### 3. Contracts should be reused, not rewritten
+### 3. Contracts should be reused
 
-One route definition can drive:
+The same route definition can feed:
 
 - runtime validation
 - type inference
-- RPC client typing
-- OpenAPI generation
+- RPC clients
+- OpenAPI documents
+
+That is the main reason `orva` is more than a thin router layer.

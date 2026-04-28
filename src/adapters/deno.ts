@@ -1,4 +1,4 @@
-import { Nano } from '../nano.js';
+import { Orva } from '../orva.js';
 
 export interface DenoServeOptions {
   port?: number;
@@ -33,7 +33,7 @@ declare global {
 }
 
 export function serveDeno<T extends object>(
-  app: Nano<T>,
+  app: Orva<T>,
   options: DenoServeOptions = {}
 ): DenoHttpServer {
   const { port = 3000, hostname = '0.0.0.0', onListen } = options;
@@ -43,13 +43,13 @@ export function serveDeno<T extends object>(
   };
   const server = Deno.serve({ port, hostname, onListen }, handler);
   
-  console.log(`🚀 Nano server running on http://${hostname}:${port}`);
+  console.log(`🚀 Orva server running on http://${hostname}:${port}`);
   
   return server;
 }
 
 export function createDenoHandler<T extends object>(
-  app: Nano<T>
+  app: Orva<T>
 ): (request: Request) => Promise<Response> {
   return (request: Request) => Promise.resolve(app.fetch(request));
 }

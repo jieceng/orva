@@ -1,6 +1,6 @@
 # 适配器
 
-`nano` 以 `app.fetch(request)` 为统一运行时入口，再通过子模块适配到不同平台。
+`orva` 以 `app.fetch(request)` 为统一运行时入口，再通过子模块适配到不同平台。
 
 ## 平台总览
 
@@ -18,10 +18,10 @@
 ## Node.js
 
 ```ts
-import { createNano } from 'nano';
-import { serveNode } from 'nano/adapters/node';
+import { createOrva } from 'orva';
+import { serveNode } from 'orva/adapters/node';
 
-const app = createNano().get('/', (c) => c.text('hello from node'));
+const app = createOrva().get('/', (c) => c.text('hello from node'));
 
 serveNode(app, { port: 3000 });
 ```
@@ -29,10 +29,10 @@ serveNode(app, { port: 3000 });
 ## Deno
 
 ```ts
-import { createNano } from 'nano';
-import { serveDeno } from 'nano/adapters/deno';
+import { createOrva } from 'orva';
+import { serveDeno } from 'orva/adapters/deno';
 
-const app = createNano().get('/', (c) => c.text('hello from deno'));
+const app = createOrva().get('/', (c) => c.text('hello from deno'));
 
 serveDeno(app, { port: 8000 });
 ```
@@ -40,10 +40,10 @@ serveDeno(app, { port: 8000 });
 ## Bun
 
 ```ts
-import { createNano } from 'nano';
-import { serveBun } from 'nano/adapters/bun';
+import { createOrva } from 'orva';
+import { serveBun } from 'orva/adapters/bun';
 
-const app = createNano().get('/', (c) => c.text('hello from bun'));
+const app = createOrva().get('/', (c) => c.text('hello from bun'));
 
 serveBun(app, { port: 3000, development: true });
 ```
@@ -51,13 +51,13 @@ serveBun(app, { port: 3000, development: true });
 ## Cloudflare Workers / Pages
 
 ```ts
-import { createNano } from 'nano';
+import { createOrva } from 'orva';
 import {
   createCloudflareWorker,
   createPagesFunction,
-} from 'nano/adapters/cloudflare';
+} from 'orva/adapters/cloudflare';
 
-const app = createNano().get('/', (c) => c.text('hello from cloudflare'));
+const app = createOrva().get('/', (c) => c.text('hello from cloudflare'));
 
 export default createCloudflareWorker(app);
 export const onRequest = createPagesFunction(app);
@@ -66,17 +66,17 @@ export const onRequest = createPagesFunction(app);
 如果你只需要默认 worker 形式，也可以直接使用：
 
 ```ts
-import { createDefaultWorker } from 'nano/adapters/cloudflare';
+import { createDefaultWorker } from 'orva/adapters/cloudflare';
 export default createDefaultWorker(app);
 ```
 
 ## AWS Lambda
 
 ```ts
-import { createNano } from 'nano';
-import { createAWSLambdaHandler } from 'nano/adapters/aws-lambda';
+import { createOrva } from 'orva';
+import { createAWSLambdaHandler } from 'orva/adapters/aws-lambda';
 
-const app = createNano().post('/echo', async (c) => c.json(await c.req.json()));
+const app = createOrva().post('/echo', async (c) => c.json(await c.req.json()));
 
 export const handler = createAWSLambdaHandler(app, {
   baseUrl: 'https://api.example.com',
@@ -86,13 +86,13 @@ export const handler = createAWSLambdaHandler(app, {
 ## Netlify
 
 ```ts
-import { createNano } from 'nano';
+import { createOrva } from 'orva';
 import {
   createNetlifyFunctionHandler,
   createNetlifyEdgeHandler,
-} from 'nano/adapters/netlify';
+} from 'orva/adapters/netlify';
 
-const app = createNano().get('/', (c) => c.text('hello from netlify'));
+const app = createOrva().get('/', (c) => c.text('hello from netlify'));
 
 export const handler = createNetlifyFunctionHandler(app);
 export default createNetlifyEdgeHandler(app);
@@ -101,10 +101,10 @@ export default createNetlifyEdgeHandler(app);
 ## Azure Functions
 
 ```ts
-import { createNano } from 'nano';
-import { createAzureFunctionHandler } from 'nano/adapters/azure';
+import { createOrva } from 'orva';
+import { createAzureFunctionHandler } from 'orva/adapters/azure';
 
-const app = createNano().get('/', (c) => c.text('hello from azure'));
+const app = createOrva().get('/', (c) => c.text('hello from azure'));
 
 export default createAzureFunctionHandler(app);
 ```
@@ -112,17 +112,17 @@ export default createAzureFunctionHandler(app);
 如果你的宿主已经给了标准 `Request`，可用：
 
 ```ts
-import { createAzureFetchHandler } from 'nano/adapters/azure';
+import { createAzureFetchHandler } from 'orva/adapters/azure';
 export default createAzureFetchHandler(app);
 ```
 
 ## Vercel
 
 ```ts
-import { createNano } from 'nano';
-import { createAppRouteHandler } from 'nano/adapters/vercel';
+import { createOrva } from 'orva';
+import { createAppRouteHandler } from 'orva/adapters/vercel';
 
-const app = createNano().get('/api/hello', (c) => c.json({ ok: true }));
+const app = createOrva().get('/api/hello', (c) => c.json({ ok: true }));
 
 export const { GET, POST, PUT, DELETE, PATCH } = createAppRouteHandler(app);
 ```

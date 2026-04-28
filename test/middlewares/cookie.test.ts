@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 
-import { createNano } from '../../src/index.ts';
+import { createOrva } from '../../src/index.ts';
 import {
   getCookie,
   parseCookieHeader,
@@ -10,7 +10,7 @@ import {
 } from '../../src/middlewares/cookie.ts';
 
 test('cookie helpers parse, serialize, and mutate response cookies', async () => {
-  const app = createNano();
+  const app = createOrva();
 
   app.get('/cookies', (c) => {
     const session = c.cookie('session');

@@ -1,4 +1,4 @@
-import type { MiddlewareHandler } from '../nano.js';
+import type { MiddlewareHandler } from '../orva.js';
 import type {
   CSPOptions,
   MiddlewareVars,

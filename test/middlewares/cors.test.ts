@@ -1,11 +1,11 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 
-import { createNano } from '../../src/index.ts';
+import { createOrva } from '../../src/index.ts';
 import { cors } from '../../src/middlewares/index.ts';
 
 test('cors handles preflight requests and response headers', async () => {
-  const app = createNano();
+  const app = createOrva();
 
   app.use(cors({
     origin: ['https://client.example.com'],

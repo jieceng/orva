@@ -1,11 +1,11 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 
-import { createNano } from '../../src/index.ts';
+import { createOrva } from '../../src/index.ts';
 import { bodyLimit } from '../../src/middlewares/index.ts';
 
 test('bodyLimit rejects oversized payloads', async () => {
-  const app = createNano();
+  const app = createOrva();
 
   app.post('/upload', bodyLimit({ maxBytes: 8 }), (c) => c.text('ok'));
 
@@ -20,7 +20,7 @@ test('bodyLimit rejects oversized payloads', async () => {
 });
 
 test('bodyLimit allows payloads within the limit', async () => {
-  const app = createNano();
+  const app = createOrva();
 
   app.post('/upload', bodyLimit({ maxBytes: 8 }), (c) => c.text('ok'));
 
