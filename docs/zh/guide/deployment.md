@@ -120,6 +120,20 @@ const apiBase = process.env.API_BASE_URL ?? 'http://localhost:3000';
 5. 检查 `package.json` `exports` 与发布文件列表
 6. 检查目标平台入口是否只做薄适配，不混入业务逻辑
 
+## 使用 GitHub Pages 发布文档
+
+当前仓库已经按 GitHub Actions + GitHub Pages 的方式配置文档发布。
+
+需要在仓库里确认：
+
+1. 打开 `Settings -> Pages`
+2. 将 `Source` 设为 `GitHub Actions`
+3. 默认分支保持为 `main`
+
+部署工作流位于 `.github/workflows/docs.yml`，发布目录是 `docs/.vitepress/dist`。
+
+由于当前仓库路径是 `jieceng/orva`，GitHub Pages 会使用 `/orva/` 作为站点基础路径，所以生产构建时会自动注入对应的 VitePress `base` 配置。
+
 ## 常见部署策略
 
 | 场景 | 建议 |

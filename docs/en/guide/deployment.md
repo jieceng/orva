@@ -28,3 +28,17 @@ Keep business logic in `src/app.ts`, and keep each platform file as a thin adapt
 3. `pnpm build`
 4. `pnpm docs:build`
 5. verify `exports` and package files
+
+## GitHub Pages for docs
+
+This repository is configured to deploy VitePress docs to GitHub Pages from GitHub Actions.
+
+Required repository settings:
+
+1. Open `Settings -> Pages`
+2. Set `Source` to `GitHub Actions`
+3. Keep the default branch as `main`
+
+The workflow lives at `.github/workflows/docs.yml` and publishes `docs/.vitepress/dist`.
+
+For this repository, the Pages site will be served under the `/orva/` base path, so the VitePress config sets the production base automatically during CI.

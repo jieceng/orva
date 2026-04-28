@@ -1,6 +1,7 @@
 import { defineConfig } from 'vitepress';
 
 const repoUrl = 'https://github.com/jieceng/orva';
+const docsBase = process.env.ORVA_DOCS_BASE ?? (process.env.GITHUB_ACTIONS ? '/orva/' : '/');
 
 const algoliaEnabled = Boolean(
   process.env.ORVA_DOCSEARCH_APP_ID
@@ -234,6 +235,7 @@ function createEnThemeConfig() {
 export default defineConfig({
   title: 'orva',
   description: 'A lightweight Fetch API web framework with typed middleware, validator, RPC, OpenAPI and multi-runtime adapters.',
+  base: docsBase,
   cleanUrls: true,
   lastUpdated: true,
   appearance: true,
