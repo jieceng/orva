@@ -2,6 +2,7 @@ import { defineConfig } from 'vitepress';
 
 const latestVersion = 'v3.x';
 const snapshotVersion = 'v3.1';
+const repoUrl = 'https://github.com/jieceng/orva';
 
 const algoliaEnabled = Boolean(
   process.env.ORVA_DOCSEARCH_APP_ID
@@ -195,6 +196,16 @@ function createZhThemeConfig() {
       level: [2, 3],
       label: '本页目录',
     },
+    socialLinks: [
+      { icon: 'github', link: repoUrl },
+    ],
+    editLink: {
+      pattern: `${repoUrl}/edit/main/docs/:path`,
+      text: '在 GitHub 上编辑此页',
+    },
+    lastUpdated: {
+      text: '最后更新于',
+    },
     footer: {
       message: 'Built with VitePress. Structured for production docs, multilingual delivery and long-term versioning.',
       copyright: 'MIT Licensed',
@@ -224,6 +235,16 @@ function createEnThemeConfig() {
     outline: {
       level: [2, 3],
       label: 'On this page',
+    },
+    socialLinks: [
+      { icon: 'github', link: repoUrl },
+    ],
+    editLink: {
+      pattern: `${repoUrl}/edit/main/docs/:path`,
+      text: 'Edit this page on GitHub',
+    },
+    lastUpdated: {
+      text: 'Last updated',
     },
     footer: {
       message: 'Built with VitePress. Structured for production docs, multilingual delivery and long-term versioning.',
