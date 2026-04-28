@@ -94,10 +94,14 @@ export type RouteRegistry = Record<string, RouteDefinition>;
 
 export interface MiddlewareTypeCarrier<
   AddedVars extends object = {},
-  AddedValidated extends ValidatedData = {}
+  AddedValidated extends ValidatedData = {},
+  AddedRPCInput extends object = {},
+  AddedOperation = never,
 > {
   readonly __nanoAddedVars__?: AddedVars;
   readonly __nanoAddedValidated__?: AddedValidated;
+  readonly __orvaRpcInput__?: AddedRPCInput;
+  readonly __orvaOperation__?: AddedOperation;
 }
 
 export interface Context<
@@ -124,9 +128,9 @@ export interface Context<
   json: (data: unknown, status?: StatusCode, headers?: HeadersInit) => Response;
   html: (data: string, status?: StatusCode, headers?: HeadersInit) => Response;
   redirect: (url: string | URL, status?: 301 | 302 | 303 | 307 | 308) => Response;
-  stream: (stream: ReadableStream | AsyncIterable<unknown>, status?: StatusCode, headers?: HeadersInit) => Response;
-  sse: (stream: ReadableStream | AsyncIterable<unknown>, status?: StatusCode) => Response;
-  download: (stream: ReadableStream | AsyncIterable<unknown>, filename?: string, status?: StatusCode) => Response;
+  stream: (stream: ReadableStream | AsyncIterable<unknown> | Iterable<unknown>, status?: StatusCode, headers?: HeadersInit) => Response;
+  sse: (stream: ReadableStream | AsyncIterable<unknown> | Iterable<unknown>, status?: StatusCode) => Response;
+  download: (stream: ReadableStream | AsyncIterable<unknown> | Iterable<unknown>, filename?: string, status?: StatusCode) => Response;
   notFound: () => Response;
 }
 
@@ -145,8 +149,10 @@ export type TypedMiddlewareHandler<
   T extends object = Record<string, unknown>,
   V extends ValidatedData = {},
   AddedVars extends object = {},
-  AddedValidated extends ValidatedData = {}
-> = MiddlewareHandler<Simplify<T & AddedVars>, Simplify<V & AddedValidated>> & MiddlewareTypeCarrier<AddedVars, AddedValidated>;
+  AddedValidated extends ValidatedData = {},
+  AddedRPCInput extends object = {},
+  AddedOperation = never,
+> = MiddlewareHandler<Simplify<T & AddedVars>, Simplify<V & AddedValidated>> & MiddlewareTypeCarrier<AddedVars, AddedValidated, AddedRPCInput, AddedOperation>;
 
 export type Handler<
   T extends object = Record<string, unknown>,
@@ -179,7 +185,7 @@ export type NotFoundHandler<
 ) => Response | Promise<Response>;
 
 export type AnyMiddlewareHandler<T extends object = Record<string, unknown>> =
-  MiddlewareHandler<T, any> & MiddlewareTypeCarrier<any, any>;
+  MiddlewareHandler<T, any> & MiddlewareTypeCarrier<any, any, any, any>;
 
 type ExtractMiddlewareAddedVars<M> = M extends MiddlewareTypeCarrier<infer AddedVars, any>
   ? AddedVars extends object ? AddedVars : {}
@@ -197,10 +203,12 @@ type MergeMiddlewareValidatedData<M extends readonly unknown[]> = Simplify<
 export function defineMiddleware<
   AddedVars extends object = {},
   AddedValidated extends ValidatedData = {},
+  AddedRPCInput extends object = {},
+  AddedOperation = never,
 >(
   handler: MiddlewareHandler<any, any>
-): TypedMiddlewareHandler<any, any, AddedVars, AddedValidated> {
-  return handler as TypedMiddlewareHandler<any, any, AddedVars, AddedValidated>;
+): TypedMiddlewareHandler<any, any, AddedVars, AddedValidated, AddedRPCInput, AddedOperation> {
+  return handler as TypedMiddlewareHandler<any, any, AddedVars, AddedValidated, AddedRPCInput, AddedOperation>;
 }
 
 type ValidatorInputMapping<Target extends string, Input> =
@@ -213,17 +221,30 @@ type ValidatorInputMapping<Target extends string, Input> =
   Target extends 'cookie' ? { cookie?: Input } :
   {};
 
-type MiddlewareRPCInput<M> = M extends { readonly [VALIDATOR_METADATA]?: ValidatorContractMetadata<infer Target, infer Input, any> }
-  ? ValidatorInputMapping<Target, Input>
+type ExtractMiddlewareAddedRPCInput<M> = M extends MiddlewareTypeCarrier<any, any, infer AddedRPCInput, any>
+  ? AddedRPCInput extends object ? AddedRPCInput : {}
   : {};
-
-type MergeRPCInput<M extends readonly unknown[]> = Simplify<
+type MiddlewareRPCInput<M> = keyof ExtractMiddlewareAddedRPCInput<M> extends never
+  ? M extends { readonly [VALIDATOR_METADATA]?: ValidatorContractMetadata<infer Target, infer Input, any> }
+    ? ValidatorInputMapping<Target, Input>
+    : {}
+  : ExtractMiddlewareAddedRPCInput<M>;
+type MergeMiddlewareRPCInput<M extends readonly unknown[]> = Simplify<
   PrettifyIntersection<MiddlewareRPCInput<M[number]>>
 >;
+type MergeRPCInput<M extends readonly unknown[]> = Simplify<
+  MergeMiddlewareRPCInput<M>
+>;
 
-type ExtractOperationMetadata<M> = M extends { readonly [OPENAPI_METADATA]?: infer Operation }
+type ExtractOperationCarrier<M> = M extends MiddlewareTypeCarrier<any, any, any, infer Operation>
   ? Operation
   : never;
+type ExtractOperationMetadata<M> =
+  [ExtractOperationCarrier<M>] extends [never]
+    ? M extends { readonly [OPENAPI_METADATA]?: infer Operation }
+      ? Operation
+      : never
+    : ExtractOperationCarrier<M>;
 
 type MergeOperationMetadata<M extends readonly unknown[]> =
   [ExtractOperationMetadata<M[number]>] extends [never]
@@ -964,7 +985,7 @@ class OrvaContext<T extends object = Record<string, unknown>, V extends Validate
     return new FastResponse('empty', status, null, { Location: url.toString() }) as unknown as Response;
   }
 
-  stream(stream: ReadableStream | AsyncIterable<unknown>, status = 200, headers?: HeadersInit): Response {
+  stream(stream: ReadableStream | AsyncIterable<unknown> | Iterable<unknown>, status = 200, headers?: HeadersInit): Response {
     const readable = stream instanceof ReadableStream ? stream : new ReadableStream({
       async start(controller) {
         try {
@@ -983,11 +1004,11 @@ class OrvaContext<T extends object = Record<string, unknown>, V extends Validate
     });
   }
 
-  sse(stream: ReadableStream | AsyncIterable<unknown>, status = 200): Response {
+  sse(stream: ReadableStream | AsyncIterable<unknown> | Iterable<unknown>, status = 200): Response {
     return this.stream(stream, status, DEFAULT_SSE_HEADERS);
   }
 
-  download(stream: ReadableStream | AsyncIterable<unknown>, filename?: string, status = 200): Response {
+  download(stream: ReadableStream | AsyncIterable<unknown> | Iterable<unknown>, filename?: string, status = 200): Response {
     return this.stream(stream, status, {
       ...DEFAULT_DOWNLOAD_HEADERS,
       ...(filename ? { 'Content-Disposition': `attachment; filename="${encodeURIComponent(filename)}"` } : {}),
@@ -1117,7 +1138,7 @@ export class Orva<
     return this;
   }
 
-  use<M extends AnyMiddlewareHandler<T>[]>(
+  use<const M extends readonly MiddlewareHandler<T, any>[]>(
     ...handlers: M
   ): Orva<Simplify<T & MergeMiddlewareAddedVars<M>>, Simplify<V & MergeMiddlewareValidatedData<M>>, R, [...GM, ...M]> {
     if (this.isInGroup) {
@@ -1388,7 +1409,7 @@ export class Orva<
   // HTTP method registration with a compact API
   get<
     Path extends string,
-    M extends AnyMiddlewareHandler<T>[],
+    const M extends readonly MiddlewareHandler<T, any>[],
     Operation = MergeOperationMetadata<M>
   >(
     path: Path,
@@ -1403,7 +1424,7 @@ export class Orva<
 
   post<
     Path extends string,
-    M extends AnyMiddlewareHandler<T>[],
+    const M extends readonly MiddlewareHandler<T, any>[],
     Operation = MergeOperationMetadata<M>
   >(
     path: Path,
@@ -1418,7 +1439,7 @@ export class Orva<
 
   put<
     Path extends string,
-    M extends AnyMiddlewareHandler<T>[],
+    const M extends readonly MiddlewareHandler<T, any>[],
     Operation = MergeOperationMetadata<M>
   >(
     path: Path,
@@ -1433,7 +1454,7 @@ export class Orva<
 
   delete<
     Path extends string,
-    M extends AnyMiddlewareHandler<T>[],
+    const M extends readonly MiddlewareHandler<T, any>[],
     Operation = MergeOperationMetadata<M>
   >(
     path: Path,
@@ -1448,7 +1469,7 @@ export class Orva<
 
   patch<
     Path extends string,
-    M extends AnyMiddlewareHandler<T>[],
+    const M extends readonly MiddlewareHandler<T, any>[],
     Operation = MergeOperationMetadata<M>
   >(
     path: Path,
@@ -1463,7 +1484,7 @@ export class Orva<
 
   options<
     Path extends string,
-    M extends AnyMiddlewareHandler<T>[],
+    const M extends readonly MiddlewareHandler<T, any>[],
     Operation = MergeOperationMetadata<M>
   >(
     path: Path,
@@ -1478,7 +1499,7 @@ export class Orva<
 
   all<
     Path extends string,
-    M extends AnyMiddlewareHandler<T>[],
+    const M extends readonly MiddlewareHandler<T, any>[],
     Operation = MergeOperationMetadata<M>
   >(
     path: Path,

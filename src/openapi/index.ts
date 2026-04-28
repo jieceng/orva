@@ -1,4 +1,4 @@
-import type { MiddlewareHandler } from '../orva.js';
+import type { MiddlewareHandler, TypedMiddlewareHandler } from '../orva.js';
 import {
   OPENAPI_METADATA,
   type OpenAPICallbackComponent,
@@ -175,7 +175,7 @@ export interface OpenAPIReadable {
 }
 
 export interface OpenAPIMiddleware<Meta extends OpenAPIOperationMetadata = OpenAPIOperationMetadata>
-  extends MiddlewareHandler<any, any> {
+  extends TypedMiddlewareHandler<any, any, {}, {}, {}, Meta> {
   readonly [OPENAPI_METADATA]: Meta;
 }
 
@@ -258,7 +258,7 @@ interface OpenAPIBuilderContext {
 export function describeRoute<Meta extends OpenAPIOperationMetadata>(
   metadata: Meta
 ): OpenAPIMiddleware<Meta> {
-  const middleware: MiddlewareHandler<any, any> = async (_context, next) => {
+  const middleware: TypedMiddlewareHandler<any, any, {}, {}, {}, Meta> = async (_context, next) => {
     await next();
   };
 

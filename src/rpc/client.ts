@@ -1,12 +1,100 @@
 // ============ RPC client implementation ============
 
-import type { OrvaRPC, RPCRequestOptions } from './types.js';
+import type { OrvaRPC, RPCRequestOptions, RPCResponse } from './types.js';
 import type { Orva } from '../orva.js';
 
 export interface RPCClientOptions {
   baseURL: string;
   headers?: Record<string, string>;
   fetch?: typeof fetch;
+}
+
+class OrvaRPCResponse<Status extends number = number, Body = unknown> implements RPCResponse<Status, Body> {
+  private valuePromise?: Promise<Body>;
+  private jsonPromise?: Promise<Body>;
+  private textPromise?: Promise<string>;
+  private formDataPromise?: Promise<FormData>;
+  private arrayBufferPromise?: Promise<ArrayBuffer>;
+  private blobPromise?: Promise<Blob>;
+
+  constructor(public readonly raw: Response) {}
+
+  get status(): Status {
+    return this.raw.status as Status;
+  }
+
+  get ok(): RPCResponse<Status, Body>['ok'] {
+    return this.raw.ok as RPCResponse<Status, Body>['ok'];
+  }
+
+  get headers(): Headers {
+    return this.raw.headers;
+  }
+
+  get redirected(): boolean {
+    return this.raw.redirected;
+  }
+
+  get type(): ResponseType {
+    return this.raw.type;
+  }
+
+  get url(): string {
+    return this.raw.url;
+  }
+
+  clone(): Response {
+    return this.raw.clone();
+  }
+
+  json(): Promise<Body> {
+    return this.jsonPromise ??= this.raw.clone().json() as Promise<Body>;
+  }
+
+  text(): Promise<string> {
+    return this.textPromise ??= this.raw.clone().text();
+  }
+
+  formData(): Promise<FormData> {
+    return this.formDataPromise ??= this.raw.clone().formData();
+  }
+
+  arrayBuffer(): Promise<ArrayBuffer> {
+    return this.arrayBufferPromise ??= this.raw.clone().arrayBuffer();
+  }
+
+  blob(): Promise<Blob> {
+    return this.blobPromise ??= this.raw.clone().blob();
+  }
+
+  value(): Promise<Body> {
+    return this.valuePromise ??= this.readValue();
+  }
+
+  private async readValue(): Promise<Body> {
+    if (this.status === 204 || this.status === 205 || this.status === 304) {
+      return undefined as Body;
+    }
+
+    const contentType = this.headers.get('Content-Type')?.toLowerCase() ?? '';
+
+    if (
+      contentType.includes('application/json')
+      || contentType.includes('+json')
+    ) {
+      return this.json();
+    }
+
+    if (contentType.includes('multipart/form-data')) {
+      return await this.formData() as Body;
+    }
+
+    if (contentType.startsWith('text/') || contentType.includes('xml') || contentType.includes('application/x-www-form-urlencoded')) {
+      return await this.text() as Body;
+    }
+
+    return await this.arrayBuffer() as Body;
+  }
 }
 
 function isBodyInitLike(value: unknown): value is BodyInit {
@@ -130,17 +218,8 @@ export function createRPC<T extends Orva<any>>(
               headers,
               body,
             });
-            
-            if (!response.ok) {
-              const errorText = await response.text();
-              throw new Error(`RPC Error ${response.status}: ${errorText}`);
-            }
-            
-            const contentType = response.headers.get('Content-Type');
-            if (contentType?.includes('application/json')) {
-              return response.json();
-            }
-            return response.text();
+
+            return new OrvaRPCResponse(response);
           };
         }
         

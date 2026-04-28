@@ -23,6 +23,16 @@ export interface ValidatorValueMap {
 export type ValidatorInput<Target extends string> =
   Target extends keyof ValidatorValueMap ? ValidatorValueMap[Target] : unknown;
 
+type ValidatorRPCInputMapping<Target extends string, Input> =
+  Target extends 'json' ? { body: Input } :
+  Target extends 'form' ? { body: Input } :
+  Target extends 'text' ? { body: Input } :
+  Target extends 'query' ? { query?: Input } :
+  Target extends 'param' ? { param?: Input } :
+  Target extends 'header' ? { headers?: Input } :
+  Target extends 'cookie' ? { cookie?: Input } :
+  {};
+
 export interface ValidatorOptions<
   T extends object,
   Target extends string,
@@ -37,7 +47,7 @@ export interface ValidatorHandler<
   Target extends string = string,
   Input = ValidatorInput<Target>,
   Output = unknown
-> extends TypedMiddlewareHandler<T, {}, {}, Record<Target, Output>> {
+> extends TypedMiddlewareHandler<T, {}, {}, Record<Target, Output>, ValidatorRPCInputMapping<Target, Input>> {
   readonly target: Target;
   readonly [VALIDATOR_METADATA]?: ValidatorContractMetadata<Target, Input, Output>;
 }
@@ -86,7 +96,7 @@ export function validator<
   parse: (value: Input, context: Context<T>) => Output | Promise<Output>,
   options: ValidatorOptions<T, Target, Input> & ValidatorMetadataOptions<Target, Input, Output> = {}
 ): ValidatorHandler<T, Target, Input, Output> {
-  const handler: TypedMiddlewareHandler<T, {}, {}, Record<Target, Output>> = async (context, next) => {
+  const handler: TypedMiddlewareHandler<T, {}, {}, Record<Target, Output>, ValidatorRPCInputMapping<Target, Input>> = async (context, next) => {
     try {
       const raw = options.value
         ? await options.value(context)

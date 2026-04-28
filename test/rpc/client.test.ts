@@ -1,12 +1,28 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 
+import type { Orva, RouteDefinition } from '../../src/index.ts';
 import { createRPC } from '../../src/rpc/index.ts';
+
+type AppWithRoutes<Routes extends Record<string, RouteDefinition>> = Orva<any, any, Routes, any>;
 
 test('createRPC builds url, query, headers and json body', async () => {
   const calls: Array<{ url: string; init?: RequestInit }> = [];
+  type App = AppWithRoutes<{
+    'POST /users/:id': RouteDefinition<
+      '/users/:id',
+      'POST',
+      {
+        param: { id: string };
+        query: { page: string; filter: string };
+        headers?: { 'x-trace': string };
+        body: { name: string };
+      },
+      { ok: boolean }
+    >;
+  }>;
 
-  const rpc = createRPC({
+  const rpc = createRPC<App>({
     baseURL: 'https://api.example.com',
     headers: { authorization: 'Bearer base' },
     fetch: async (url, init) => {
@@ -18,14 +34,16 @@ test('createRPC builds url, query, headers and json body', async () => {
     },
   });
 
-  const result = await rpc.users[':id'].$post({
+  const response = await rpc.users[':id'].$post({
     param: { id: 'a/b' },
     query: { page: '2', filter: 'yes' },
     headers: { 'x-trace': '1' },
     body: { name: 'orva' },
   });
 
-  assert.deepEqual(result, { ok: true });
+  assert.equal(response.status, 200);
+  assert.equal(response.ok, true);
+  assert.deepEqual(await response.value(), { ok: true });
   assert.equal(calls.length, 1);
   assert.equal(
     calls[0].url,
@@ -40,11 +58,19 @@ test('createRPC builds url, query, headers and json body', async () => {
   assert.equal(calls[0].init?.body, JSON.stringify({ name: 'orva' }));
 });
 
-test('createRPC preserves FormData and throws on non-ok responses', async () => {
+test('createRPC preserves FormData and returns typed non-ok responses', async () => {
   const form = new FormData();
   form.set('file', 'orva');
+  type App = AppWithRoutes<{
+    'POST /upload': RouteDefinition<
+      '/upload',
+      'POST',
+      { body: FormData },
+      string
+    >;
+  }>;
 
-  const rpc = createRPC({
+  const rpc = createRPC<App>({
     baseURL: 'https://api.example.com',
     fetch: async (_url, init) => {
       assert.equal(init?.body, form);
@@ -54,14 +80,23 @@ test('createRPC preserves FormData and throws on non-ok responses', async () => 
     },
   });
 
-  await assert.rejects(
-    rpc.upload.$post({ body: form }),
-    /RPC Error 400: bad request/
-  );
+  const response = await rpc.upload.$post({ body: form });
+  assert.equal(response.status, 400);
+  assert.equal(response.ok, false);
+  assert.equal(await response.text(), 'bad request');
 });
 
 test('createRPC can serialize cookies into the cookie header', async () => {
-  const rpc = createRPC({
+  type App = AppWithRoutes<{
+    'GET /profile': RouteDefinition<
+      '/profile',
+      'GET',
+      { cookie?: { session: string; theme: string } },
+      { ok: boolean }
+    >;
+  }>;
+
+  const rpc = createRPC<App>({
     baseURL: 'https://api.example.com',
     fetch: async (_url, init) => {
       const headers = new Headers(init?.headers);
@@ -73,20 +108,40 @@ test('createRPC can serialize cookies into the cookie header', async () => {
     },
   });
 
-  const result = await rpc.profile.$get({
+  const response = await rpc.profile.$get({
     cookie: {
       session: 'abc123',
       theme: 'dark',
     },
   });
 
-  assert.deepEqual(result, { ok: true });
+  assert.deepEqual(await response.value(), { ok: true });
 });
 
 test('createRPC serializes body according to explicit content-type', async () => {
   const calls: Array<{ init?: RequestInit }> = [];
+  type App = AppWithRoutes<{
+    'POST /forms': RouteDefinition<
+      '/forms',
+      'POST',
+      {
+        headers?: { 'content-type': 'application/x-www-form-urlencoded' };
+        body: Record<string, string>;
+      },
+      string
+    >;
+    'POST /notes': RouteDefinition<
+      '/notes',
+      'POST',
+      {
+        headers?: { 'content-type': 'text/plain; charset=utf-8' };
+        body: string;
+      },
+      string
+    >;
+  }>;
 
-  const rpc = createRPC({
+  const rpc = createRPC<App>({
     baseURL: 'https://api.example.com',
     fetch: async (_url, init) => {
       calls.push({ init });
@@ -103,7 +158,7 @@ test('createRPC serializes body according to explicit content-type', async () =>
   });
   await rpc.notes.$post({
     headers: { 'content-type': 'text/plain; charset=utf-8' },
-    body: 123,
+    body: '123',
   });
 
   const formHeaders = new Headers(calls[0]?.init?.headers);

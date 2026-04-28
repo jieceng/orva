@@ -8,9 +8,12 @@ export type {
   OrvaRPC,
   RPCClient,
   RPCMethod,
+  RPCResponse,
   RPCRouteDefinition,
   RPCPathProxy,
   RPCRequestOptions,
+  InferRPCResponse,
+  InferResponseType,
   RouteParams,
   ParamsFromPath,
 } from './types.js';
