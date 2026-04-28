@@ -1,5 +1,5 @@
 {
-  "name": "orva",
+  "name": "orvajs",
   "version": "3.1.0",
   "description": "Lightweight Fetch API web framework with typed middleware, RPC, validator, OpenAPI and multi-runtime adapters",
   "type": "module",
@@ -104,6 +104,7 @@
     "router",
     "fetch",
     "orva",
+    "orvajs",
     "rpc",
     "openapi",
     "middleware",

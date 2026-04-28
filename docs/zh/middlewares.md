@@ -9,15 +9,15 @@
 应用项目里，优先用聚合导入：
 
 ```ts
-import { cors, requestId, secureHeaders } from 'orva/middlewares';
+import { cors, requestId, secureHeaders } from 'orvajs/middlewares';
 ```
 
 库、模板、脚手架、共享基建里，优先用细粒度子路径：
 
 ```ts
-import { cors } from 'orva/middlewares/cors';
-import { requestId } from 'orva/middlewares/request-id';
-import { secureHeaders } from 'orva/middlewares/secure-headers';
+import { cors } from 'orvajs/middlewares/cors';
+import { requestId } from 'orvajs/middlewares/request-id';
+import { secureHeaders } from 'orvajs/middlewares/secure-headers';
 ```
 
 ## 快速选择
@@ -42,15 +42,15 @@ import { secureHeaders } from 'orva/middlewares/secure-headers';
 
 | 中间件 | 导入路径 | 适用场景 | 最小示例 |
 | --- | --- | --- | --- |
-| `basicAuth()` | `orva/middlewares/basic-auth` | 浏览器登录弹窗、内部控制台、简易后台 | `app.use(basicAuth({ users: { admin: 'secret' } }))` |
-| `bearerAuth()` | `orva/middlewares/bearer-auth` | Bearer Token API、服务间调用 | `app.use(bearerAuth({ token: ['token-a', 'token-b'] }))` |
-| `apiKeyAuth()` | `orva/middlewares/api-key-auth` | Header / Query 形式的 API Key | `app.use(apiKeyAuth({ key: ['k1'], headerName: 'X-API-Key' }))` |
+| `basicAuth()` | `orvajs/middlewares/basic-auth` | 浏览器登录弹窗、内部控制台、简易后台 | `app.use(basicAuth({ users: { admin: 'secret' } }))` |
+| `bearerAuth()` | `orvajs/middlewares/bearer-auth` | Bearer Token API、服务间调用 | `app.use(bearerAuth({ token: ['token-a', 'token-b'] }))` |
+| `apiKeyAuth()` | `orvajs/middlewares/api-key-auth` | Header / Query 形式的 API Key | `app.use(apiKeyAuth({ key: ['k1'], headerName: 'X-API-Key' }))` |
 
 ### 认证组合示例
 
 ```ts
-import { createOrva } from 'orva';
-import { apiKeyAuth, basicAuth, bearerAuth } from 'orva/middlewares';
+import { createOrva } from 'orvajs';
+import { apiKeyAuth, basicAuth, bearerAuth } from 'orvajs/middlewares';
 
 const app = createOrva()
   .get('/admin', basicAuth({ users: { admin: 'secret' } }), (c) => c.text('ok'))
@@ -66,25 +66,25 @@ const app = createOrva()
 
 | 中间件 | 导入路径 | 适用场景 | 最小示例 |
 | --- | --- | --- | --- |
-| `allowMethods()` | `orva/middlewares/allow-methods` | 只允许少数方法通过 | `app.use(allowMethods(['GET', 'POST']))` |
-| `blockMethods()` | `orva/middlewares/block-methods` | 禁止危险或不支持的方法 | `app.use(blockMethods(['TRACE', 'CONNECT']))` |
-| `requireHeader()` | `orva/middlewares/require-header` | 强制要求请求头存在 | `app.use(requireHeader(['x-tenant-id']))` |
-| `requireQuery()` | `orva/middlewares/require-query` | 强制要求 query 参数存在 | `app.use(requireQuery(['page']))` |
-| `requireJson()` | `orva/middlewares/require-json` | 写请求必须是 `application/json` | `app.use(requireJson())` |
-| `requireAccept()` | `orva/middlewares/require-accept` | 强制 `Accept` 协商 | `app.use(requireAccept(['application/json']))` |
-| `bodyLimit()` | `orva/middlewares/body-limit` | 拒绝超大请求体 | `app.use(bodyLimit({ maxBytes: 1024 * 1024 }))` |
-| `timeout()` | `orva/middlewares/timeout` | 超时后直接返回失败响应 | `app.use(timeout({ ms: 5_000 }))` |
-| `rateLimit()` | `orva/middlewares/rate-limit` | 抗突发流量和滥用 | `app.use(rateLimit({ limit: 100, windowMs: 60_000 }))` |
-| `hostAllowlist()` | `orva/middlewares/host-allowlist` | 限制有效 Host | `app.use(hostAllowlist(['api.example.com']))` |
-| `blockUserAgents()` | `orva/middlewares/block-user-agents` | 屏蔽爬虫或异常客户端 | `app.use(blockUserAgents([/curl/i, 'BadBot']))` |
-| `requireOrigin()` | `orva/middlewares/require-origin` | 限制浏览器来源 | `app.use(requireOrigin(['https://app.example.com']))` |
-| `idempotencyKey()` | `orva/middlewares/idempotency-key` | 写接口强制 `Idempotency-Key` | `app.use(idempotencyKey())` |
-| `csrfOrigin()` | `orva/middlewares/csrf-origin` | 带 body 请求做 CSRF Origin 校验 | `app.use(csrfOrigin(['https://app.example.com']))` |
+| `allowMethods()` | `orvajs/middlewares/allow-methods` | 只允许少数方法通过 | `app.use(allowMethods(['GET', 'POST']))` |
+| `blockMethods()` | `orvajs/middlewares/block-methods` | 禁止危险或不支持的方法 | `app.use(blockMethods(['TRACE', 'CONNECT']))` |
+| `requireHeader()` | `orvajs/middlewares/require-header` | 强制要求请求头存在 | `app.use(requireHeader(['x-tenant-id']))` |
+| `requireQuery()` | `orvajs/middlewares/require-query` | 强制要求 query 参数存在 | `app.use(requireQuery(['page']))` |
+| `requireJson()` | `orvajs/middlewares/require-json` | 写请求必须是 `application/json` | `app.use(requireJson())` |
+| `requireAccept()` | `orvajs/middlewares/require-accept` | 强制 `Accept` 协商 | `app.use(requireAccept(['application/json']))` |
+| `bodyLimit()` | `orvajs/middlewares/body-limit` | 拒绝超大请求体 | `app.use(bodyLimit({ maxBytes: 1024 * 1024 }))` |
+| `timeout()` | `orvajs/middlewares/timeout` | 超时后直接返回失败响应 | `app.use(timeout({ ms: 5_000 }))` |
+| `rateLimit()` | `orvajs/middlewares/rate-limit` | 抗突发流量和滥用 | `app.use(rateLimit({ limit: 100, windowMs: 60_000 }))` |
+| `hostAllowlist()` | `orvajs/middlewares/host-allowlist` | 限制有效 Host | `app.use(hostAllowlist(['api.example.com']))` |
+| `blockUserAgents()` | `orvajs/middlewares/block-user-agents` | 屏蔽爬虫或异常客户端 | `app.use(blockUserAgents([/curl/i, 'BadBot']))` |
+| `requireOrigin()` | `orvajs/middlewares/require-origin` | 限制浏览器来源 | `app.use(requireOrigin(['https://app.example.com']))` |
+| `idempotencyKey()` | `orvajs/middlewares/idempotency-key` | 写接口强制 `Idempotency-Key` | `app.use(idempotencyKey())` |
+| `csrfOrigin()` | `orvajs/middlewares/csrf-origin` | 带 body 请求做 CSRF Origin 校验 | `app.use(csrfOrigin(['https://app.example.com']))` |
 
 ### 守卫组合示例
 
 ```ts
-import { createOrva } from 'orva';
+import { createOrva } from 'orvajs';
 import {
   allowMethods,
   bodyLimit,
@@ -92,7 +92,7 @@ import {
   rateLimit,
   requireJson,
   requireOrigin,
-} from 'orva/middlewares';
+} from 'orvajs/middlewares';
 
 const app = createOrva().use(
   allowMethods(['GET', 'POST', 'PATCH']),
@@ -112,25 +112,25 @@ const app = createOrva().use(
 
 | 中间件 | 导入路径 | 适用场景 | 最小示例 |
 | --- | --- | --- | --- |
-| `poweredBy()` | `orva/middlewares/powered-by` | 添加 `X-Powered-By` | `app.use(poweredBy('orva'))` |
-| `responseHeaders()` | `orva/middlewares/response-headers` | 追加静态或动态响应头 | `app.use(responseHeaders({ headers: { 'x-app': 'orva' } }))` |
-| `cacheControl()` | `orva/middlewares/cache-control` | 设置缓存策略 | `app.use(cacheControl('public, max-age=60'))` |
-| `noStore()` | `orva/middlewares/no-store` | 禁止缓存 | `app.use(noStore())` |
-| `vary()` | `orva/middlewares/vary` | 补 `Vary` | `app.use(vary('Origin', 'Accept-Encoding'))` |
-| `cors()` | `orva/middlewares/cors` | 浏览器跨域访问 | `app.use(cors({ origin: ['https://app.example.com'], credentials: true }))` |
-| `httpsRedirect()` | `orva/middlewares/https-redirect` | HTTP 跳转 HTTPS | `app.use(httpsRedirect({ status: 308 }))` |
-| `trailingSlash()` | `orva/middlewares/trailing-slash` | 统一尾斜杠策略 | `app.use(trailingSlash({ mode: 'remove' }))` |
-| `etag()` | `orva/middlewares/etag` | 添加强 ETag 和 304 | `app.use(etag())` |
-| `responseTag()` | `orva/middlewares/response-tag` | 打一个单独响应头标记 | `app.use(responseTag('x-release', '2026-04'))` |
-| `contentType()` | `orva/middlewares/content-type` | 提供默认内容类型 | `app.use(contentType('application/json; charset=utf-8'))` |
-| `checksum()` | `orva/middlewares/checksum` | 给响应体加摘要头 | `app.use(checksum('X-Body-SHA1'))` |
-| `responseChecksumTrailer()` | `orva/middlewares/response-checksum-trailer` | 输出 `Digest` 风格摘要 | `app.use(responseChecksumTrailer('Digest'))` |
-| `contentLength()` | `orva/middlewares/content-length` | 缺失时补 `Content-Length` | `app.use(contentLength())` |
+| `poweredBy()` | `orvajs/middlewares/powered-by` | 添加 `X-Powered-By` | `app.use(poweredBy('orva'))` |
+| `responseHeaders()` | `orvajs/middlewares/response-headers` | 追加静态或动态响应头 | `app.use(responseHeaders({ headers: { 'x-app': 'orva' } }))` |
+| `cacheControl()` | `orvajs/middlewares/cache-control` | 设置缓存策略 | `app.use(cacheControl('public, max-age=60'))` |
+| `noStore()` | `orvajs/middlewares/no-store` | 禁止缓存 | `app.use(noStore())` |
+| `vary()` | `orvajs/middlewares/vary` | 补 `Vary` | `app.use(vary('Origin', 'Accept-Encoding'))` |
+| `cors()` | `orvajs/middlewares/cors` | 浏览器跨域访问 | `app.use(cors({ origin: ['https://app.example.com'], credentials: true }))` |
+| `httpsRedirect()` | `orvajs/middlewares/https-redirect` | HTTP 跳转 HTTPS | `app.use(httpsRedirect({ status: 308 }))` |
+| `trailingSlash()` | `orvajs/middlewares/trailing-slash` | 统一尾斜杠策略 | `app.use(trailingSlash({ mode: 'remove' }))` |
+| `etag()` | `orvajs/middlewares/etag` | 添加强 ETag 和 304 | `app.use(etag())` |
+| `responseTag()` | `orvajs/middlewares/response-tag` | 打一个单独响应头标记 | `app.use(responseTag('x-release', '2026-04'))` |
+| `contentType()` | `orvajs/middlewares/content-type` | 提供默认内容类型 | `app.use(contentType('application/json; charset=utf-8'))` |
+| `checksum()` | `orvajs/middlewares/checksum` | 给响应体加摘要头 | `app.use(checksum('X-Body-SHA1'))` |
+| `responseChecksumTrailer()` | `orvajs/middlewares/response-checksum-trailer` | 输出 `Digest` 风格摘要 | `app.use(responseChecksumTrailer('Digest'))` |
+| `contentLength()` | `orvajs/middlewares/content-length` | 缺失时补 `Content-Length` | `app.use(contentLength())` |
 
 ### HTTP 组合示例
 
 ```ts
-import { createOrva } from 'orva';
+import { createOrva } from 'orvajs';
 import {
   cacheControl,
   cors,
@@ -138,7 +138,7 @@ import {
   responseHeaders,
   secureHeaders,
   vary,
-} from 'orva/middlewares';
+} from 'orvajs/middlewares';
 
 const app = createOrva().use(
   cors({ origin: ['https://app.example.com'], credentials: true }),
@@ -158,22 +158,22 @@ const app = createOrva().use(
 
 | 中间件 | 导入路径 | 适用场景 | 最小示例 |
 | --- | --- | --- | --- |
-| `logger()` | `orva/middlewares/logger` | 控制台或自定义请求日志 | `app.use(logger({ includeQuery: true }))` |
-| `requestId()` | `orva/middlewares/request-id` | 请求关联 ID | `app.use(requestId({ contextKey: 'requestId' }))` |
-| `responseTime()` | `orva/middlewares/response-time` | 响应耗时头 | `app.use(responseTime())` |
-| `requestMeta()` | `orva/middlewares/request-meta` | 把 method/path/query/headers 写入上下文 | `app.use(requestMeta())` |
-| `userAgent()` | `orva/middlewares/user-agent` | 把 `User-Agent` 写入上下文 | `app.use(userAgent())` |
-| `clientIp()` | `orva/middlewares/client-ip` | 从代理头提取 IP | `app.use(clientIp())` |
-| `serverTiming()` | `orva/middlewares/server-timing` | 输出 `Server-Timing` | `app.use(serverTiming('app;dur=12'))` |
-| `requestContext()` | `orva/middlewares/request-context` | 聚合 IP / UA / Origin 信息 | `app.use(requestContext())` |
-| `requestSize()` | `orva/middlewares/request-size` | 记录请求大小 | `app.use(requestSize())` |
-| `locale()` | `orva/middlewares/locale` | 解析 `Accept-Language` | `app.use(locale('zh-CN'))` |
-| `requestBodyText()` | `orva/middlewares/request-body-text` | 保存原始 body 文本 | `app.use(requestBodyText())` |
+| `logger()` | `orvajs/middlewares/logger` | 控制台或自定义请求日志 | `app.use(logger({ includeQuery: true }))` |
+| `requestId()` | `orvajs/middlewares/request-id` | 请求关联 ID | `app.use(requestId({ contextKey: 'requestId' }))` |
+| `responseTime()` | `orvajs/middlewares/response-time` | 响应耗时头 | `app.use(responseTime())` |
+| `requestMeta()` | `orvajs/middlewares/request-meta` | 把 method/path/query/headers 写入上下文 | `app.use(requestMeta())` |
+| `userAgent()` | `orvajs/middlewares/user-agent` | 把 `User-Agent` 写入上下文 | `app.use(userAgent())` |
+| `clientIp()` | `orvajs/middlewares/client-ip` | 从代理头提取 IP | `app.use(clientIp())` |
+| `serverTiming()` | `orvajs/middlewares/server-timing` | 输出 `Server-Timing` | `app.use(serverTiming('app;dur=12'))` |
+| `requestContext()` | `orvajs/middlewares/request-context` | 聚合 IP / UA / Origin 信息 | `app.use(requestContext())` |
+| `requestSize()` | `orvajs/middlewares/request-size` | 记录请求大小 | `app.use(requestSize())` |
+| `locale()` | `orvajs/middlewares/locale` | 解析 `Accept-Language` | `app.use(locale('zh-CN'))` |
+| `requestBodyText()` | `orvajs/middlewares/request-body-text` | 保存原始 body 文本 | `app.use(requestBodyText())` |
 
 ### 观测组合示例
 
 ```ts
-import { createOrva } from 'orva';
+import { createOrva } from 'orvajs';
 import {
   clientIp,
   logger,
@@ -181,7 +181,7 @@ import {
   requestId,
   responseTime,
   serverTiming,
-} from 'orva/middlewares';
+} from 'orvajs/middlewares';
 
 const app = createOrva().use(
   requestId(),
@@ -201,31 +201,31 @@ const app = createOrva().use(
 
 | 中间件 | 导入路径 | 适用场景 | 最小示例 |
 | --- | --- | --- | --- |
-| `contentSecurityPolicy()` | `orva/middlewares/content-security-policy` | CSP 与 report-only 策略 | `app.use(contentSecurityPolicy({ directives: { defaultSrc: [\"'self'\"] } }))` |
-| `referrerPolicy()` | `orva/middlewares/referrer-policy` | 控制 Referrer 泄露 | `app.use(referrerPolicy('strict-origin-when-cross-origin'))` |
-| `frameOptions()` | `orva/middlewares/frame-options` | 防止点击劫持 | `app.use(frameOptions('DENY'))` |
-| `xContentTypeOptions()` | `orva/middlewares/x-content-type-options` | 禁止 MIME sniffing | `app.use(xContentTypeOptions())` |
-| `xDnsPrefetchControl()` | `orva/middlewares/x-dns-prefetch-control` | 控制 DNS 预取 | `app.use(xDnsPrefetchControl(false))` |
-| `xDownloadOptions()` | `orva/middlewares/x-download-options` | IE 下载安全头 | `app.use(xDownloadOptions())` |
-| `xPermittedCrossDomainPolicies()` | `orva/middlewares/x-permitted-cross-domain-policies` | 限制 Adobe/Flash 跨域策略 | `app.use(xPermittedCrossDomainPolicies('none'))` |
-| `xXssProtection()` | `orva/middlewares/x-xss-protection` | 兼容旧浏览器 XSS 头 | `app.use(xXssProtection('0'))` |
-| `strictTransportSecurity()` | `orva/middlewares/strict-transport-security` | HSTS | `app.use(strictTransportSecurity({ maxAge: 31536000, preload: true }))` |
-| `permissionsPolicy()` | `orva/middlewares/permissions-policy` | 限制浏览器能力 | `app.use(permissionsPolicy({ directives: { geolocation: [] } }))` |
-| `crossOriginEmbedderPolicy()` | `orva/middlewares/cross-origin-embedder-policy` | COEP | `app.use(crossOriginEmbedderPolicy('require-corp'))` |
-| `crossOriginOpenerPolicy()` | `orva/middlewares/cross-origin-opener-policy` | COOP | `app.use(crossOriginOpenerPolicy('same-origin'))` |
-| `crossOriginResourcePolicy()` | `orva/middlewares/cross-origin-resource-policy` | CORP | `app.use(crossOriginResourcePolicy('same-origin'))` |
-| `originAgentCluster()` | `orva/middlewares/origin-agent-cluster` | Origin-Agent-Cluster 隔离 | `app.use(originAgentCluster('?1'))` |
-| `secureHeaders()` | `orva/middlewares/secure-headers` | 一组合理的安全默认头 | `app.use(secureHeaders())` |
+| `contentSecurityPolicy()` | `orvajs/middlewares/content-security-policy` | CSP 与 report-only 策略 | `app.use(contentSecurityPolicy({ directives: { defaultSrc: [\"'self'\"] } }))` |
+| `referrerPolicy()` | `orvajs/middlewares/referrer-policy` | 控制 Referrer 泄露 | `app.use(referrerPolicy('strict-origin-when-cross-origin'))` |
+| `frameOptions()` | `orvajs/middlewares/frame-options` | 防止点击劫持 | `app.use(frameOptions('DENY'))` |
+| `xContentTypeOptions()` | `orvajs/middlewares/x-content-type-options` | 禁止 MIME sniffing | `app.use(xContentTypeOptions())` |
+| `xDnsPrefetchControl()` | `orvajs/middlewares/x-dns-prefetch-control` | 控制 DNS 预取 | `app.use(xDnsPrefetchControl(false))` |
+| `xDownloadOptions()` | `orvajs/middlewares/x-download-options` | IE 下载安全头 | `app.use(xDownloadOptions())` |
+| `xPermittedCrossDomainPolicies()` | `orvajs/middlewares/x-permitted-cross-domain-policies` | 限制 Adobe/Flash 跨域策略 | `app.use(xPermittedCrossDomainPolicies('none'))` |
+| `xXssProtection()` | `orvajs/middlewares/x-xss-protection` | 兼容旧浏览器 XSS 头 | `app.use(xXssProtection('0'))` |
+| `strictTransportSecurity()` | `orvajs/middlewares/strict-transport-security` | HSTS | `app.use(strictTransportSecurity({ maxAge: 31536000, preload: true }))` |
+| `permissionsPolicy()` | `orvajs/middlewares/permissions-policy` | 限制浏览器能力 | `app.use(permissionsPolicy({ directives: { geolocation: [] } }))` |
+| `crossOriginEmbedderPolicy()` | `orvajs/middlewares/cross-origin-embedder-policy` | COEP | `app.use(crossOriginEmbedderPolicy('require-corp'))` |
+| `crossOriginOpenerPolicy()` | `orvajs/middlewares/cross-origin-opener-policy` | COOP | `app.use(crossOriginOpenerPolicy('same-origin'))` |
+| `crossOriginResourcePolicy()` | `orvajs/middlewares/cross-origin-resource-policy` | CORP | `app.use(crossOriginResourcePolicy('same-origin'))` |
+| `originAgentCluster()` | `orvajs/middlewares/origin-agent-cluster` | Origin-Agent-Cluster 隔离 | `app.use(originAgentCluster('?1'))` |
+| `secureHeaders()` | `orvajs/middlewares/secure-headers` | 一组合理的安全默认头 | `app.use(secureHeaders())` |
 
 ### 安全头组合示例
 
 ```ts
-import { createOrva } from 'orva';
+import { createOrva } from 'orvajs';
 import {
   contentSecurityPolicy,
   secureHeaders,
   strictTransportSecurity,
-} from 'orva/middlewares';
+} from 'orvajs/middlewares';
 
 const app = createOrva().use(
   secureHeaders(),
@@ -252,14 +252,14 @@ const app = createOrva().use(
 
 | 中间件 | 导入路径 | 适用场景 | 最小示例 |
 | --- | --- | --- | --- |
-| `serveStatic()` | `orva/middlewares/serve-static` | 静态文件、manifest、SPA fallback | `app.get('/assets/*', serveStatic({ root: 'public', prefix: '/assets', etag: true }))` |
-| `compress()` | `orva/middlewares/compress` | Brotli / gzip / deflate 压缩 | `app.use(compress({ threshold: 1024, encodings: ['br', 'gzip'] }))` |
+| `serveStatic()` | `orvajs/middlewares/serve-static` | 静态文件、manifest、SPA fallback | `app.get('/assets/*', serveStatic({ root: 'public', prefix: '/assets', etag: true }))` |
+| `compress()` | `orvajs/middlewares/compress` | Brotli / gzip / deflate 压缩 | `app.use(compress({ threshold: 1024, encodings: ['br', 'gzip'] }))` |
 
 ### 静态资源组合示例
 
 ```ts
-import { createOrva } from 'orva';
-import { cacheControl, compress, etag, serveStatic } from 'orva/middlewares';
+import { createOrva } from 'orvajs';
+import { cacheControl, compress, etag, serveStatic } from 'orvajs/middlewares';
 
 const app = createOrva()
   .use(compress({ threshold: 1024, encodings: ['br', 'gzip'] }), cacheControl('public, max-age=600'), etag())
@@ -283,16 +283,16 @@ const app = createOrva()
 
 | 工具 | 导入路径 | 适用场景 | 最小示例 |
 | --- | --- | --- | --- |
-| `getCookie()` | `orva/middlewares/cookie` | 从请求里读单个 cookie | `const session = getCookie(request, 'session')` |
-| `parseCookieHeader()` | `orva/middlewares/cookie` | 解析整条 `cookie` header | `const cookies = parseCookieHeader(request.headers.get('cookie'))` |
-| `serializeCookie()` | `orva/middlewares/cookie` | 生成 `Set-Cookie` | `serializeCookie('theme', 'dark', { path: '/', httpOnly: true })` |
-| `serializeDeleteCookie()` | `orva/middlewares/cookie` | 生成删除 cookie 的 header 值 | `serializeDeleteCookie('session', { path: '/' })` |
+| `getCookie()` | `orvajs/middlewares/cookie` | 从请求里读单个 cookie | `const session = getCookie(request, 'session')` |
+| `parseCookieHeader()` | `orvajs/middlewares/cookie` | 解析整条 `cookie` header | `const cookies = parseCookieHeader(request.headers.get('cookie'))` |
+| `serializeCookie()` | `orvajs/middlewares/cookie` | 生成 `Set-Cookie` | `serializeCookie('theme', 'dark', { path: '/', httpOnly: true })` |
+| `serializeDeleteCookie()` | `orvajs/middlewares/cookie` | 生成删除 cookie 的 header 值 | `serializeDeleteCookie('session', { path: '/' })` |
 
 ### Cookie 组合示例
 
 ```ts
-import { defineMiddleware } from 'orva';
-import { getCookie, serializeCookie, serializeDeleteCookie } from 'orva/middlewares/cookie';
+import { defineMiddleware } from 'orvajs';
+import { getCookie, serializeCookie, serializeDeleteCookie } from 'orvajs/middlewares/cookie';
 
 export const sessionCookies = defineMiddleware(async (c, next) => {
   const session = getCookie(c.req, 'session');
@@ -322,7 +322,7 @@ export function logoutHeaders(): Headers {
 如果你只是想先拿到一套稳妥的默认栈，最短路径仍然是：
 
 ```ts
-import { createOrva } from 'orva';
+import { createOrva } from 'orvajs';
 import {
   bodyLimit,
   cors,
@@ -330,7 +330,7 @@ import {
   requestId,
   responseTime,
   secureHeaders,
-} from 'orva/middlewares';
+} from 'orvajs/middlewares';
 
 const app = createOrva().use(
   requestId(),

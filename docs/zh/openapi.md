@@ -1,14 +1,14 @@
 # OpenAPI
 
-`orva/openapi` 提供的是一套“从路由出发”的文档生成能力，而不是单独维护一份 YAML。
+`orvajs/openapi` 提供的是一套“从路由出发”的文档生成能力，而不是单独维护一份 YAML。
 
 ## 最小示例
 
 ```ts
 import { z } from 'zod';
-import { createOrva } from 'orva';
-import { zodValidator } from 'orva/validator/zod';
-import { createOpenAPIDocument, describeRoute } from 'orva/openapi';
+import { createOrva } from 'orvajs';
+import { zodValidator } from 'orvajs/validator/zod';
+import { createOpenAPIDocument, describeRoute } from 'orvajs/openapi';
 
 const userSchema = z.object({
   id: z.string(),
@@ -64,7 +64,7 @@ const document = createOpenAPIDocument(app, {
 
 ## 组件化 helper
 
-为了把文档站和 API 网关常用的 `components.*` 补齐，`orva/openapi` 提供了统一 helper API：
+为了把文档站和 API 网关常用的 `components.*` 补齐，`orvajs/openapi` 提供了统一 helper API：
 
 - `defineParameter()`
 - `defineRequestBody()`
@@ -79,7 +79,7 @@ const document = createOpenAPIDocument(app, {
 ### 复用安全方案
 
 ```ts
-import { defineSecurityScheme, requireSecurity } from 'orva/openapi';
+import { defineSecurityScheme, requireSecurity } from 'orvajs/openapi';
 
 const bearer = defineSecurityScheme('BearerAuth', {
   type: 'http',

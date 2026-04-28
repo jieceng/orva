@@ -12,8 +12,8 @@ In `orva`, `app.use()` is responsible for:
 - providing indirect metadata sources for OpenAPI and security contracts
 
 ```ts
-import { createOrva, defineMiddleware } from 'orva';
-import { validator } from 'orva/validator';
+import { createOrva, defineMiddleware } from 'orvajs';
+import { validator } from 'orvajs/validator';
 
 const session = defineMiddleware<{ session: { id: string; role: string } }>(async (c, next) => {
   c.set('session', { id: 'u_1', role: 'admin' });
@@ -41,7 +41,7 @@ app.get('/me', (c) => {
 Good for internal apps, prototypes, and small-to-medium services:
 
 ```ts
-import { cors, secureHeaders, requestId } from 'orva/middlewares';
+import { cors, secureHeaders, requestId } from 'orvajs/middlewares';
 ```
 
 ### Granular imports
@@ -49,9 +49,9 @@ import { cors, secureHeaders, requestId } from 'orva/middlewares';
 Better for npm packages, templates, shared platform code, and tree-shaking-sensitive projects:
 
 ```ts
-import { cors } from 'orva/middlewares/cors';
-import { secureHeaders } from 'orva/middlewares/secure-headers';
-import { requestId } from 'orva/middlewares/request-id';
+import { cors } from 'orvajs/middlewares/cors';
+import { secureHeaders } from 'orvajs/middlewares/secure-headers';
+import { requestId } from 'orvajs/middlewares/request-id';
 ```
 
 <OrvaImportPlayground />
@@ -66,7 +66,7 @@ import {
   requestId,
   responseTime,
   secureHeaders,
-} from 'orva/middlewares';
+} from 'orvajs/middlewares';
 
 app.use(
   requestId(),
@@ -89,8 +89,8 @@ Then add more as needed:
 ## A more complete API entry example
 
 ```ts
-import { createOrva } from 'orva';
-import { zodValidator } from 'orva/validator/zod';
+import { createOrva } from 'orvajs';
+import { zodValidator } from 'orvajs/validator/zod';
 import {
   basicAuth,
   bodyLimit,
@@ -98,7 +98,7 @@ import {
   requestId,
   responseTime,
   secureHeaders,
-} from 'orva/middlewares';
+} from 'orvajs/middlewares';
 import { z } from 'zod';
 
 const app = createOrva()
@@ -167,7 +167,7 @@ app.use(async (c, next) => {
 - Put reusable cross-service contracts onto the validator / OpenAPI / RPC path when possible.
 - Do not import adapters, RPC, or middleware from the root entry.
 - Keep middleware factories side-effect free and config-driven where possible.
-- For published ecosystem packages, prefer `orva/middlewares/*` submodule paths.
+- For published ecosystem packages, prefer `orvajs/middlewares/*` submodule paths.
 - Keep static assets, compression, and cache headers at the edge or boundary layer instead of scattering them into business handlers.
 
 Next, continue with [Testing and Quality](/guide/testing) and [Deployment and Runtimes](/guide/deployment).

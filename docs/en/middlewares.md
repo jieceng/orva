@@ -5,13 +5,13 @@
 ## Import styles
 
 ```ts
-import { cors, requestId, secureHeaders } from 'orva/middlewares';
+import { cors, requestId, secureHeaders } from 'orvajs/middlewares';
 ```
 
 ```ts
-import { cors } from 'orva/middlewares/cors';
-import { requestId } from 'orva/middlewares/request-id';
-import { secureHeaders } from 'orva/middlewares/secure-headers';
+import { cors } from 'orvajs/middlewares/cors';
+import { requestId } from 'orvajs/middlewares/request-id';
+import { secureHeaders } from 'orvajs/middlewares/secure-headers';
 ```
 
 Use subpath imports for libraries, templates and published infrastructure packages.

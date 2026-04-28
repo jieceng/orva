@@ -20,8 +20,8 @@
 ## 基础用法
 
 ```ts
-import { createOrva } from 'orva';
-import { validator } from 'orva/validator';
+import { createOrva } from 'orvajs';
+import { validator } from 'orvajs/validator';
 
 const app = createOrva().post(
   '/users',
@@ -73,8 +73,8 @@ validator('json', parseBody, {
 
 ```ts
 import { z } from 'zod';
-import { createOrva } from 'orva';
-import { zodValidator } from 'orva/validator/zod';
+import { createOrva } from 'orvajs';
+import { zodValidator } from 'orvajs/validator/zod';
 
 const createUserSchema = z.object({
   name: z.string().min(1),

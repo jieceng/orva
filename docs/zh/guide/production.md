@@ -12,8 +12,8 @@
 - OpenAPI / 安全元数据的间接来源
 
 ```ts
-import { createOrva, defineMiddleware } from 'orva';
-import { validator } from 'orva/validator';
+import { createOrva, defineMiddleware } from 'orvajs';
+import { validator } from 'orvajs/validator';
 
 const session = defineMiddleware<{ session: { id: string; role: string } }>(async (c, next) => {
   c.set('session', { id: 'u_1', role: 'admin' });
@@ -41,7 +41,7 @@ app.get('/me', (c) => {
 适合内部项目、原型或中小型应用：
 
 ```ts
-import { cors, secureHeaders, requestId } from 'orva/middlewares';
+import { cors, secureHeaders, requestId } from 'orvajs/middlewares';
 ```
 
 ### 细粒度导入
@@ -49,9 +49,9 @@ import { cors, secureHeaders, requestId } from 'orva/middlewares';
 适合 npm 包、模板仓库、共享基建和对 tree-shaking 敏感的项目：
 
 ```ts
-import { cors } from 'orva/middlewares/cors';
-import { secureHeaders } from 'orva/middlewares/secure-headers';
-import { requestId } from 'orva/middlewares/request-id';
+import { cors } from 'orvajs/middlewares/cors';
+import { secureHeaders } from 'orvajs/middlewares/secure-headers';
+import { requestId } from 'orvajs/middlewares/request-id';
 ```
 
 <OrvaImportPlayground />
@@ -66,7 +66,7 @@ import {
   requestId,
   responseTime,
   secureHeaders,
-} from 'orva/middlewares';
+} from 'orvajs/middlewares';
 
 app.use(
   requestId(),
@@ -89,8 +89,8 @@ app.use(
 ## 一个更完整的 API 入口示例
 
 ```ts
-import { createOrva } from 'orva';
-import { zodValidator } from 'orva/validator/zod';
+import { createOrva } from 'orvajs';
+import { zodValidator } from 'orvajs/validator/zod';
 import {
   basicAuth,
   bodyLimit,
@@ -98,7 +98,7 @@ import {
   requestId,
   responseTime,
   secureHeaders,
-} from 'orva/middlewares';
+} from 'orvajs/middlewares';
 import { z } from 'zod';
 
 const app = createOrva()
@@ -167,7 +167,7 @@ app.use(async (c, next) => {
 - 所有跨服务可复用契约尽量进入 validator / OpenAPI / RPC 统一链路。
 - 不要从根入口导入 adapters、RPC 或中间件。
 - 中间件工厂优先无副作用、纯配置化。
-- 对外发布的生态包优先使用 `orva/middlewares/*` 子模块路径。
+- 对外发布的生态包优先使用 `orvajs/middlewares/*` 子模块路径。
 - 静态资源、压缩、缓存头一类能力尽量收敛在边界层，不要分散进业务 handler。
 
 下一步建议继续看 [测试与质量](/zh/guide/testing) 和 [部署与运行时](/zh/guide/deployment)。

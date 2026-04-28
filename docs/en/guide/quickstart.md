@@ -5,7 +5,7 @@ The goal of this page is to give you a project shape you can keep building on, n
 ## Install
 
 ```bash
-pnpm add orva
+pnpm add orvajs
 pnpm add -D typescript tsx
 ```
 
@@ -18,8 +18,8 @@ pnpm docs:dev
 ## First service
 
 ```ts
-import { createOrva } from 'orva';
-import { serveNode } from 'orva/adapters/node';
+import { createOrva } from 'orvajs';
+import { serveNode } from 'orvajs/adapters/node';
 
 const app = createOrva();
 
@@ -49,8 +49,8 @@ server.ts
 `src/app.ts`:
 
 ```ts
-import { createOrva } from 'orva';
-import { cors, secureHeaders } from 'orva/middlewares';
+import { createOrva } from 'orvajs';
+import { cors, secureHeaders } from 'orvajs/middlewares';
 import { usersApp } from './routes/users';
 
 export const app = createOrva()
@@ -67,7 +67,7 @@ import {
   requestId,
   responseTime,
   secureHeaders,
-} from 'orva/middlewares';
+} from 'orvajs/middlewares';
 
 export const app = createOrva().use(
   requestId(),
@@ -82,7 +82,7 @@ export const app = createOrva().use(
 
 ```ts
 import { z } from 'zod';
-import { zodValidator } from 'orva/validator/zod';
+import { zodValidator } from 'orvajs/validator/zod';
 
 const createUserSchema = z.object({
   name: z.string().min(1),
@@ -99,8 +99,8 @@ export const app = createOrva().post(
 ## Add OpenAPI and RPC metadata
 
 ```ts
-import { createRPCMetadata } from 'orva/rpc';
-import { createOpenAPIDocument } from 'orva/openapi';
+import { createRPCMetadata } from 'orvajs/rpc';
+import { createOpenAPIDocument } from 'orvajs/openapi';
 
 export const rpcMetadata = createRPCMetadata(app);
 
@@ -117,14 +117,14 @@ export const openapi = createOpenAPIDocument(app, {
 Application code can use aggregate imports:
 
 ```ts
-import { cors, requestId } from 'orva/middlewares';
+import { cors, requestId } from 'orvajs/middlewares';
 ```
 
 Reusable packages and templates should prefer subpaths:
 
 ```ts
-import { cors } from 'orva/middlewares/cors';
-import { requestId } from 'orva/middlewares/request-id';
+import { cors } from 'orvajs/middlewares/cors';
+import { requestId } from 'orvajs/middlewares/request-id';
 ```
 
 <OrvaImportPlayground />

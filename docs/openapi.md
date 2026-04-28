@@ -1,14 +1,14 @@
 # OpenAPI
 
-`orva/openapi` gives you route-first OpenAPI generation instead of a separate hand-maintained YAML file.
+`orvajs/openapi` gives you route-first OpenAPI generation instead of a separate hand-maintained YAML file.
 
 ## Minimal example
 
 ```ts
 import { z } from 'zod';
-import { createOrva } from 'orva';
-import { zodValidator } from 'orva/validator/zod';
-import { createOpenAPIDocument, describeRoute } from 'orva/openapi';
+import { createOrva } from 'orvajs';
+import { zodValidator } from 'orvajs/validator/zod';
+import { createOpenAPIDocument, describeRoute } from 'orvajs/openapi';
 ```
 
 ## Helpers

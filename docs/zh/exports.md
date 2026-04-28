@@ -14,20 +14,20 @@ import {
   type Context,
   type Handler,
   type MiddlewareHandler,
-} from 'orva';
+} from 'orvajs';
 ```
 
 ## Validator
 
 ```ts
-import { validator, getValidatedData, setValidatedData } from 'orva/validator';
-import { zodValidator, zValidator } from 'orva/validator/zod';
+import { validator, getValidatedData, setValidatedData } from 'orvajs/validator';
+import { zodValidator, zValidator } from 'orvajs/validator/zod';
 ```
 
 ## RPC
 
 ```ts
-import { createRPC, createRPCMetadata } from 'orva/rpc';
+import { createRPC, createRPCMetadata } from 'orvajs/rpc';
 ```
 
 ## OpenAPI
@@ -46,33 +46,33 @@ import {
   defineCallback,
   definePathItem,
   requireSecurity,
-} from 'orva/openapi';
+} from 'orvajs/openapi';
 ```
 
 ## Adapters
 
 ```ts
-import { serveNode } from 'orva/adapters/node';
-import { serveDeno } from 'orva/adapters/deno';
-import { serveBun } from 'orva/adapters/bun';
-import { createAWSLambdaHandler } from 'orva/adapters/aws-lambda';
-import { createNetlifyFunctionHandler } from 'orva/adapters/netlify';
-import { createAzureFunctionHandler } from 'orva/adapters/azure';
-import { createCloudflareWorker } from 'orva/adapters/cloudflare';
-import { createAppRouteHandler } from 'orva/adapters/vercel';
+import { serveNode } from 'orvajs/adapters/node';
+import { serveDeno } from 'orvajs/adapters/deno';
+import { serveBun } from 'orvajs/adapters/bun';
+import { createAWSLambdaHandler } from 'orvajs/adapters/aws-lambda';
+import { createNetlifyFunctionHandler } from 'orvajs/adapters/netlify';
+import { createAzureFunctionHandler } from 'orvajs/adapters/azure';
+import { createCloudflareWorker } from 'orvajs/adapters/cloudflare';
+import { createAppRouteHandler } from 'orvajs/adapters/vercel';
 ```
 
 也可以从聚合入口导入：
 
 ```ts
-import { serveNode, serveBun } from 'orva/adapters';
+import { serveNode, serveBun } from 'orvajs/adapters';
 ```
 
 ## Middlewares
 
 ```ts
-import { cors, secureHeaders } from 'orva/middlewares';
-import { cors as corsFactory } from 'orva/middlewares/cors';
+import { cors, secureHeaders } from 'orvajs/middlewares';
+import { cors as corsFactory } from 'orvajs/middlewares/cors';
 ```
 
 ## 建议

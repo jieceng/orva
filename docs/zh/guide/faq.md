@@ -43,7 +43,7 @@
 - RPC 输入推导
 - OpenAPI 参数 / requestBody 约束
 
-那么使用 `orva/validator` 或 `orva/validator/zod` 会更顺手。
+那么使用 `orvajs/validator` 或 `orvajs/validator/zod` 会更顺手。
 
 ## 为什么根入口不导出 RPC、adapters、中间件
 

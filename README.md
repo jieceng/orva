@@ -5,15 +5,15 @@ Lightweight Fetch API web framework with typed middleware, validator, RPC, OpenA
 ## Install
 
 ```bash
-pnpm add orva
+pnpm add orvajs
 ```
 
 ## Quick Start
 
 ```ts
-import { createOrva } from 'orva';
-import { serveNode } from 'orva/adapters/node';
-import { cors, requestId, secureHeaders } from 'orva/middlewares';
+import { createOrva } from 'orvajs';
+import { serveNode } from 'orvajs/adapters/node';
+import { cors, requestId, secureHeaders } from 'orvajs/middlewares';
 
 const app = createOrva()
   .use(requestId(), cors(), secureHeaders())
@@ -24,24 +24,24 @@ serveNode(app, { port: 3000 });
 
 ## Package Structure
 
-The root `orva` entry only exports the framework core.
+The root `orvajs` entry only exports the framework core.
 
 Use subpaths for ecosystem modules:
 
 ```ts
-import { createOrva, defineMiddleware } from 'orva';
-import { validator } from 'orva/validator';
-import { zodValidator } from 'orva/validator/zod';
-import { createRPC } from 'orva/rpc';
-import { createOpenAPIDocument } from 'orva/openapi';
-import { serveNode } from 'orva/adapters/node';
-import { cors } from 'orva/middlewares/cors';
+import { createOrva, defineMiddleware } from 'orvajs';
+import { validator } from 'orvajs/validator';
+import { zodValidator } from 'orvajs/validator/zod';
+import { createRPC } from 'orvajs/rpc';
+import { createOpenAPIDocument } from 'orvajs/openapi';
+import { serveNode } from 'orvajs/adapters/node';
+import { cors } from 'orvajs/middlewares/cors';
 ```
 
 Backward-compatible aliases remain available during migration:
 
 ```ts
-import { Orva, createOrva } from 'orva';
+import { Orva, createOrva } from 'orvajs';
 ```
 
 ## Middleware Imports
@@ -49,15 +49,15 @@ import { Orva, createOrva } from 'orva';
 Aggregate imports are convenient for apps:
 
 ```ts
-import { cors, requestId, secureHeaders } from 'orva/middlewares';
+import { cors, requestId, secureHeaders } from 'orvajs/middlewares';
 ```
 
 Fine-grained imports are better for libraries, templates and tree-shaking-sensitive builds:
 
 ```ts
-import { cors } from 'orva/middlewares/cors';
-import { requestId } from 'orva/middlewares/request-id';
-import { secureHeaders } from 'orva/middlewares/secure-headers';
+import { cors } from 'orvajs/middlewares/cors';
+import { requestId } from 'orvajs/middlewares/request-id';
+import { secureHeaders } from 'orvajs/middlewares/secure-headers';
 ```
 
 ## Typed `app.use()`
@@ -65,8 +65,8 @@ import { secureHeaders } from 'orva/middlewares/secure-headers';
 You can accumulate route-visible types through `app.use()` with `defineMiddleware()` and validator middleware:
 
 ```ts
-import { createOrva, defineMiddleware } from 'orva';
-import { validator } from 'orva/validator';
+import { createOrva, defineMiddleware } from 'orvajs';
+import { validator } from 'orvajs/validator';
 
 const session = defineMiddleware<{ session: string }>(async (c, next) => {
   c.set('session', 'session-1');

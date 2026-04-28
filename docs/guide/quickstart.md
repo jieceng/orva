@@ -5,11 +5,11 @@ The goal of this page is not just to return a `Hello World`, but to give you a p
 ## Install
 
 ```bash
-pnpm add orva
+pnpm add orvajs
 pnpm add -D typescript tsx
 ```
 
-The published `orva` package only includes `dist`, `README.md`, and `LICENSE`. If you want to run the docs site locally, clone the full repository first:
+The published `orvajs` package only includes `dist`, `README.md`, and `LICENSE`. If you want to run the docs site locally, clone the full repository first:
 
 ```bash
 git clone https://github.com/jieceng/orva.git
@@ -21,8 +21,8 @@ pnpm docs:dev
 ## First service
 
 ```ts
-import { createOrva } from 'orva';
-import { serveNode } from 'orva/adapters/node';
+import { createOrva } from 'orvajs';
+import { serveNode } from 'orvajs/adapters/node';
 
 const app = createOrva();
 
@@ -57,8 +57,8 @@ server.ts
 `src/app.ts`:
 
 ```ts
-import { createOrva } from 'orva';
-import { cors, secureHeaders } from 'orva/middlewares';
+import { createOrva } from 'orvajs';
+import { cors, secureHeaders } from 'orvajs/middlewares';
 import { usersApp } from './routes/users';
 
 export const app = createOrva()
@@ -69,7 +69,7 @@ export const app = createOrva()
 `src/routes/users.ts`:
 
 ```ts
-import { createOrva } from 'orva';
+import { createOrva } from 'orvajs';
 
 export const usersApp = createOrva()
   .get('/', (c) => c.json([{ id: 'u_1', name: 'Ada' }]))
@@ -79,7 +79,7 @@ export const usersApp = createOrva()
 `server.ts`:
 
 ```ts
-import { serveNode } from 'orva/adapters/node';
+import { serveNode } from 'orvajs/adapters/node';
 import { app } from './src/app';
 
 serveNode(app, { port: 3000 });
@@ -90,14 +90,14 @@ serveNode(app, { port: 3000 });
 Most projects should at least begin with:
 
 ```ts
-import { createOrva } from 'orva';
+import { createOrva } from 'orvajs';
 import {
   bodyLimit,
   cors,
   requestId,
   responseTime,
   secureHeaders,
-} from 'orva/middlewares';
+} from 'orvajs/middlewares';
 
 export const app = createOrva().use(
   requestId(),
@@ -112,8 +112,8 @@ export const app = createOrva().use(
 
 ```ts
 import { z } from 'zod';
-import { createOrva } from 'orva';
-import { zodValidator } from 'orva/validator/zod';
+import { createOrva } from 'orvajs';
+import { zodValidator } from 'orvajs/validator/zod';
 
 const createUserSchema = z.object({
   name: z.string().min(1),
@@ -132,8 +132,8 @@ export const app = createOrva().post(
 The server app stays the same. You add contract exports beside it:
 
 ```ts
-import { createRPCMetadata } from 'orva/rpc';
-import { createOpenAPIDocument } from 'orva/openapi';
+import { createRPCMetadata } from 'orvajs/rpc';
+import { createOpenAPIDocument } from 'orvajs/openapi';
 import { app } from './app';
 
 export const rpcMetadata = createRPCMetadata(app);
@@ -151,14 +151,14 @@ export const openapi = createOpenAPIDocument(app, {
 ### Application code
 
 ```ts
-import { cors, requestId } from 'orva/middlewares';
+import { cors, requestId } from 'orvajs/middlewares';
 ```
 
 ### Published packages, templates, and platform tooling
 
 ```ts
-import { cors } from 'orva/middlewares/cors';
-import { requestId } from 'orva/middlewares/request-id';
+import { cors } from 'orvajs/middlewares/cors';
+import { requestId } from 'orvajs/middlewares/request-id';
 ```
 
 <OrvaImportPlayground />

@@ -1,11 +1,11 @@
 # RPC
 
-`orva/rpc` builds a typed client from your server-side routes instead of forcing you to redefine the contract elsewhere.
+`orvajs/rpc` builds a typed client from your server-side routes instead of forcing you to redefine the contract elsewhere.
 
 ## Create a client
 
 ```ts
-import { createRPC } from 'orva/rpc';
+import { createRPC } from 'orvajs/rpc';
 import type { app } from '../src/app';
 
 const client = createRPC<typeof app>({

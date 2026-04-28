@@ -38,18 +38,18 @@
 ### 1. 根入口只导出核心
 
 ```ts
-import { createOrva, defineMiddleware } from 'orva';
+import { createOrva, defineMiddleware } from 'orvajs';
 ```
 
 非核心能力统一走子模块：
 
 ```ts
-import { createRPC } from 'orva/rpc';
-import { serveNode } from 'orva/adapters/node';
-import { cors } from 'orva/middlewares/cors';
-import { validator } from 'orva/validator';
-import { zodValidator } from 'orva/validator/zod';
-import { createOpenAPIDocument } from 'orva/openapi';
+import { createRPC } from 'orvajs/rpc';
+import { serveNode } from 'orvajs/adapters/node';
+import { cors } from 'orvajs/middlewares/cors';
+import { validator } from 'orvajs/validator';
+import { zodValidator } from 'orvajs/validator/zod';
+import { createOpenAPIDocument } from 'orvajs/openapi';
 ```
 
 这样做有两个直接好处：
@@ -62,7 +62,7 @@ import { createOpenAPIDocument } from 'orva/openapi';
 `orva` 允许通过 `defineMiddleware()` 和 validator 把类型累积到后续路由中：
 
 ```ts
-import { createOrva, defineMiddleware } from 'orva';
+import { createOrva, defineMiddleware } from 'orvajs';
 
 const session = defineMiddleware<{ session: { userId: string; role: string } }>(async (c, next) => {
   c.set('session', { userId: 'u_1', role: 'admin' });
@@ -101,6 +101,6 @@ const app = createOrva()
 
 - 新项目：先从 [快速开始](/zh/guide/quickstart) 建立一个最小服务。
 - 现有 API 服务：优先接 validator、错误处理和中间件，再补 RPC / OpenAPI。
-- 平台基建：优先采用细粒度子模块路径，如 `orva/middlewares/cors`。
+- 平台基建：优先采用细粒度子模块路径，如 `orvajs/middlewares/cors`。
 
 下一步建议阅读 [快速开始](/zh/guide/quickstart) 和 [中间件与类型累积](/zh/guide/production)。

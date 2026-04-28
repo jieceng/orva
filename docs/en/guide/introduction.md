@@ -30,24 +30,24 @@
 ### 1. The root entry exports only the core
 
 ```ts
-import { createOrva, defineMiddleware } from 'orva';
+import { createOrva, defineMiddleware } from 'orvajs';
 ```
 
 Everything else comes from subpaths:
 
 ```ts
-import { createRPC } from 'orva/rpc';
-import { serveNode } from 'orva/adapters/node';
-import { cors } from 'orva/middlewares/cors';
-import { validator } from 'orva/validator';
-import { zodValidator } from 'orva/validator/zod';
-import { createOpenAPIDocument } from 'orva/openapi';
+import { createRPC } from 'orvajs/rpc';
+import { serveNode } from 'orvajs/adapters/node';
+import { cors } from 'orvajs/middlewares/cors';
+import { validator } from 'orvajs/validator';
+import { zodValidator } from 'orvajs/validator/zod';
+import { createOpenAPIDocument } from 'orvajs/openapi';
 ```
 
 ### 2. Middleware types are part of the contract
 
 ```ts
-import { createOrva, defineMiddleware } from 'orva';
+import { createOrva, defineMiddleware } from 'orvajs';
 
 const session = defineMiddleware<{ session: { userId: string; role: string } }>(async (c, next) => {
   c.set('session', { userId: 'u_1', role: 'admin' });

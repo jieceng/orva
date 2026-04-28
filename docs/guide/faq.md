@@ -43,7 +43,7 @@ But if you want validation results to keep flowing into:
 - RPC input inference
 - OpenAPI parameter and `requestBody` constraints
 
-then `orva/validator` or `orva/validator/zod` will integrate more smoothly.
+then `orvajs/validator` or `orvajs/validator/zod` will integrate more smoothly.
 
 ## Why does the root entry not export RPC, adapters, or middleware?
 

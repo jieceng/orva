@@ -47,7 +47,7 @@ This pattern is especially useful for RPC type inference because the child app r
 ## Route-level middleware
 
 ```ts
-import { basicAuth } from 'orva/middlewares';
+import { basicAuth } from 'orvajs/middlewares';
 
 app.get(
   '/admin',

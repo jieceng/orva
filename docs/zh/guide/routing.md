@@ -47,7 +47,7 @@ const app = createOrva().route('/api', users);
 ## 路由级中间件
 
 ```ts
-import { basicAuth } from 'orva/middlewares';
+import { basicAuth } from 'orvajs/middlewares';
 
 app.get(
   '/admin',

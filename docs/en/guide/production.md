@@ -12,8 +12,8 @@ In `orva`, `app.use()` also carries:
 - metadata that later affects RPC and OpenAPI
 
 ```ts
-import { createOrva, defineMiddleware } from 'orva';
-import { validator } from 'orva/validator';
+import { createOrva, defineMiddleware } from 'orvajs';
+import { validator } from 'orvajs/validator';
 
 const session = defineMiddleware<{ session: { id: string; role: string } }>(async (c, next) => {
   c.set('session', { id: 'u_1', role: 'admin' });
@@ -37,7 +37,7 @@ import {
   requestId,
   responseTime,
   secureHeaders,
-} from 'orva/middlewares';
+} from 'orvajs/middlewares';
 
 app.use(
   requestId(),

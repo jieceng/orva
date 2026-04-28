@@ -16,7 +16,7 @@ One advantage of `orva` is that the app is centered around `fetch(request)`, so 
 ```ts
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { createOrva } from 'orva';
+import { createOrva } from 'orvajs';
 
 test('GET /health returns ok', async () => {
   const app = createOrva().get('/health', (c) => c.json({ ok: true }));
@@ -73,7 +73,7 @@ If you need to assert post-processing behavior, it is usually better to check re
 
 ```ts
 import { z } from 'zod';
-import { zodValidator } from 'orva/validator/zod';
+import { zodValidator } from 'orvajs/validator/zod';
 
 test('validator returns 422 for invalid json', async () => {
   const app = createOrva().post(
@@ -95,8 +95,8 @@ test('validator returns 422 for invalid json', async () => {
 ## Testing RPC and OpenAPI
 
 ```ts
-import { createRPCMetadata } from 'orva/rpc';
-import { createOpenAPIDocument } from 'orva/openapi';
+import { createRPCMetadata } from 'orvajs/rpc';
+import { createOpenAPIDocument } from 'orvajs/openapi';
 
 test('contract metadata can be generated', () => {
   const rpc = createRPCMetadata(app);
@@ -114,7 +114,7 @@ test('contract metadata can be generated', () => {
 When you need to verify Node bridging, streaming responses, or real port behavior, use `serveNode()`:
 
 ```ts
-import { serveNode } from 'orva/adapters/node';
+import { serveNode } from 'orvajs/adapters/node';
 
 test('node adapter serves requests', async () => {
   const app = createOrva().get('/', (c) => c.text('ok'));

@@ -38,18 +38,18 @@ That means it is neither a toy framework focused only on a tiny API surface, nor
 ### 1. The root entry exports only the core
 
 ```ts
-import { createOrva, defineMiddleware } from 'orva';
+import { createOrva, defineMiddleware } from 'orvajs';
 ```
 
 Non-core features come from subpaths:
 
 ```ts
-import { createRPC } from 'orva/rpc';
-import { serveNode } from 'orva/adapters/node';
-import { cors } from 'orva/middlewares/cors';
-import { validator } from 'orva/validator';
-import { zodValidator } from 'orva/validator/zod';
-import { createOpenAPIDocument } from 'orva/openapi';
+import { createRPC } from 'orvajs/rpc';
+import { serveNode } from 'orvajs/adapters/node';
+import { cors } from 'orvajs/middlewares/cors';
+import { validator } from 'orvajs/validator';
+import { zodValidator } from 'orvajs/validator/zod';
+import { createOpenAPIDocument } from 'orvajs/openapi';
 ```
 
 This has two direct benefits:
@@ -62,7 +62,7 @@ This has two direct benefits:
 `orva` lets `defineMiddleware()` and validators accumulate types into downstream routes:
 
 ```ts
-import { createOrva, defineMiddleware } from 'orva';
+import { createOrva, defineMiddleware } from 'orvajs';
 
 const session = defineMiddleware<{ session: { userId: string; role: string } }>(async (c, next) => {
   c.set('session', { userId: 'u_1', role: 'admin' });
@@ -101,6 +101,6 @@ That is one of the main differences between `orva` and lighter routers that stop
 
 - New projects: start with [Quickstart](/guide/quickstart) and ship a minimal service first.
 - Existing API services: add validator, error handling, and middleware first, then layer in RPC / OpenAPI.
-- Platform tooling: prefer granular submodule paths such as `orva/middlewares/cors`.
+- Platform tooling: prefer granular submodule paths such as `orvajs/middlewares/cors`.
 
 Next, read [Quickstart](/guide/quickstart) and [Middleware and Type Accumulation](/guide/production).

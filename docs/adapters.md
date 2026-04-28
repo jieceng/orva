@@ -16,8 +16,8 @@
 ## Node.js
 
 ```ts
-import { createOrva } from 'orva';
-import { serveNode } from 'orva/adapters/node';
+import { createOrva } from 'orvajs';
+import { serveNode } from 'orvajs/adapters/node';
 
 const app = createOrva().get('/', (c) => c.text('hello from node'));
 

@@ -18,8 +18,8 @@ The validator layer in `orva` does two things:
 ## Basic example
 
 ```ts
-import { createOrva } from 'orva';
-import { validator } from 'orva/validator';
+import { createOrva } from 'orvajs';
+import { validator } from 'orvajs/validator';
 
 const app = createOrva().post(
   '/users',

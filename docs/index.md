@@ -42,9 +42,9 @@ features:
 ## Minimal runnable example
 
 ```ts
-import { createOrva } from 'orva';
-import { serveNode } from 'orva/adapters/node';
-import { cors, requestId, secureHeaders } from 'orva/middlewares';
+import { createOrva } from 'orvajs';
+import { serveNode } from 'orvajs/adapters/node';
+import { cors, requestId, secureHeaders } from 'orvajs/middlewares';
 
 const app = createOrva()
   .use(requestId(), cors(), secureHeaders())
@@ -79,7 +79,7 @@ serveNode(app, { port: 3000 });
 | --- | --- |
 | Core | `createOrva()` `group()` `route()` `onError()` `notFound()` |
 | Context | `req` `params` `query` `cookie` `after()` `text/json/html/stream/sse/download` |
-| Middleware | 50+ middleware exports and `orva/middlewares/*` subpaths |
+| Middleware | 50+ middleware exports and `orvajs/middlewares/*` subpaths |
 | Validation | built-in `validator()` and `zodValidator()` |
 | Contracts | `createRPC()` `createRPCMetadata()` `createOpenAPIDocument()` |
 | Adapters | Node / Bun / Deno / Cloudflare / Vercel / Netlify / Azure / AWS Lambda |

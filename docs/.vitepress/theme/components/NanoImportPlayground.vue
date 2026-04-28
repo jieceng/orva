@@ -6,10 +6,10 @@ const mode = ref<'bundle' | 'subpath'>('subpath');
 const { lang } = useData();
 
 const snippets = {
-  bundle: `import { cors, requestId, secureHeaders } from 'orva/middlewares';`,
-  subpath: `import { cors } from 'orva/middlewares/cors';
-import { requestId } from 'orva/middlewares/request-id';
-import { secureHeaders } from 'orva/middlewares/secure-headers';`,
+  bundle: `import { cors, requestId, secureHeaders } from 'orvajs/middlewares';`,
+  subpath: `import { cors } from 'orvajs/middlewares/cors';
+import { requestId } from 'orvajs/middlewares/request-id';
+import { secureHeaders } from 'orvajs/middlewares/secure-headers';`,
 } as const;
 
 const copy = {

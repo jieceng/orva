@@ -16,7 +16,7 @@ Because `orva` apps are centered on `fetch(request)`, many tests do not need a r
 ```ts
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { createOrva } from 'orva';
+import { createOrva } from 'orvajs';
 
 test('GET /health returns ok', async () => {
   const app = createOrva().get('/health', (c) => c.json({ ok: true }));

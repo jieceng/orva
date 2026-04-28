@@ -18,8 +18,8 @@
 ## Node.js
 
 ```ts
-import { createOrva } from 'orva';
-import { serveNode } from 'orva/adapters/node';
+import { createOrva } from 'orvajs';
+import { serveNode } from 'orvajs/adapters/node';
 
 const app = createOrva().get('/', (c) => c.text('hello from node'));
 
@@ -29,8 +29,8 @@ serveNode(app, { port: 3000 });
 ## Deno
 
 ```ts
-import { createOrva } from 'orva';
-import { serveDeno } from 'orva/adapters/deno';
+import { createOrva } from 'orvajs';
+import { serveDeno } from 'orvajs/adapters/deno';
 
 const app = createOrva().get('/', (c) => c.text('hello from deno'));
 
@@ -40,8 +40,8 @@ serveDeno(app, { port: 8000 });
 ## Bun
 
 ```ts
-import { createOrva } from 'orva';
-import { serveBun } from 'orva/adapters/bun';
+import { createOrva } from 'orvajs';
+import { serveBun } from 'orvajs/adapters/bun';
 
 const app = createOrva().get('/', (c) => c.text('hello from bun'));
 
@@ -51,11 +51,11 @@ serveBun(app, { port: 3000, development: true });
 ## Cloudflare Workers / Pages
 
 ```ts
-import { createOrva } from 'orva';
+import { createOrva } from 'orvajs';
 import {
   createCloudflareWorker,
   createPagesFunction,
-} from 'orva/adapters/cloudflare';
+} from 'orvajs/adapters/cloudflare';
 
 const app = createOrva().get('/', (c) => c.text('hello from cloudflare'));
 
@@ -66,15 +66,15 @@ export const onRequest = createPagesFunction(app);
 如果你只需要默认 worker 形式，也可以直接使用：
 
 ```ts
-import { createDefaultWorker } from 'orva/adapters/cloudflare';
+import { createDefaultWorker } from 'orvajs/adapters/cloudflare';
 export default createDefaultWorker(app);
 ```
 
 ## AWS Lambda
 
 ```ts
-import { createOrva } from 'orva';
-import { createAWSLambdaHandler } from 'orva/adapters/aws-lambda';
+import { createOrva } from 'orvajs';
+import { createAWSLambdaHandler } from 'orvajs/adapters/aws-lambda';
 
 const app = createOrva().post('/echo', async (c) => c.json(await c.req.json()));
 
@@ -86,11 +86,11 @@ export const handler = createAWSLambdaHandler(app, {
 ## Netlify
 
 ```ts
-import { createOrva } from 'orva';
+import { createOrva } from 'orvajs';
 import {
   createNetlifyFunctionHandler,
   createNetlifyEdgeHandler,
-} from 'orva/adapters/netlify';
+} from 'orvajs/adapters/netlify';
 
 const app = createOrva().get('/', (c) => c.text('hello from netlify'));
 
@@ -101,8 +101,8 @@ export default createNetlifyEdgeHandler(app);
 ## Azure Functions
 
 ```ts
-import { createOrva } from 'orva';
-import { createAzureFunctionHandler } from 'orva/adapters/azure';
+import { createOrva } from 'orvajs';
+import { createAzureFunctionHandler } from 'orvajs/adapters/azure';
 
 const app = createOrva().get('/', (c) => c.text('hello from azure'));
 
@@ -112,15 +112,15 @@ export default createAzureFunctionHandler(app);
 如果你的宿主已经给了标准 `Request`，可用：
 
 ```ts
-import { createAzureFetchHandler } from 'orva/adapters/azure';
+import { createAzureFetchHandler } from 'orvajs/adapters/azure';
 export default createAzureFetchHandler(app);
 ```
 
 ## Vercel
 
 ```ts
-import { createOrva } from 'orva';
-import { createAppRouteHandler } from 'orva/adapters/vercel';
+import { createOrva } from 'orvajs';
+import { createAppRouteHandler } from 'orvajs/adapters/vercel';
 
 const app = createOrva().get('/api/hello', (c) => c.json({ ok: true }));
 

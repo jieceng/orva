@@ -5,15 +5,15 @@
 ## Core
 
 ```ts
-import { Orva, createOrva, defineMiddleware } from 'orva';
+import { Orva, createOrva, defineMiddleware } from 'orvajs';
 ```
 
 ## Subpaths
 
 ```ts
-import { validator } from 'orva/validator';
-import { createRPC } from 'orva/rpc';
-import { createOpenAPIDocument } from 'orva/openapi';
-import { serveNode } from 'orva/adapters/node';
-import { cors } from 'orva/middlewares/cors';
+import { validator } from 'orvajs/validator';
+import { createRPC } from 'orvajs/rpc';
+import { createOpenAPIDocument } from 'orvajs/openapi';
+import { serveNode } from 'orvajs/adapters/node';
+import { cors } from 'orvajs/middlewares/cors';
 ```

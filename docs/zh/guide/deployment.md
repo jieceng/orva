@@ -20,8 +20,8 @@
 ## Node.js 部署
 
 ```ts
-import { createOrva } from 'orva';
-import { serveNode } from 'orva/adapters/node';
+import { createOrva } from 'orvajs';
+import { serveNode } from 'orvajs/adapters/node';
 
 const app = createOrva().get('/health', (c) => c.json({ ok: true }));
 
@@ -39,8 +39,8 @@ serveNode(app, { port: Number(process.env.PORT ?? 3000) });
 保持 `app` 独立，平台入口只负责接线：
 
 ```ts
-import { createOrva } from 'orva';
-import { createCloudflareWorker } from 'orva/adapters/cloudflare';
+import { createOrva } from 'orvajs';
+import { createCloudflareWorker } from 'orvajs/adapters/cloudflare';
 
 export const app = createOrva().get('/health', (c) => c.json({ ok: true }));
 
@@ -69,7 +69,7 @@ export const app = createOrva()
 
 ```ts
 // platform/node.ts
-import { serveNode } from 'orva/adapters/node';
+import { serveNode } from 'orvajs/adapters/node';
 import { app } from '../src/app';
 
 serveNode(app, { port: 3000 });
@@ -77,7 +77,7 @@ serveNode(app, { port: 3000 });
 
 ```ts
 // platform/vercel.ts
-import { createAppRouteHandler } from 'orva/adapters/vercel';
+import { createAppRouteHandler } from 'orvajs/adapters/vercel';
 import { app } from '../src/app';
 
 export const { GET, POST, PUT, DELETE, PATCH } = createAppRouteHandler(app);

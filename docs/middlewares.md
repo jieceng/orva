@@ -9,15 +9,15 @@
 Use aggregate imports in applications:
 
 ```ts
-import { cors, requestId, secureHeaders } from 'orva/middlewares';
+import { cors, requestId, secureHeaders } from 'orvajs/middlewares';
 ```
 
 Use subpath imports in libraries, templates, CLIs, and shared infrastructure packages:
 
 ```ts
-import { cors } from 'orva/middlewares/cors';
-import { requestId } from 'orva/middlewares/request-id';
-import { secureHeaders } from 'orva/middlewares/secure-headers';
+import { cors } from 'orvajs/middlewares/cors';
+import { requestId } from 'orvajs/middlewares/request-id';
+import { secureHeaders } from 'orvajs/middlewares/secure-headers';
 ```
 
 ## Quick picks
@@ -42,15 +42,15 @@ These middlewares all gate access and set `c.get('auth')` / `c.var.auth` style m
 
 | Middleware | Import | Use it for | Example |
 | --- | --- | --- | --- |
-| `basicAuth()` | `orva/middlewares/basic-auth` | Browser prompts, internal tools, admin consoles | `app.use(basicAuth({ users: { admin: 'secret' } }))` |
-| `bearerAuth()` | `orva/middlewares/bearer-auth` | Bearer token APIs and service-to-service auth | `app.use(bearerAuth({ token: ['token-a', 'token-b'] }))` |
-| `apiKeyAuth()` | `orva/middlewares/api-key-auth` | Header or query based API keys | `app.use(apiKeyAuth({ key: ['k1'], headerName: 'X-API-Key' }))` |
+| `basicAuth()` | `orvajs/middlewares/basic-auth` | Browser prompts, internal tools, admin consoles | `app.use(basicAuth({ users: { admin: 'secret' } }))` |
+| `bearerAuth()` | `orvajs/middlewares/bearer-auth` | Bearer token APIs and service-to-service auth | `app.use(bearerAuth({ token: ['token-a', 'token-b'] }))` |
+| `apiKeyAuth()` | `orvajs/middlewares/api-key-auth` | Header or query based API keys | `app.use(apiKeyAuth({ key: ['k1'], headerName: 'X-API-Key' }))` |
 
 ### Authentication recipe
 
 ```ts
-import { createOrva } from 'orva';
-import { basicAuth, bearerAuth, apiKeyAuth } from 'orva/middlewares';
+import { createOrva } from 'orvajs';
+import { basicAuth, bearerAuth, apiKeyAuth } from 'orvajs/middlewares';
 
 const app = createOrva()
   .get('/admin', basicAuth({ users: { admin: 'secret' } }), (c) => c.text('ok'))
@@ -66,25 +66,25 @@ Use these when the request should be rejected before the main handler runs.
 
 | Middleware | Import | Use it for | Example |
 | --- | --- | --- | --- |
-| `allowMethods()` | `orva/middlewares/allow-methods` | Allow only a small method set | `app.use(allowMethods(['GET', 'POST']))` |
-| `blockMethods()` | `orva/middlewares/block-methods` | Block dangerous or unsupported methods | `app.use(blockMethods(['TRACE', 'CONNECT']))` |
-| `requireHeader()` | `orva/middlewares/require-header` | Require one or more headers | `app.use(requireHeader(['x-tenant-id']))` |
-| `requireQuery()` | `orva/middlewares/require-query` | Require one or more query params | `app.use(requireQuery(['page']))` |
-| `requireJson()` | `orva/middlewares/require-json` | Enforce `application/json` on write methods | `app.use(requireJson())` |
-| `requireAccept()` | `orva/middlewares/require-accept` | Enforce `Accept` negotiation | `app.use(requireAccept(['application/json']))` |
-| `bodyLimit()` | `orva/middlewares/body-limit` | Reject oversized request bodies | `app.use(bodyLimit({ maxBytes: 1024 * 1024 }))` |
-| `timeout()` | `orva/middlewares/timeout` | Fail slow requests with a timeout response | `app.use(timeout({ ms: 5_000 }))` |
-| `rateLimit()` | `orva/middlewares/rate-limit` | Protect endpoints against bursts and abuse | `app.use(rateLimit({ limit: 100, windowMs: 60_000 }))` |
-| `hostAllowlist()` | `orva/middlewares/host-allowlist` | Restrict valid hosts | `app.use(hostAllowlist(['api.example.com']))` |
-| `blockUserAgents()` | `orva/middlewares/block-user-agents` | Block bots or broken clients by pattern | `app.use(blockUserAgents([/curl/i, 'BadBot']))` |
-| `requireOrigin()` | `orva/middlewares/require-origin` | Restrict browser origins | `app.use(requireOrigin(['https://app.example.com']))` |
-| `idempotencyKey()` | `orva/middlewares/idempotency-key` | Require `Idempotency-Key` on mutating endpoints | `app.use(idempotencyKey())` |
-| `csrfOrigin()` | `orva/middlewares/csrf-origin` | CSRF-style origin checks for body-carrying requests | `app.use(csrfOrigin(['https://app.example.com']))` |
+| `allowMethods()` | `orvajs/middlewares/allow-methods` | Allow only a small method set | `app.use(allowMethods(['GET', 'POST']))` |
+| `blockMethods()` | `orvajs/middlewares/block-methods` | Block dangerous or unsupported methods | `app.use(blockMethods(['TRACE', 'CONNECT']))` |
+| `requireHeader()` | `orvajs/middlewares/require-header` | Require one or more headers | `app.use(requireHeader(['x-tenant-id']))` |
+| `requireQuery()` | `orvajs/middlewares/require-query` | Require one or more query params | `app.use(requireQuery(['page']))` |
+| `requireJson()` | `orvajs/middlewares/require-json` | Enforce `application/json` on write methods | `app.use(requireJson())` |
+| `requireAccept()` | `orvajs/middlewares/require-accept` | Enforce `Accept` negotiation | `app.use(requireAccept(['application/json']))` |
+| `bodyLimit()` | `orvajs/middlewares/body-limit` | Reject oversized request bodies | `app.use(bodyLimit({ maxBytes: 1024 * 1024 }))` |
+| `timeout()` | `orvajs/middlewares/timeout` | Fail slow requests with a timeout response | `app.use(timeout({ ms: 5_000 }))` |
+| `rateLimit()` | `orvajs/middlewares/rate-limit` | Protect endpoints against bursts and abuse | `app.use(rateLimit({ limit: 100, windowMs: 60_000 }))` |
+| `hostAllowlist()` | `orvajs/middlewares/host-allowlist` | Restrict valid hosts | `app.use(hostAllowlist(['api.example.com']))` |
+| `blockUserAgents()` | `orvajs/middlewares/block-user-agents` | Block bots or broken clients by pattern | `app.use(blockUserAgents([/curl/i, 'BadBot']))` |
+| `requireOrigin()` | `orvajs/middlewares/require-origin` | Restrict browser origins | `app.use(requireOrigin(['https://app.example.com']))` |
+| `idempotencyKey()` | `orvajs/middlewares/idempotency-key` | Require `Idempotency-Key` on mutating endpoints | `app.use(idempotencyKey())` |
+| `csrfOrigin()` | `orvajs/middlewares/csrf-origin` | CSRF-style origin checks for body-carrying requests | `app.use(csrfOrigin(['https://app.example.com']))` |
 
 ### Guard recipe
 
 ```ts
-import { createOrva } from 'orva';
+import { createOrva } from 'orvajs';
 import {
   allowMethods,
   bodyLimit,
@@ -92,7 +92,7 @@ import {
   rateLimit,
   requireJson,
   requireOrigin,
-} from 'orva/middlewares';
+} from 'orvajs/middlewares';
 
 const app = createOrva().use(
   allowMethods(['GET', 'POST', 'PATCH']),
@@ -112,25 +112,25 @@ These middlewares shape headers, redirects, validators, and response metadata.
 
 | Middleware | Import | Use it for | Example |
 | --- | --- | --- | --- |
-| `poweredBy()` | `orva/middlewares/powered-by` | Add `X-Powered-By` | `app.use(poweredBy('orva'))` |
-| `responseHeaders()` | `orva/middlewares/response-headers` | Append one or more dynamic/static headers | `app.use(responseHeaders({ headers: { 'x-app': 'orva' } }))` |
-| `cacheControl()` | `orva/middlewares/cache-control` | Set cache policy | `app.use(cacheControl('public, max-age=60'))` |
-| `noStore()` | `orva/middlewares/no-store` | Disable caching | `app.use(noStore())` |
-| `vary()` | `orva/middlewares/vary` | Add `Vary` headers | `app.use(vary('Origin', 'Accept-Encoding'))` |
-| `cors()` | `orva/middlewares/cors` | Cross-origin browser access | `app.use(cors({ origin: ['https://app.example.com'], credentials: true }))` |
-| `httpsRedirect()` | `orva/middlewares/https-redirect` | Redirect HTTP traffic to HTTPS | `app.use(httpsRedirect({ status: 308 }))` |
-| `trailingSlash()` | `orva/middlewares/trailing-slash` | Add or remove trailing slashes | `app.use(trailingSlash({ mode: 'remove' }))` |
-| `etag()` | `orva/middlewares/etag` | Add strong ETag validators and 304 support | `app.use(etag())` |
-| `responseTag()` | `orva/middlewares/response-tag` | Stamp a single response header | `app.use(responseTag('x-release', '2026-04'))` |
-| `contentType()` | `orva/middlewares/content-type` | Provide a fallback content type | `app.use(contentType('application/json; charset=utf-8'))` |
-| `checksum()` | `orva/middlewares/checksum` | Add a body hash header | `app.use(checksum('X-Body-SHA1'))` |
-| `responseChecksumTrailer()` | `orva/middlewares/response-checksum-trailer` | Add a digest-style response hash | `app.use(responseChecksumTrailer('Digest'))` |
-| `contentLength()` | `orva/middlewares/content-length` | Compute `Content-Length` when missing | `app.use(contentLength())` |
+| `poweredBy()` | `orvajs/middlewares/powered-by` | Add `X-Powered-By` | `app.use(poweredBy('orva'))` |
+| `responseHeaders()` | `orvajs/middlewares/response-headers` | Append one or more dynamic/static headers | `app.use(responseHeaders({ headers: { 'x-app': 'orva' } }))` |
+| `cacheControl()` | `orvajs/middlewares/cache-control` | Set cache policy | `app.use(cacheControl('public, max-age=60'))` |
+| `noStore()` | `orvajs/middlewares/no-store` | Disable caching | `app.use(noStore())` |
+| `vary()` | `orvajs/middlewares/vary` | Add `Vary` headers | `app.use(vary('Origin', 'Accept-Encoding'))` |
+| `cors()` | `orvajs/middlewares/cors` | Cross-origin browser access | `app.use(cors({ origin: ['https://app.example.com'], credentials: true }))` |
+| `httpsRedirect()` | `orvajs/middlewares/https-redirect` | Redirect HTTP traffic to HTTPS | `app.use(httpsRedirect({ status: 308 }))` |
+| `trailingSlash()` | `orvajs/middlewares/trailing-slash` | Add or remove trailing slashes | `app.use(trailingSlash({ mode: 'remove' }))` |
+| `etag()` | `orvajs/middlewares/etag` | Add strong ETag validators and 304 support | `app.use(etag())` |
+| `responseTag()` | `orvajs/middlewares/response-tag` | Stamp a single response header | `app.use(responseTag('x-release', '2026-04'))` |
+| `contentType()` | `orvajs/middlewares/content-type` | Provide a fallback content type | `app.use(contentType('application/json; charset=utf-8'))` |
+| `checksum()` | `orvajs/middlewares/checksum` | Add a body hash header | `app.use(checksum('X-Body-SHA1'))` |
+| `responseChecksumTrailer()` | `orvajs/middlewares/response-checksum-trailer` | Add a digest-style response hash | `app.use(responseChecksumTrailer('Digest'))` |
+| `contentLength()` | `orvajs/middlewares/content-length` | Compute `Content-Length` when missing | `app.use(contentLength())` |
 
 ### HTTP recipe
 
 ```ts
-import { createOrva } from 'orva';
+import { createOrva } from 'orvajs';
 import {
   cacheControl,
   cors,
@@ -138,7 +138,7 @@ import {
   responseHeaders,
   secureHeaders,
   vary,
-} from 'orva/middlewares';
+} from 'orvajs/middlewares';
 
 const app = createOrva().use(
   cors({ origin: ['https://app.example.com'], credentials: true }),
@@ -158,22 +158,22 @@ These middlewares capture request metadata and write it into response headers or
 
 | Middleware | Import | Use it for | Example |
 | --- | --- | --- | --- |
-| `logger()` | `orva/middlewares/logger` | Console or custom request logging | `app.use(logger({ includeQuery: true }))` |
-| `requestId()` | `orva/middlewares/request-id` | Stable request correlation IDs | `app.use(requestId({ contextKey: 'requestId' }))` |
-| `responseTime()` | `orva/middlewares/response-time` | Add an elapsed-time header | `app.use(responseTime())` |
-| `requestMeta()` | `orva/middlewares/request-meta` | Store method/path/query/headers in context | `app.use(requestMeta())` |
-| `userAgent()` | `orva/middlewares/user-agent` | Store `User-Agent` in context | `app.use(userAgent())` |
-| `clientIp()` | `orva/middlewares/client-ip` | Store client IP from proxy headers | `app.use(clientIp())` |
-| `serverTiming()` | `orva/middlewares/server-timing` | Add `Server-Timing` | `app.use(serverTiming('app;dur=12'))` |
-| `requestContext()` | `orva/middlewares/request-context` | Store combined IP / UA / origin metadata | `app.use(requestContext())` |
-| `requestSize()` | `orva/middlewares/request-size` | Capture request size in bytes | `app.use(requestSize())` |
-| `locale()` | `orva/middlewares/locale` | Parse `Accept-Language` | `app.use(locale('en'))` |
-| `requestBodyText()` | `orva/middlewares/request-body-text` | Store the raw request body text | `app.use(requestBodyText())` |
+| `logger()` | `orvajs/middlewares/logger` | Console or custom request logging | `app.use(logger({ includeQuery: true }))` |
+| `requestId()` | `orvajs/middlewares/request-id` | Stable request correlation IDs | `app.use(requestId({ contextKey: 'requestId' }))` |
+| `responseTime()` | `orvajs/middlewares/response-time` | Add an elapsed-time header | `app.use(responseTime())` |
+| `requestMeta()` | `orvajs/middlewares/request-meta` | Store method/path/query/headers in context | `app.use(requestMeta())` |
+| `userAgent()` | `orvajs/middlewares/user-agent` | Store `User-Agent` in context | `app.use(userAgent())` |
+| `clientIp()` | `orvajs/middlewares/client-ip` | Store client IP from proxy headers | `app.use(clientIp())` |
+| `serverTiming()` | `orvajs/middlewares/server-timing` | Add `Server-Timing` | `app.use(serverTiming('app;dur=12'))` |
+| `requestContext()` | `orvajs/middlewares/request-context` | Store combined IP / UA / origin metadata | `app.use(requestContext())` |
+| `requestSize()` | `orvajs/middlewares/request-size` | Capture request size in bytes | `app.use(requestSize())` |
+| `locale()` | `orvajs/middlewares/locale` | Parse `Accept-Language` | `app.use(locale('en'))` |
+| `requestBodyText()` | `orvajs/middlewares/request-body-text` | Store the raw request body text | `app.use(requestBodyText())` |
 
 ### Observability recipe
 
 ```ts
-import { createOrva } from 'orva';
+import { createOrva } from 'orvajs';
 import {
   clientIp,
   logger,
@@ -181,7 +181,7 @@ import {
   requestId,
   responseTime,
   serverTiming,
-} from 'orva/middlewares';
+} from 'orvajs/middlewares';
 
 const app = createOrva().use(
   requestId(),
@@ -201,31 +201,31 @@ Use `secureHeaders()` for a fast baseline, or compose individual policies when y
 
 | Middleware | Import | Use it for | Example |
 | --- | --- | --- | --- |
-| `contentSecurityPolicy()` | `orva/middlewares/content-security-policy` | CSP and report-only policies | `app.use(contentSecurityPolicy({ directives: { defaultSrc: [\"'self'\"] } }))` |
-| `referrerPolicy()` | `orva/middlewares/referrer-policy` | Referrer leakage control | `app.use(referrerPolicy('strict-origin-when-cross-origin'))` |
-| `frameOptions()` | `orva/middlewares/frame-options` | Clickjacking protection | `app.use(frameOptions('DENY'))` |
-| `xContentTypeOptions()` | `orva/middlewares/x-content-type-options` | MIME sniffing protection | `app.use(xContentTypeOptions())` |
-| `xDnsPrefetchControl()` | `orva/middlewares/x-dns-prefetch-control` | DNS prefetch policy | `app.use(xDnsPrefetchControl(false))` |
-| `xDownloadOptions()` | `orva/middlewares/x-download-options` | IE download safety header | `app.use(xDownloadOptions())` |
-| `xPermittedCrossDomainPolicies()` | `orva/middlewares/x-permitted-cross-domain-policies` | Adobe/Flash cross-domain restrictions | `app.use(xPermittedCrossDomainPolicies('none'))` |
-| `xXssProtection()` | `orva/middlewares/x-xss-protection` | Legacy browser XSS header | `app.use(xXssProtection('0'))` |
-| `strictTransportSecurity()` | `orva/middlewares/strict-transport-security` | HSTS | `app.use(strictTransportSecurity({ maxAge: 31536000, preload: true }))` |
-| `permissionsPolicy()` | `orva/middlewares/permissions-policy` | Restrict browser capabilities | `app.use(permissionsPolicy({ directives: { geolocation: [] } }))` |
-| `crossOriginEmbedderPolicy()` | `orva/middlewares/cross-origin-embedder-policy` | COEP | `app.use(crossOriginEmbedderPolicy('require-corp'))` |
-| `crossOriginOpenerPolicy()` | `orva/middlewares/cross-origin-opener-policy` | COOP | `app.use(crossOriginOpenerPolicy('same-origin'))` |
-| `crossOriginResourcePolicy()` | `orva/middlewares/cross-origin-resource-policy` | CORP | `app.use(crossOriginResourcePolicy('same-origin'))` |
-| `originAgentCluster()` | `orva/middlewares/origin-agent-cluster` | Origin-Agent-Cluster isolation | `app.use(originAgentCluster('?1'))` |
-| `secureHeaders()` | `orva/middlewares/secure-headers` | Sensible security-header defaults | `app.use(secureHeaders())` |
+| `contentSecurityPolicy()` | `orvajs/middlewares/content-security-policy` | CSP and report-only policies | `app.use(contentSecurityPolicy({ directives: { defaultSrc: [\"'self'\"] } }))` |
+| `referrerPolicy()` | `orvajs/middlewares/referrer-policy` | Referrer leakage control | `app.use(referrerPolicy('strict-origin-when-cross-origin'))` |
+| `frameOptions()` | `orvajs/middlewares/frame-options` | Clickjacking protection | `app.use(frameOptions('DENY'))` |
+| `xContentTypeOptions()` | `orvajs/middlewares/x-content-type-options` | MIME sniffing protection | `app.use(xContentTypeOptions())` |
+| `xDnsPrefetchControl()` | `orvajs/middlewares/x-dns-prefetch-control` | DNS prefetch policy | `app.use(xDnsPrefetchControl(false))` |
+| `xDownloadOptions()` | `orvajs/middlewares/x-download-options` | IE download safety header | `app.use(xDownloadOptions())` |
+| `xPermittedCrossDomainPolicies()` | `orvajs/middlewares/x-permitted-cross-domain-policies` | Adobe/Flash cross-domain restrictions | `app.use(xPermittedCrossDomainPolicies('none'))` |
+| `xXssProtection()` | `orvajs/middlewares/x-xss-protection` | Legacy browser XSS header | `app.use(xXssProtection('0'))` |
+| `strictTransportSecurity()` | `orvajs/middlewares/strict-transport-security` | HSTS | `app.use(strictTransportSecurity({ maxAge: 31536000, preload: true }))` |
+| `permissionsPolicy()` | `orvajs/middlewares/permissions-policy` | Restrict browser capabilities | `app.use(permissionsPolicy({ directives: { geolocation: [] } }))` |
+| `crossOriginEmbedderPolicy()` | `orvajs/middlewares/cross-origin-embedder-policy` | COEP | `app.use(crossOriginEmbedderPolicy('require-corp'))` |
+| `crossOriginOpenerPolicy()` | `orvajs/middlewares/cross-origin-opener-policy` | COOP | `app.use(crossOriginOpenerPolicy('same-origin'))` |
+| `crossOriginResourcePolicy()` | `orvajs/middlewares/cross-origin-resource-policy` | CORP | `app.use(crossOriginResourcePolicy('same-origin'))` |
+| `originAgentCluster()` | `orvajs/middlewares/origin-agent-cluster` | Origin-Agent-Cluster isolation | `app.use(originAgentCluster('?1'))` |
+| `secureHeaders()` | `orvajs/middlewares/secure-headers` | Sensible security-header defaults | `app.use(secureHeaders())` |
 
 ### Security recipe
 
 ```ts
-import { createOrva } from 'orva';
+import { createOrva } from 'orvajs';
 import {
   contentSecurityPolicy,
   secureHeaders,
   strictTransportSecurity,
-} from 'orva/middlewares';
+} from 'orvajs/middlewares';
 
 const app = createOrva().use(
   secureHeaders(),
@@ -252,14 +252,14 @@ These are the delivery middlewares most teams want once docs, dashboards, or upl
 
 | Middleware | Import | Use it for | Example |
 | --- | --- | --- | --- |
-| `serveStatic()` | `orva/middlewares/serve-static` | Static files, manifests, SPA fallback | `app.get('/assets/*', serveStatic({ root: 'public', prefix: '/assets', etag: true }))` |
-| `compress()` | `orva/middlewares/compress` | Brotli / gzip / deflate compression | `app.use(compress({ threshold: 1024, encodings: ['br', 'gzip'] }))` |
+| `serveStatic()` | `orvajs/middlewares/serve-static` | Static files, manifests, SPA fallback | `app.get('/assets/*', serveStatic({ root: 'public', prefix: '/assets', etag: true }))` |
+| `compress()` | `orvajs/middlewares/compress` | Brotli / gzip / deflate compression | `app.use(compress({ threshold: 1024, encodings: ['br', 'gzip'] }))` |
 
 ### Asset delivery recipe
 
 ```ts
-import { createOrva } from 'orva';
-import { cacheControl, compress, etag, serveStatic } from 'orva/middlewares';
+import { createOrva } from 'orvajs';
+import { cacheControl, compress, etag, serveStatic } from 'orvajs/middlewares';
 
 const app = createOrva()
   .use(compress({ threshold: 1024, encodings: ['br', 'gzip'] }), cacheControl('public, max-age=600'), etag())
@@ -283,16 +283,16 @@ These are utility exports, not `app.use()` middlewares. Use them inside custom m
 
 | Utility | Import | Use it for | Example |
 | --- | --- | --- | --- |
-| `getCookie()` | `orva/middlewares/cookie` | Read a single cookie from a request | `const session = getCookie(request, 'session')` |
-| `parseCookieHeader()` | `orva/middlewares/cookie` | Parse the full `cookie` header | `const cookies = parseCookieHeader(request.headers.get('cookie'))` |
-| `serializeCookie()` | `orva/middlewares/cookie` | Build a `Set-Cookie` value | `serializeCookie('theme', 'dark', { path: '/', httpOnly: true })` |
-| `serializeDeleteCookie()` | `orva/middlewares/cookie` | Expire and remove cookies | `serializeDeleteCookie('session', { path: '/' })` |
+| `getCookie()` | `orvajs/middlewares/cookie` | Read a single cookie from a request | `const session = getCookie(request, 'session')` |
+| `parseCookieHeader()` | `orvajs/middlewares/cookie` | Parse the full `cookie` header | `const cookies = parseCookieHeader(request.headers.get('cookie'))` |
+| `serializeCookie()` | `orvajs/middlewares/cookie` | Build a `Set-Cookie` value | `serializeCookie('theme', 'dark', { path: '/', httpOnly: true })` |
+| `serializeDeleteCookie()` | `orvajs/middlewares/cookie` | Expire and remove cookies | `serializeDeleteCookie('session', { path: '/' })` |
 
 ### Cookie recipe
 
 ```ts
-import { defineMiddleware } from 'orva';
-import { getCookie, serializeCookie, serializeDeleteCookie } from 'orva/middlewares/cookie';
+import { defineMiddleware } from 'orvajs';
+import { getCookie, serializeCookie, serializeDeleteCookie } from 'orvajs/middlewares/cookie';
 
 export const sessionCookies = defineMiddleware(async (c, next) => {
   const session = getCookie(c.req, 'session');
@@ -322,7 +322,7 @@ export function logoutHeaders(): Headers {
 If you are just getting started, the shortest stable stack is still:
 
 ```ts
-import { createOrva } from 'orva';
+import { createOrva } from 'orvajs';
 import {
   bodyLimit,
   cors,
@@ -330,7 +330,7 @@ import {
   requestId,
   responseTime,
   secureHeaders,
-} from 'orva/middlewares';
+} from 'orvajs/middlewares';
 
 const app = createOrva().use(
   requestId(),
