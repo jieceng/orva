@@ -6,6 +6,7 @@ import {
   type OpenAPIMiddlewareMetadata,
   type OpenAPIOperationMetadata,
   type OperationOutput,
+  type OperationResponseOutputs,
   type RouteRuntimeDefinition,
   type ValidatorContractMetadata,
 } from './metadata.js';
@@ -25,6 +26,18 @@ export type HTTPMethod =
   | (string & {}); // Allow custom method extensions
 
 export type StatusCode = number;
+export type ResponseFormat = 'json' | 'text' | 'html' | 'stream' | 'empty';
+export type TypedResponse<
+  Status extends StatusCode = StatusCode,
+  Body = unknown,
+  Format extends ResponseFormat = ResponseFormat,
+> = Response & {
+  readonly __orvaTypedResponse__?: {
+    readonly status: Status;
+    readonly body: Body;
+    readonly format: Format;
+  };
+};
 
 export interface EnhancedRequest extends Request {
   _jsonCache?: unknown;
@@ -81,13 +94,15 @@ export interface RouteDefinition<
   Method extends string = string,
   Input extends object = {},
   Output = unknown,
-  Operation = unknown
+  Operation = unknown,
+  Responses extends Record<number, unknown> = {}
 > {
   path: Path;
   method: Method;
   input: Input;
   output: Output;
   operation?: Operation;
+  responses?: Responses;
 }
 
 export type RouteRegistry = Record<string, RouteDefinition>;
@@ -124,14 +139,14 @@ export interface Context<
   setCookie: (name: string, value: string, options?: CookieOptions) => void;
   deleteCookie: (name: string, options?: DeleteCookieOptions) => void;
 
-  text: (data: string, status?: StatusCode, headers?: HeadersInit) => Response;
-  json: (data: unknown, status?: StatusCode, headers?: HeadersInit) => Response;
-  html: (data: string, status?: StatusCode, headers?: HeadersInit) => Response;
-  redirect: (url: string | URL, status?: 301 | 302 | 303 | 307 | 308) => Response;
+  text: <const Status extends StatusCode = 200>(data: string, status?: Status, headers?: HeadersInit) => TypedResponse<Status, string, 'text'>;
+  json: <Body, const Status extends StatusCode = 200>(data: Body, status?: Status, headers?: HeadersInit) => TypedResponse<Status, Body, 'json'>;
+  html: <const Status extends StatusCode = 200>(data: string, status?: Status, headers?: HeadersInit) => TypedResponse<Status, string, 'html'>;
+  redirect: <const Status extends 301 | 302 | 303 | 307 | 308 = 302>(url: string | URL, status?: Status) => TypedResponse<Status, null, 'empty'>;
   stream: (stream: ReadableStream | AsyncIterable<unknown> | Iterable<unknown>, status?: StatusCode, headers?: HeadersInit) => Response;
   sse: (stream: ReadableStream | AsyncIterable<unknown> | Iterable<unknown>, status?: StatusCode) => Response;
   download: (stream: ReadableStream | AsyncIterable<unknown> | Iterable<unknown>, filename?: string, status?: StatusCode) => Response;
-  notFound: () => Response;
+  notFound: () => TypedResponse<404, string, 'text'>;
 }
 
 export type Next = () => Promise<void>;
@@ -159,7 +174,7 @@ export type Handler<
   V extends ValidatedData = {}
 > = (
   c: Context<T, V>
-) => Response | Promise<Response>;
+) => Response | TypedResponse<any, any, any> | Promise<Response | TypedResponse<any, any, any>>;
 
 export type ResponseFinalizer<
   T extends object = Record<string, unknown>,
@@ -251,10 +266,39 @@ type MergeOperationMetadata<M extends readonly unknown[]> =
     ? undefined
     : ExtractOperationMetadata<M[number]>;
 
+type TypedResponseMetadata<Response> = Response extends TypedResponse<infer Status, infer Body, infer Format>
+  ? { status: Status; body: Body; format: Format }
+  : never;
+type HandlerResponseMetadata<H extends (...args: any[]) => any> = TypedResponseMetadata<Awaited<ReturnType<H>>>;
+type HandlerResponseMap<H extends (...args: any[]) => any> = [HandlerResponseMetadata<H>] extends [never]
+  ? {}
+  : {
+      [S in HandlerResponseMetadata<H> extends { status: infer Status extends number } ? Status : never]:
+        Extract<HandlerResponseMetadata<H>, { status: S }> extends { body: infer Body } ? Body : never;
+    };
+type RouteResponseMap<Operation, H extends (...args: any[]) => any> =
+  [Operation] extends [undefined]
+    ? HandlerResponseMap<H>
+    : OperationResponseOutputs<Operation>;
+type SuccessStatusKeys<Responses extends Record<number, unknown>> =
+  keyof Responses extends infer Key
+    ? Key extends number
+      ? `${Key}` extends `2${string}` ? Key : never
+      : never
+    : never;
+type RouteOutputFromResponses<Responses extends Record<number, unknown>, Fallback> =
+  [SuccessStatusKeys<Responses>] extends [never]
+    ? Fallback
+    : Responses[SuccessStatusKeys<Responses>];
 type InferRouteOutputFromOperation<Operation> =
   [Operation] extends [undefined]
     ? unknown
     : OperationOutput<Operation>;
+type InferRouteResponses<Operation, H extends (...args: any[]) => any> = RouteResponseMap<Operation, H>;
+type InferRouteOutput<Operation, H extends (...args: any[]) => any> = RouteOutputFromResponses<
+  InferRouteResponses<Operation, H>,
+  InferRouteOutputFromOperation<Operation>
+>;
 
 type ExtractPathParamNames<Path extends string> =
   Path extends `${string}:${infer Param}/${infer Rest}`
@@ -285,8 +329,8 @@ type JoinPaths<Prefix extends string, Path extends string> =
 type PrefixRouteDefinition<
   Prefix extends string,
   Definition
-> = Definition extends RouteDefinition<infer Path extends string, infer Method extends string, infer Input extends object, infer Output, infer Operation>
-  ? RouteDefinition<JoinPaths<Prefix, Path>, Method, Input, Output, Operation>
+> = Definition extends RouteDefinition<infer Path extends string, infer Method extends string, infer Input extends object, infer Output, infer Operation, infer Responses extends Record<number, unknown>>
+  ? RouteDefinition<JoinPaths<Prefix, Path>, Method, Input, Output, Operation, Responses>
   : never;
 type PrefixRouteRegistry<Prefix extends string, Routes extends object> = Simplify<{
   [K in keyof Routes as Routes[K] extends RouteDefinition<infer Path extends string, infer Method extends string, any, any, any>
@@ -969,28 +1013,34 @@ class OrvaContext<T extends object = Record<string, unknown>, V extends Validate
     return this.state?.responseCookies ?? null;
   }
 
-  text(data: string, status = 200, headers?: HeadersInit): Response {
-    return new FastResponse('text', status, data, headers ? createFastHeaders(DEFAULT_TEXT_HEADERS, headers) : DEFAULT_TEXT_HEADERS) as unknown as Response;
+  text<const Status extends StatusCode = 200>(data: string, status = 200 as Status, headers?: HeadersInit): TypedResponse<Status, string, 'text'> {
+    return new FastResponse('text', status, data, headers ? createFastHeaders(DEFAULT_TEXT_HEADERS, headers) : DEFAULT_TEXT_HEADERS) as unknown as TypedResponse<Status, string, 'text'>;
   }
 
-  json(data: unknown, status = 200, headers?: HeadersInit): Response {
-    return new FastResponse('json', status, data, headers ? createFastHeaders(DEFAULT_JSON_HEADERS, headers) : DEFAULT_JSON_HEADERS) as unknown as Response;
+  json<Body, const Status extends StatusCode = 200>(data: Body, status = 200 as Status, headers?: HeadersInit): TypedResponse<Status, Body, 'json'> {
+    return new FastResponse('json', status, data, headers ? createFastHeaders(DEFAULT_JSON_HEADERS, headers) : DEFAULT_JSON_HEADERS) as unknown as TypedResponse<Status, Body, 'json'>;
   }
 
-  html(data: string, status = 200, headers?: HeadersInit): Response {
-    return new FastResponse('text', status, data, headers ? createFastHeaders(DEFAULT_HTML_HEADERS, headers) : DEFAULT_HTML_HEADERS) as unknown as Response;
+  html<const Status extends StatusCode = 200>(data: string, status = 200 as Status, headers?: HeadersInit): TypedResponse<Status, string, 'html'> {
+    return new FastResponse('text', status, data, headers ? createFastHeaders(DEFAULT_HTML_HEADERS, headers) : DEFAULT_HTML_HEADERS) as unknown as TypedResponse<Status, string, 'html'>;
   }
 
-  redirect(url: string | URL, status: 301 | 302 | 303 | 307 | 308 = 302): Response {
-    return new FastResponse('empty', status, null, { Location: url.toString() }) as unknown as Response;
+  redirect<const Status extends 301 | 302 | 303 | 307 | 308 = 302>(url: string | URL, status: Status = 302 as Status): TypedResponse<Status, null, 'empty'> {
+    return new FastResponse('empty', status, null, { Location: url.toString() }) as unknown as TypedResponse<Status, null, 'empty'>;
   }
 
-  stream(stream: ReadableStream | AsyncIterable<unknown> | Iterable<unknown>, status = 200, headers?: HeadersInit): Response {
+  stream<Body extends ReadableStream | AsyncIterable<unknown> | Iterable<unknown>, const Status extends StatusCode = 200>(stream: Body, status = 200 as Status, headers?: HeadersInit): TypedResponse<Status, Body, 'stream'> {
     const readable = stream instanceof ReadableStream ? stream : new ReadableStream({
       async start(controller) {
         try {
-          for await (const chunk of stream) {
-            controller.enqueue(typeof chunk === 'string' ? new TextEncoder().encode(chunk) : chunk as Uint8Array);
+          if (Symbol.asyncIterator in Object(stream)) {
+            for await (const chunk of stream as AsyncIterable<unknown>) {
+              controller.enqueue(typeof chunk === 'string' ? new TextEncoder().encode(chunk) : chunk as Uint8Array);
+            }
+          } else {
+            for (const chunk of stream as Iterable<unknown>) {
+              controller.enqueue(typeof chunk === 'string' ? new TextEncoder().encode(chunk) : chunk as Uint8Array);
+            }
           }
           controller.close();
         } catch (err) {
@@ -1001,22 +1051,22 @@ class OrvaContext<T extends object = Record<string, unknown>, V extends Validate
     return new Response(readable, {
       status,
       headers: createHeaders(DEFAULT_DOWNLOAD_HEADERS, headers),
-    });
+    }) as TypedResponse<Status, Body, 'stream'>;
   }
 
-  sse(stream: ReadableStream | AsyncIterable<unknown> | Iterable<unknown>, status = 200): Response {
+  sse<Body extends ReadableStream | AsyncIterable<unknown> | Iterable<unknown>, const Status extends StatusCode = 200>(stream: Body, status = 200 as Status): TypedResponse<Status, Body, 'stream'> {
     return this.stream(stream, status, DEFAULT_SSE_HEADERS);
   }
 
-  download(stream: ReadableStream | AsyncIterable<unknown> | Iterable<unknown>, filename?: string, status = 200): Response {
+  download<Body extends ReadableStream | AsyncIterable<unknown> | Iterable<unknown>, const Status extends StatusCode = 200>(stream: Body, filename?: string, status = 200 as Status): TypedResponse<Status, Body, 'stream'> {
     return this.stream(stream, status, {
       ...DEFAULT_DOWNLOAD_HEADERS,
       ...(filename ? { 'Content-Disposition': `attachment; filename="${encodeURIComponent(filename)}"` } : {}),
     });
   }
 
-  notFound(): Response {
-    return new FastResponse('text', 404, 'Not Found', DEFAULT_TEXT_HEADERS) as unknown as Response;
+  notFound(): TypedResponse<404, string, 'text'> {
+    return new FastResponse('text', 404, 'Not Found', DEFAULT_TEXT_HEADERS) as unknown as TypedResponse<404, string, 'text'>;
   }
 
   async runPipeline(
@@ -1410,90 +1460,96 @@ export class Orva<
   get<
     Path extends string,
     const M extends readonly MiddlewareHandler<T, any>[],
+    H extends Handler<T, Simplify<V & MergeMiddlewareValidatedData<[...GM, ...M]>>>,
     Operation = MergeOperationMetadata<M>
   >(
     path: Path,
-    ...handlers: [...M, Handler<T, Simplify<V & MergeMiddlewareValidatedData<[...GM, ...M]>>>]
+    ...handlers: [...M, H]
   ): Orva<T, V, Simplify<R & {
-    [K in RouteKey<'GET', Path>]: RouteDefinition<Path, 'GET', RouteInputWithPath<Path, MergeRPCInput<[...GM, ...M]>>, InferRouteOutputFromOperation<Operation>, Operation>;
+    [K in RouteKey<'GET', Path>]: RouteDefinition<Path, 'GET', RouteInputWithPath<Path, MergeRPCInput<[...GM, ...M]>>, InferRouteOutput<Operation, H>, Operation, InferRouteResponses<Operation, H>>;
   }>, GM> {
     return this.addRoute('GET', path, handlers) as unknown as Orva<T, V, Simplify<R & {
-      [K in RouteKey<'GET', Path>]: RouteDefinition<Path, 'GET', RouteInputWithPath<Path, MergeRPCInput<[...GM, ...M]>>, InferRouteOutputFromOperation<Operation>, Operation>;
+      [K in RouteKey<'GET', Path>]: RouteDefinition<Path, 'GET', RouteInputWithPath<Path, MergeRPCInput<[...GM, ...M]>>, InferRouteOutput<Operation, H>, Operation, InferRouteResponses<Operation, H>>;
     }>, GM>;
   }
 
   post<
     Path extends string,
     const M extends readonly MiddlewareHandler<T, any>[],
+    H extends Handler<T, Simplify<V & MergeMiddlewareValidatedData<[...GM, ...M]>>>,
     Operation = MergeOperationMetadata<M>
   >(
     path: Path,
-    ...handlers: [...M, Handler<T, Simplify<V & MergeMiddlewareValidatedData<[...GM, ...M]>>>]
+    ...handlers: [...M, H]
   ): Orva<T, V, Simplify<R & {
-    [K in RouteKey<'POST', Path>]: RouteDefinition<Path, 'POST', RouteInputWithPath<Path, MergeRPCInput<[...GM, ...M]>>, InferRouteOutputFromOperation<Operation>, Operation>;
+    [K in RouteKey<'POST', Path>]: RouteDefinition<Path, 'POST', RouteInputWithPath<Path, MergeRPCInput<[...GM, ...M]>>, InferRouteOutput<Operation, H>, Operation, InferRouteResponses<Operation, H>>;
   }>, GM> {
     return this.addRoute('POST', path, handlers) as unknown as Orva<T, V, Simplify<R & {
-      [K in RouteKey<'POST', Path>]: RouteDefinition<Path, 'POST', RouteInputWithPath<Path, MergeRPCInput<[...GM, ...M]>>, InferRouteOutputFromOperation<Operation>, Operation>;
+      [K in RouteKey<'POST', Path>]: RouteDefinition<Path, 'POST', RouteInputWithPath<Path, MergeRPCInput<[...GM, ...M]>>, InferRouteOutput<Operation, H>, Operation, InferRouteResponses<Operation, H>>;
     }>, GM>;
   }
 
   put<
     Path extends string,
     const M extends readonly MiddlewareHandler<T, any>[],
+    H extends Handler<T, Simplify<V & MergeMiddlewareValidatedData<[...GM, ...M]>>>,
     Operation = MergeOperationMetadata<M>
   >(
     path: Path,
-    ...handlers: [...M, Handler<T, Simplify<V & MergeMiddlewareValidatedData<[...GM, ...M]>>>]
+    ...handlers: [...M, H]
   ): Orva<T, V, Simplify<R & {
-    [K in RouteKey<'PUT', Path>]: RouteDefinition<Path, 'PUT', RouteInputWithPath<Path, MergeRPCInput<[...GM, ...M]>>, InferRouteOutputFromOperation<Operation>, Operation>;
+    [K in RouteKey<'PUT', Path>]: RouteDefinition<Path, 'PUT', RouteInputWithPath<Path, MergeRPCInput<[...GM, ...M]>>, InferRouteOutput<Operation, H>, Operation, InferRouteResponses<Operation, H>>;
   }>, GM> {
     return this.addRoute('PUT', path, handlers) as unknown as Orva<T, V, Simplify<R & {
-      [K in RouteKey<'PUT', Path>]: RouteDefinition<Path, 'PUT', RouteInputWithPath<Path, MergeRPCInput<[...GM, ...M]>>, InferRouteOutputFromOperation<Operation>, Operation>;
+      [K in RouteKey<'PUT', Path>]: RouteDefinition<Path, 'PUT', RouteInputWithPath<Path, MergeRPCInput<[...GM, ...M]>>, InferRouteOutput<Operation, H>, Operation, InferRouteResponses<Operation, H>>;
     }>, GM>;
   }
 
   delete<
     Path extends string,
     const M extends readonly MiddlewareHandler<T, any>[],
+    H extends Handler<T, Simplify<V & MergeMiddlewareValidatedData<[...GM, ...M]>>>,
     Operation = MergeOperationMetadata<M>
   >(
     path: Path,
-    ...handlers: [...M, Handler<T, Simplify<V & MergeMiddlewareValidatedData<[...GM, ...M]>>>]
+    ...handlers: [...M, H]
   ): Orva<T, V, Simplify<R & {
-    [K in RouteKey<'DELETE', Path>]: RouteDefinition<Path, 'DELETE', RouteInputWithPath<Path, MergeRPCInput<[...GM, ...M]>>, InferRouteOutputFromOperation<Operation>, Operation>;
+    [K in RouteKey<'DELETE', Path>]: RouteDefinition<Path, 'DELETE', RouteInputWithPath<Path, MergeRPCInput<[...GM, ...M]>>, InferRouteOutput<Operation, H>, Operation, InferRouteResponses<Operation, H>>;
   }>, GM> {
     return this.addRoute('DELETE', path, handlers) as unknown as Orva<T, V, Simplify<R & {
-      [K in RouteKey<'DELETE', Path>]: RouteDefinition<Path, 'DELETE', RouteInputWithPath<Path, MergeRPCInput<[...GM, ...M]>>, InferRouteOutputFromOperation<Operation>, Operation>;
+      [K in RouteKey<'DELETE', Path>]: RouteDefinition<Path, 'DELETE', RouteInputWithPath<Path, MergeRPCInput<[...GM, ...M]>>, InferRouteOutput<Operation, H>, Operation, InferRouteResponses<Operation, H>>;
     }>, GM>;
   }
 
   patch<
     Path extends string,
     const M extends readonly MiddlewareHandler<T, any>[],
+    H extends Handler<T, Simplify<V & MergeMiddlewareValidatedData<[...GM, ...M]>>>,
     Operation = MergeOperationMetadata<M>
   >(
     path: Path,
-    ...handlers: [...M, Handler<T, Simplify<V & MergeMiddlewareValidatedData<[...GM, ...M]>>>]
+    ...handlers: [...M, H]
   ): Orva<T, V, Simplify<R & {
-    [K in RouteKey<'PATCH', Path>]: RouteDefinition<Path, 'PATCH', RouteInputWithPath<Path, MergeRPCInput<[...GM, ...M]>>, InferRouteOutputFromOperation<Operation>, Operation>;
+    [K in RouteKey<'PATCH', Path>]: RouteDefinition<Path, 'PATCH', RouteInputWithPath<Path, MergeRPCInput<[...GM, ...M]>>, InferRouteOutput<Operation, H>, Operation, InferRouteResponses<Operation, H>>;
   }>, GM> {
     return this.addRoute('PATCH', path, handlers) as unknown as Orva<T, V, Simplify<R & {
-      [K in RouteKey<'PATCH', Path>]: RouteDefinition<Path, 'PATCH', RouteInputWithPath<Path, MergeRPCInput<[...GM, ...M]>>, InferRouteOutputFromOperation<Operation>, Operation>;
+      [K in RouteKey<'PATCH', Path>]: RouteDefinition<Path, 'PATCH', RouteInputWithPath<Path, MergeRPCInput<[...GM, ...M]>>, InferRouteOutput<Operation, H>, Operation, InferRouteResponses<Operation, H>>;
     }>, GM>;
   }
 
   options<
     Path extends string,
     const M extends readonly MiddlewareHandler<T, any>[],
+    H extends Handler<T, Simplify<V & MergeMiddlewareValidatedData<[...GM, ...M]>>>,
     Operation = MergeOperationMetadata<M>
   >(
     path: Path,
-    ...handlers: [...M, Handler<T, Simplify<V & MergeMiddlewareValidatedData<[...GM, ...M]>>>]
+    ...handlers: [...M, H]
   ): Orva<T, V, Simplify<R & {
-    [K in RouteKey<'OPTIONS', Path>]: RouteDefinition<Path, 'OPTIONS', RouteInputWithPath<Path, MergeRPCInput<[...GM, ...M]>>, InferRouteOutputFromOperation<Operation>, Operation>;
+    [K in RouteKey<'OPTIONS', Path>]: RouteDefinition<Path, 'OPTIONS', RouteInputWithPath<Path, MergeRPCInput<[...GM, ...M]>>, InferRouteOutput<Operation, H>, Operation, InferRouteResponses<Operation, H>>;
   }>, GM> {
     return this.addRoute('OPTIONS', path, handlers) as unknown as Orva<T, V, Simplify<R & {
-      [K in RouteKey<'OPTIONS', Path>]: RouteDefinition<Path, 'OPTIONS', RouteInputWithPath<Path, MergeRPCInput<[...GM, ...M]>>, InferRouteOutputFromOperation<Operation>, Operation>;
+      [K in RouteKey<'OPTIONS', Path>]: RouteDefinition<Path, 'OPTIONS', RouteInputWithPath<Path, MergeRPCInput<[...GM, ...M]>>, InferRouteOutput<Operation, H>, Operation, InferRouteResponses<Operation, H>>;
     }>, GM>;
   }
 

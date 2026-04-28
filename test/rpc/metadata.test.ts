@@ -59,7 +59,8 @@ test('rpc types and metadata read validator and schema contracts', async () => {
       'POST',
       { param: { id: string }; body: { name: string } },
       { id: string; name: string },
-      CreateUserOperation
+      CreateUserOperation,
+      { 201: { id: string; name: string } }
     >;
   }>;
 

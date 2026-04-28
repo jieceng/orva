@@ -1,9 +1,7 @@
 // ============ RPC type utilities ============
 
 import type {
-  OpenAPIMediaTypeMetadata,
-  OpenAPIOperationMetadata,
-  OpenAPIResponseMetadata,
+  OperationResponseOutputs,
 } from '../metadata.js';
 import type { Orva, RouteDefinition } from '../orva.js';
 
@@ -12,40 +10,14 @@ type UnionToIntersection<U> = (
 ) extends ((arg: infer I) => void) ? I : never;
 
 type Simplify<T> = { [K in keyof T]: T[K] } & {};
-type NumericStatusKey = number | `${number}`;
-type NormalizeStatusKey<Key> = Key extends number
-  ? Key
-  : Key extends `${infer Status extends number}`
-    ? Status
-    : never;
 type IsOkStatus<Status extends number> = `${Status}` extends `2${string}` ? true : false;
-type ExtractSchemaOutput<Schema> = Schema extends { readonly output?: infer Output } ? Output : unknown;
-type ExtractMediaTypeOutput<MediaType> = MediaType extends OpenAPIMediaTypeMetadata<any, infer Output>
-  ? Output
-  : MediaType extends { schema?: infer Schema }
-    ? ExtractSchemaOutput<Schema>
-    : unknown;
-type ExtractResponseOutput<Response> = Response extends OpenAPIResponseMetadata<infer Output>
-  ? Output
-  : Response extends { content?: infer Content }
-    ? Content extends Record<string, infer MediaType>
-      ? ExtractMediaTypeOutput<MediaType>
-      : Response extends { schema?: infer Schema }
-        ? ExtractSchemaOutput<Schema>
-        : unknown
-    : Response extends { schema?: infer Schema }
-      ? ExtractSchemaOutput<Schema>
-      : unknown;
-type OperationResponses<Operation> = Operation extends OpenAPIOperationMetadata<infer Responses>
-  ? Simplify<{
-      [K in keyof Responses as NormalizeStatusKey<K>]: ExtractResponseOutput<Responses[K]>;
-    }>
-  : {};
 type FallbackResponses<Output> = { 200: Output };
-type RouteResponses<Route> = Route extends { operation?: infer Operation; output: infer Output }
-  ? keyof OperationResponses<Operation> extends never
-    ? FallbackResponses<Output>
-    : OperationResponses<Operation>
+type RouteResponses<Route> = Route extends RouteDefinition<any, any, any, infer Output, infer Operation, infer Responses extends Record<number, unknown>>
+  ? keyof Responses extends never
+    ? keyof OperationResponseOutputs<Operation> extends never
+      ? FallbackResponses<Output>
+      : OperationResponseOutputs<Operation>
+    : Responses
   : FallbackResponses<unknown>;
 type ResponseUnion<Responses extends Record<number, unknown>> = {
   [Status in keyof Responses & number]: RPCResponse<Status, Responses[Status]>;

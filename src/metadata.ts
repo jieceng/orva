@@ -279,13 +279,38 @@ export interface RouteRuntimeDefinition {
 
 export type OpenAPIResponses = Record<number, OpenAPIResponseMetadata<any>>;
 
-export type OperationOutput<Operation> =
+type NumericStatusKey = number | `${number}`;
+type NormalizeStatusKey<Key> = Key extends number
+  ? Key
+  : Key extends `${infer Status extends number}`
+    ? Status
+    : never;
+type ExtractSchemaOutput<Schema> = Schema extends SchemaContract<any, infer Output> ? Output : unknown;
+type ExtractMediaTypeOutput<MediaType> = MediaType extends OpenAPIMediaTypeMetadata<any, infer Output>
+  ? Output
+  : MediaType extends { schema?: infer Schema }
+    ? ExtractSchemaOutput<Schema>
+    : unknown;
+type ExtractResponseOutput<Response> = Response extends OpenAPIResponseMetadata<infer Output>
+  ? Output
+  : Response extends { content?: infer Content }
+    ? Content extends Record<string, infer MediaType>
+      ? ExtractMediaTypeOutput<MediaType>
+      : Response extends { schema?: infer Schema }
+        ? ExtractSchemaOutput<Schema>
+        : unknown
+    : Response extends { schema?: infer Schema }
+      ? ExtractSchemaOutput<Schema>
+      : unknown;
+
+export type OperationResponseOutputs<Operation> =
   Operation extends { responses: infer Responses }
     ? Responses extends OpenAPIResponses
-      ? Responses[keyof Responses] extends { schema?: infer Schema }
-        ? Schema extends SchemaContract<any, infer Output>
-          ? Output
-          : unknown
-        : unknown
-      : unknown
-    : unknown;
+      ? {
+          [K in keyof Responses as NormalizeStatusKey<K>]: ExtractResponseOutput<Responses[K]>;
+        }
+      : {}
+    : {};
+
+export type OperationOutput<Operation> =
+  OperationResponseOutputs<Operation>[keyof OperationResponseOutputs<Operation>];

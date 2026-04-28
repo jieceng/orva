@@ -52,7 +52,11 @@ test('rpc typing requires path params and body validators as request inputs', as
       'POST',
       { param: { id: string }; body: { name: string } },
       { ok: string; id: string },
-      CreateUserOperation
+      CreateUserOperation,
+      {
+        201: { ok: string; id: string };
+        422: { error: string };
+      }
     >;
   }>;
 
@@ -112,7 +116,8 @@ test('route(prefix, subApp) preserves route registry for rpc typing', async () =
       'GET',
       { param: { id: string } },
       { id: string },
-      GetUserOperation
+      GetUserOperation,
+      { 200: { id: string } }
     >;
   }>;
 
@@ -129,4 +134,36 @@ test('route(prefix, subApp) preserves route registry for rpc typing', async () =
   const response = await typed;
   assert.equal(response.status, 200);
   assert.deepEqual(await response.value(), { id: '7' });
+});
+
+test('rpc can infer response bodies directly from c.json without openapi metadata', async () => {
+  const app = createOrva()
+    .get('/posts', (c) => c.json([{ id: 1, title: 'Post 1' }]))
+    .get('/posts/:id', (c) => c.json({ id: c.params.id, title: 'Post details' }));
+
+  const rpc = createRPC<typeof app>({
+    baseURL: 'https://api.example.com',
+    fetch: async (url) => {
+      const path = new URL(String(url)).pathname;
+      if (path.endsWith('/posts')) {
+        return new Response(JSON.stringify([{ id: 1, title: 'Post 1' }]), {
+          status: 200,
+          headers: { 'content-type': 'application/json' },
+        });
+      }
+
+      return new Response(JSON.stringify({ id: '123', title: 'Post details' }), {
+        status: 200,
+        headers: { 'content-type': 'application/json' },
+      });
+    },
+  });
+
+  const posts = await rpc.posts.$get();
+  const postsValue: { id: number; title: string }[] = await posts.value();
+  assert.deepEqual(postsValue, [{ id: 1, title: 'Post 1' }]);
+
+  const post = await rpc.posts[':id'].$get({ param: { id: '123' } });
+  const postValue: { id: string; title: string } = await post.json();
+  assert.deepEqual(postValue, { id: '123', title: 'Post details' });
 });
