@@ -44,7 +44,7 @@ app.use(
   logger(),
   cors(),
   secureHeaders(),
-  bodyLimit({ maxSize: 1024 * 1024 }),
+  bodyLimit({ maxBytes: 1024 * 1024 }),
   responseTime(),
 );
 ```
@@ -56,6 +56,8 @@ Then add what the app actually needs:
 - `etag()`
 - `serveStatic()`
 - `compress()`
+
+If you want pre-grouped stacks instead of assembling one manually, read the [Middleware Cookbook](/en/recipes/middleware-cookbook).
 
 ## Middleware ordering
 

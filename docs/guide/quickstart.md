@@ -2,6 +2,15 @@
 
 The goal of this page is not just to return a `Hello World`, but to give you a project shape you can keep building on in a few minutes.
 
+## What you will learn
+
+On this page you will:
+
+- run a working server
+- shape a small app layout
+- add a baseline middleware stack
+- connect validation and contract outputs
+
 ## Install
 
 ```bash
@@ -103,7 +112,7 @@ export const app = createOrva().use(
   requestId(),
   cors(),
   secureHeaders(),
-  bodyLimit({ maxSize: 1024 * 1024 }),
+  bodyLimit({ maxBytes: 1024 * 1024 }),
   responseTime(),
 );
 ```
@@ -167,5 +176,6 @@ import { requestId } from 'orvajs/middlewares/request-id';
 
 - Read [Routing and Composition](/guide/routing)
 - Read [Context and Responses](/guide/context)
+- Read [Type Flow](/guide/type-flow)
 - Read [Middleware and Type Accumulation](/guide/production)
 - Read [Testing and Quality](/guide/testing)

@@ -3,55 +3,61 @@ layout: home
 
 hero:
   name: orva
-  text: 商用可落地的 Fetch API Web 框架
-  tagline: 以接近 Hono 的使用方式，交付 typed middleware、validator、RPC、OpenAPI 和多运行时适配的一体化服务端能力。
+  text: 以“学会”为目标的服务端框架文档
+  tagline: 先跑起一个 Fetch API 服务，再循序渐进接入 validator、typed RPC、OpenAPI 和生产中间件，不需要切换心智模型。
   actions:
     - theme: brand
-      text: 5 分钟上手
+      text: 开始快速上手
       link: /zh/guide/quickstart
     - theme: alt
-      text: 生产实践
-      link: /zh/guide/production
+      text: 看懂类型链路
+      link: /zh/guide/type-flow
     - theme: alt
-      text: 中间件目录
-      link: /zh/middlewares
+      text: 构建 REST API
+      link: /zh/recipes/rest-api
     - theme: alt
-      text: GitHub
-      link: https://github.com/jieceng/orva
+      text: 查阅参考资料
+      link: /zh/reference/
 
 features:
-  - title: 轻核心，不堆根导出
-    details: 根入口只保留核心 API。RPC、adapters、middlewares、validator、openapi 统一走子路径，适合 tree-shaking、模板拆分和生态发布。
-  - title: 类型链路可贯通
-    details: app.use() 类型累积、validator 输出、RPC 输入推导、OpenAPI 元数据契约可以串成单链路，减少接口漂移和重复描述。
-  - title: 运行时覆盖完整
-    details: 覆盖 Node、Bun、Deno、Cloudflare、Vercel、Netlify、Azure、AWS Lambda，并提供 cookie、static、compress、安全头、认证、限流等常用能力。
+  - title: 分层学习
+    details: "先运行服务，再理解 Context，再接入 validator、RPC、OpenAPI，文档顺序按学习路径组织，而不是只按模块堆叠。"
+  - title: 一条契约链
+    details: "`app.use()` 类型累积、validator 输出、RPC 输入推导、OpenAPI 元数据会被作为同一条链路来讲清楚。"
+  - title: 面向真实服务
+    details: "跑通 demo 之后，可以继续接入 adapters、中间件、测试、部署和参考资料，逐步落到生产场景。"
 ---
 
-## 为什么是 orva
+## 从这里开始
 
-`orva` 的目标不是只做一层轻路由，而是给希望保持小心智负担的团队，一套可以直接交付线上服务的 TypeScript 服务端工作流：
+如果你是第一次使用 `orva`，建议按这个顺序学习：
 
-- 路由、Context、Middleware 足够直观，不强迫引入复杂抽象。
-- validator、RPC、OpenAPI 共享路由与元数据，不需要多套接口描述。
-- 导出结构清晰，适合多包仓库、CLI 模板、SDK、基建层复用。
-- 对 Node 和主流 Serverless / Edge 平台都有稳定入口。
+1. [快速开始](/zh/guide/quickstart)：几分钟内跑起真实服务
+2. [Context 与响应](/zh/guide/context)：掌握请求读取和响应辅助
+3. [路由与组合](/zh/guide/routing)：学会拆分路由且不丢类型
+4. [类型链路](/zh/guide/type-flow)：理解 middleware、validator、RPC、OpenAPI 如何贯通
+5. [Recipes](/zh/recipes/rest-api)：开始做接近生产的应用
 
-::: info 文档站地址
-GitHub Pages 正式地址：`https://jieceng.github.io/orva/`
-:::
+如果你是从其他 Node 或 Fetch 框架迁移过来，建议尽早阅读 [从 Express / Hono 迁移](/zh/guide/migration)。
+
+## `orva` 擅长什么
+
+- 基于 Fetch API 的小心智请求模型
+- 明确的子路径导出，适合核心框架、RPC、adapters、validator、中间件、OpenAPI 分层使用
+- 在运行时校验、handler 上下文、RPC 客户端、OpenAPI 输出之间复用契约
+- 面向 Node、Bun、Deno、Serverless、Edge 的部署能力
 
 <OrvaContractPipeline />
 
-## 一段最小可运行示例
+## 第一段真正有用的服务
 
 ```ts
 import { createOrva } from 'orvajs';
 import { serveNode } from 'orvajs/adapters/node';
-import { cors, requestId, secureHeaders } from 'orvajs/middlewares';
+import { requestId, secureHeaders } from 'orvajs/middlewares';
 
 const app = createOrva()
-  .use(requestId(), cors(), secureHeaders())
+  .use(requestId(), secureHeaders())
   .get('/health', (c) => c.json({
     ok: true,
     requestId: c.get('requestId'),
@@ -60,40 +66,26 @@ const app = createOrva()
 serveNode(app, { port: 3000 });
 ```
 
-## 适合什么场景
+## 按任务学习
 
-| 场景 | 为什么合适 |
+| 目标 | 对应页面 |
 | --- | --- |
-| API / BFF 服务 | 路由、validator、typed response 组合简单，适合业务接口密集型项目 |
-| 平台网关与中台 | OpenAPI、RPC、组件化 metadata 和中间件目录足够支撑治理场景 |
-| 多运行时部署 | 同一应用代码可复用到 Node、Edge、Serverless |
-| 基建模板与脚手架 | 子模块边界清晰，方便按需导出和生态封装 |
+| 跑起第一个服务 | [快速开始](/zh/guide/quickstart) |
+| 理解请求模型 | [Context 与响应](/zh/guide/context) |
+| 理解契约传播 | [类型链路](/zh/guide/type-flow) |
+| 构建 REST API | [REST API Recipe](/zh/recipes/rest-api) |
+| 构建 typed client 工作流 | [Typed RPC App Recipe](/zh/recipes/typed-rpc-app) |
+| 组装生产可用的中间件栈 | [Middleware Cookbook](/zh/recipes/middleware-cookbook) |
+| 从其他框架迁移现有服务 | [迁移指南](/zh/guide/migration) |
+| 查询模块和导出 | [参考资料](/zh/reference/) |
 
-## 文档阅读路径
+## 参考资料入口
 
-1. 从 [快速开始](/zh/guide/quickstart) 跑通第一个 Node 服务，并理解推荐目录结构。
-2. 阅读 [路由与组合](/zh/guide/routing)、[Context 与响应](/zh/guide/context)，掌握核心 API。
-3. 接上 [Validator](/zh/validator)、[RPC](/zh/rpc)、[OpenAPI](/zh/openapi)，把契约链打通。
-4. 参考 [中间件与类型累积](/zh/guide/production)、[测试与质量](/zh/guide/testing)、[部署与运行时](/zh/guide/deployment) 完成工程化落地。
-5. 遇到选型或迁移问题时，再看 [常见问题](/zh/guide/faq)。
-
-## 能力总览
-
-| 能力域 | 当前提供 |
+| 能力域 | 入口 |
 | --- | --- |
-| Core | `createOrva()` `group()` `route()` `onError()` `notFound()` |
-| Context | `req` `params` `query` `cookie` `after()` `text/json/html/stream/sse/download` |
-| Middleware | 50+ 细粒度中间件与 `orvajs/middlewares/*` 子模块导出 |
-| Validation | 内置 `validator()` 与 `zodValidator()` |
-| Contracts | `createRPC()` `createRPCMetadata()` `createOpenAPIDocument()` |
-| Adapters | Node / Bun / Deno / Cloudflare / Vercel / Netlify / Azure / AWS Lambda |
-
-## 采用建议
-
-::: tip 适合怎样的团队
-如果你的团队想要比传统 Express 体系更完整的类型链路，但又不想为了契约和部署层引入太重的框架约束，`orva` 是更平衡的选择。
-:::
-
-::: info 文档站能力
-当前站点已接入多语言、版本入口、品牌资源、可复用演示组件与 Algolia 搜索配置。未提供 Algolia 环境变量时，会自动回退到本地搜索。
-:::
+| 核心框架 | [参考资料总览](/zh/reference/) |
+| Validator | [Validator](/zh/validator) |
+| RPC | [RPC](/zh/rpc) |
+| OpenAPI | [OpenAPI](/zh/openapi) |
+| Middleware | [中间件目录](/zh/middlewares) |
+| Adapters | [适配器](/zh/adapters) |

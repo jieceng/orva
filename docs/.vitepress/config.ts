@@ -105,8 +105,10 @@ function createZhSidebar(prefix = '/zh') {
       items: [
         { text: '介绍', link: `${prefix}/guide/introduction` },
         { text: '快速开始', link: `${prefix}/guide/quickstart` },
-        { text: '路由与组合', link: `${prefix}/guide/routing` },
         { text: 'Context 与响应', link: `${prefix}/guide/context` },
+        { text: '路由与组合', link: `${prefix}/guide/routing` },
+        { text: '类型链路', link: `${prefix}/guide/type-flow` },
+        { text: '从 Express / Hono 迁移', link: `${prefix}/guide/migration` },
         { text: '中间件与类型累积', link: `${prefix}/guide/production` },
         { text: '测试与质量', link: `${prefix}/guide/testing` },
         { text: '部署与运行时', link: `${prefix}/guide/deployment` },
@@ -114,8 +116,17 @@ function createZhSidebar(prefix = '/zh') {
       ],
     },
     {
-      text: '核心能力',
+      text: 'Recipes',
       items: [
+        { text: 'REST API', link: `${prefix}/recipes/rest-api` },
+        { text: 'Typed RPC App', link: `${prefix}/recipes/typed-rpc-app` },
+        { text: 'Middleware Cookbook', link: `${prefix}/recipes/middleware-cookbook` },
+      ],
+    },
+    {
+      text: '参考资料',
+      items: [
+        { text: '总览', link: `${prefix}/reference/` },
         { text: '中间件目录', link: `${prefix}/middlewares` },
         { text: 'Validator', link: `${prefix}/validator` },
         { text: 'RPC', link: `${prefix}/rpc` },
@@ -134,8 +145,10 @@ function createEnSidebar(prefix = '') {
       items: [
         { text: 'Introduction', link: `${prefix}/guide/introduction` },
         { text: 'Quickstart', link: `${prefix}/guide/quickstart` },
-        { text: 'Routing and Composition', link: `${prefix}/guide/routing` },
         { text: 'Context and Responses', link: `${prefix}/guide/context` },
+        { text: 'Routing and Composition', link: `${prefix}/guide/routing` },
+        { text: 'Type Flow', link: `${prefix}/guide/type-flow` },
+        { text: 'Migrate from Express or Hono', link: `${prefix}/guide/migration` },
         { text: 'Middleware and Type Accumulation', link: `${prefix}/guide/production` },
         { text: 'Testing and Quality', link: `${prefix}/guide/testing` },
         { text: 'Deployment and Runtimes', link: `${prefix}/guide/deployment` },
@@ -143,8 +156,17 @@ function createEnSidebar(prefix = '') {
       ],
     },
     {
-      text: 'Core Capabilities',
+      text: 'Recipes',
       items: [
+        { text: 'REST API', link: `${prefix}/recipes/rest-api` },
+        { text: 'Typed RPC App', link: `${prefix}/recipes/typed-rpc-app` },
+        { text: 'Middleware Cookbook', link: `${prefix}/recipes/middleware-cookbook` },
+      ],
+    },
+    {
+      text: 'Reference',
+      items: [
+        { text: 'Overview', link: `${prefix}/reference/` },
         { text: 'Middleware Catalog', link: `${prefix}/middlewares` },
         { text: 'Validator', link: `${prefix}/validator` },
         { text: 'RPC', link: `${prefix}/rpc` },
@@ -162,12 +184,10 @@ function createZhThemeConfig() {
     siteTitle: 'orva',
     nav: [
       { text: '指南', link: '/zh/guide/introduction' },
+      { text: 'Recipes', link: '/zh/recipes/rest-api' },
+      { text: '参考', link: '/zh/reference/' },
       { text: '中间件', link: '/zh/middlewares' },
-      { text: '验证', link: '/zh/validator' },
-      { text: 'RPC', link: '/zh/rpc' },
-      { text: 'OpenAPI', link: '/zh/openapi' },
-      { text: '适配器', link: '/zh/adapters' },
-      { text: '导出', link: '/zh/exports' },
+      { text: 'Validator', link: '/zh/validator' },
     ],
     sidebar: {
       '/zh/': createZhSidebar('/zh'),
@@ -200,12 +220,11 @@ function createEnThemeConfig() {
     siteTitle: 'orva',
     nav: [
       { text: 'Guide', link: '/guide/introduction' },
+      { text: 'Recipes', link: '/recipes/rest-api' },
+      { text: 'Reference', link: '/reference/' },
       { text: 'Middleware', link: '/middlewares' },
       { text: 'Validator', link: '/validator' },
       { text: 'RPC', link: '/rpc' },
-      { text: 'OpenAPI', link: '/openapi' },
-      { text: 'Adapters', link: '/adapters' },
-      { text: 'Exports', link: '/exports' },
     ],
     sidebar: {
       '/': createEnSidebar(''),

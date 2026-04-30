@@ -9,7 +9,7 @@
 | Node.js | `serveNode` | 常规服务器、容器、PM2、systemd |
 | Deno | `serveDeno` `createDenoHandler` | Deno 原生 HTTP 服务 |
 | Bun | `serveBun` `createBunHandler` | Bun 原生高性能服务 |
-| Cloudflare | `createCloudflareWorker` `createPagesFunction` `createDefaultWorker` | Workers / Pages |
+| Cloudflare | `createCloudflareWorker` `createCloudflareWorkerWithEnv` `createPagesFunction` `createDefaultWorker` | Workers / Pages |
 | AWS Lambda | `createAWSLambdaHandler` | API Gateway + Lambda |
 | Netlify | `createNetlifyFunctionHandler` `createNetlifyEdgeHandler` | Function / Edge Function |
 | Azure | `createAzureFunctionHandler` `createAzureFetchHandler` | Azure Functions |
@@ -68,6 +68,13 @@ export const onRequest = createPagesFunction(app);
 ```ts
 import { createDefaultWorker } from 'orvajs/adapters/cloudflare';
 export default createDefaultWorker(app);
+```
+
+如果你需要保留 env 注入入口，可用：
+
+```ts
+import { createCloudflareWorkerWithEnv } from 'orvajs/adapters/cloudflare';
+export default createCloudflareWorkerWithEnv(app);
 ```
 
 ## AWS Lambda

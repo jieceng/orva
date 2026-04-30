@@ -9,6 +9,15 @@
 - OpenAPI 文档与组件化元数据
 - Node、Bun、Deno、Cloudflare、Vercel、Netlify、Azure、AWS Lambda 适配器
 
+## 这一页要学会什么
+
+看完这一页，你应该能理解：
+
+- `orva` 是一类什么框架
+- 它主要解决哪些问题
+- 为什么根入口和子路径导出是刻意分开的
+- 为什么 validator、RPC、OpenAPI 会被当成一套契约系统来设计
+
 ## 设计目标
 
 `orva` 的核心目标只有三个：
@@ -103,4 +112,8 @@ const app = createOrva()
 - 现有 API 服务：优先接 validator、错误处理和中间件，再补 RPC / OpenAPI。
 - 平台基建：优先采用细粒度子模块路径，如 `orvajs/middlewares/cors`。
 
-下一步建议阅读 [快速开始](/zh/guide/quickstart) 和 [中间件与类型累积](/zh/guide/production)。
+## 下一步
+
+1. [快速开始](/zh/guide/quickstart)
+2. [Context 与响应](/zh/guide/context)
+3. [类型链路](/zh/guide/type-flow)

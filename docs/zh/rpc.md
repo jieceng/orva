@@ -6,7 +6,7 @@
 
 ```ts
 import { createRPC } from 'orvajs/rpc';
-import type { app } from '../src/app';
+import { app } from '../src/app';
 
 const client = createRPC<typeof app>({
   baseURL: 'https://api.example.com',
@@ -25,7 +25,7 @@ const user = await client.api.users[':id'].$get({
 });
 ```
 
-HTTP 方法通过 `$get`、`$post`、`$put`、`$delete`、`$patch` 这类属性暴露。
+HTTP 方法通过 `$get`、`$post`、`$put`、`$delete`、`$patch`、`$options`、`$head` 这类属性暴露。
 
 ## `c.json()` 的响应类型推导
 
@@ -59,6 +59,10 @@ const detail = await post.json();
 validator 的输出也会流入 RPC 请求参数类型：
 
 ```ts
+import { createOrva } from 'orvajs';
+import { createRPC } from 'orvajs/rpc';
+import { validator } from 'orvajs/validator';
+
 const app = createOrva().post(
   '/users',
   validator('json', (value: any) => ({
@@ -117,15 +121,15 @@ await client.api.forms.submit.$post({
 });
 ```
 
-## 错误行为
+## 错误处理
 
-当响应 `!response.ok` 时，客户端会抛出错误，并附带响应文本内容。
+RPC 客户端默认不会在 `!response.ok` 时自动抛错，而是仍然返回一个带类型方法的响应对象。你可以根据 `response.ok` 或 `response.status` 自己决定如何处理。
 
 ```ts
-try {
-  await client.api.users.$post({ body: {} });
-} catch (error) {
-  console.error(error);
+const response = await client.api.users.$post({ body: {} });
+
+if (!response.ok) {
+  console.error(response.status, await response.text());
 }
 ```
 

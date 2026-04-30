@@ -51,7 +51,7 @@ import { basicAuth } from 'orvajs/middlewares';
 
 app.get(
   '/admin',
-  basicAuth({ username: 'admin', password: 'secret' }),
+  basicAuth({ users: { admin: 'secret' } }),
   (c) => c.text('ok'),
 );
 ```

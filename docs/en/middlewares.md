@@ -2,6 +2,8 @@
 
 `orva` ships with a production-oriented middleware set and fine-grained subpath exports.
 
+If you want recommended stacks by scenario instead of a full catalog, start with the [Middleware Cookbook](/en/recipes/middleware-cookbook).
+
 ## Import styles
 
 ```ts

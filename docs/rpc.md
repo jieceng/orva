@@ -6,7 +6,7 @@
 
 ```ts
 import { createRPC } from 'orvajs/rpc';
-import type { app } from '../src/app';
+import { app } from '../src/app';
 
 const client = createRPC<typeof app>({
   baseURL: 'https://api.example.com',
@@ -22,7 +22,7 @@ const user = await client.api.users[':id'].$get({
 });
 ```
 
-Methods are exposed as `$get`, `$post`, `$put`, `$delete`, `$patch`, and `$options`.
+Methods are exposed as `$get`, `$post`, `$put`, `$delete`, `$patch`, `$options`, and `$head`.
 
 ## Response types inferred from `c.json()`
 
@@ -56,6 +56,10 @@ In this example:
 Validator output also flows into RPC request types:
 
 ```ts
+import { createOrva } from 'orvajs';
+import { createRPC } from 'orvajs/rpc';
+import { validator } from 'orvajs/validator';
+
 const app = createOrva().post(
   '/users',
   validator('json', (value: any) => ({

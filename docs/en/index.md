@@ -3,57 +3,61 @@ layout: home
 
 hero:
   name: orva
-  text: A production-ready Fetch API web framework
-  tagline: Keep a Hono-like mental model while shipping typed middleware, validator, RPC, OpenAPI, and multi-runtime adapters in one cohesive server stack.
+  text: Learn the framework by building with it
+  tagline: Start with a small Fetch API server, then grow into validator, typed RPC, OpenAPI, and production middleware without switching mental models.
   actions:
     - theme: brand
-      text: Start in 5 minutes
+      text: Start the Quickstart
       link: /en/guide/quickstart
     - theme: alt
-      text: Production guide
-      link: /en/guide/production
+      text: See the Type Flow
+      link: /en/guide/type-flow
     - theme: alt
-      text: Middleware catalog
-      link: /en/middlewares
+      text: Build a REST API
+      link: /en/recipes/rest-api
     - theme: alt
-      text: GitHub
-      link: https://github.com/jieceng/orva
+      text: Browse Reference
+      link: /en/reference/
 
 features:
-  - title: Small core, explicit exports
-    details: The root entry stays focused on the framework core. RPC, adapters, middlewares, validator, and openapi ship through subpaths that are easier to tree-shake and publish.
-  - title: End-to-end type flow
-    details: app.use() accumulation, validator output, RPC input inference, and OpenAPI metadata can move through the same contract chain instead of drifting apart.
-  - title: Ready for deployment
-    details: Node, Bun, Deno, Cloudflare, Vercel, Netlify, Azure, and AWS Lambda are covered, with common middleware for auth, security headers, rate limits, static assets, cookies, and compression.
+  - title: Learn in layers
+    details: "The docs are organized so you can first run a server, then understand Context, then add validator, RPC, and OpenAPI in sequence."
+  - title: One contract chain
+    details: "`app.use()` types, validator output, RPC request inference, and OpenAPI metadata are explained as one connected system instead of separate features."
+  - title: Ready for real services
+    details: "Adapters, middleware, testing, deployment, and reference material are all available once you move past the first demo."
 ---
 
-## Why orva
+## Start here
 
-`orva` is built for teams that want a small request-handling model without giving up the parts that usually show up right after the first demo:
+If this is your first time with `orva`, use this order:
 
-- composable routing and middleware
-- validator-backed contracts
-- typed RPC clients
-- OpenAPI generation
-- clean subpath exports
-- multi-runtime deployment
+1. [Quickstart](/en/guide/quickstart): run a real service in a few minutes
+2. [Context and Responses](/en/guide/context): learn request reads and response helpers
+3. [Routing and Composition](/en/guide/routing): split routes without losing type information
+4. [Type Flow](/en/guide/type-flow): understand how middleware, validator, RPC, and OpenAPI connect
+5. [Recipes](/en/recipes/rest-api): build something close to production
 
-::: info Official docs URL
-GitHub Pages deployment address: `https://jieceng.github.io/orva/`
-:::
+If you are moving from another Node or Fetch framework, read [Migrate from Express or Hono](/en/guide/migration) early.
+
+## What `orva` is good at
+
+- small request-handling model based on the Fetch API
+- explicit subpath exports for framework core, RPC, adapters, validator, middleware, and OpenAPI
+- contract reuse across runtime validation, handler context, RPC clients, and OpenAPI output
+- deployment across Node, Bun, Deno, serverless, and edge targets
 
 <OrvaContractPipeline />
 
-## Minimal runnable example
+## Your first useful app
 
 ```ts
 import { createOrva } from 'orvajs';
 import { serveNode } from 'orvajs/adapters/node';
-import { cors, requestId, secureHeaders } from 'orvajs/middlewares';
+import { requestId, secureHeaders } from 'orvajs/middlewares';
 
 const app = createOrva()
-  .use(requestId(), cors(), secureHeaders())
+  .use(requestId(), secureHeaders())
   .get('/health', (c) => c.json({
     ok: true,
     requestId: c.get('requestId'),
@@ -62,30 +66,26 @@ const app = createOrva()
 serveNode(app, { port: 3000 });
 ```
 
-## Best fit
+## Learn by task
 
-| Scenario | Why it fits |
+| Goal | Go here |
 | --- | --- |
-| APIs and BFFs | Straightforward routing plus contract tooling |
-| Platform gateways | Rich middleware and reusable OpenAPI metadata |
-| Multi-runtime services | The same app can move across Node, Edge, and serverless targets |
-| Internal templates and shared infra | Subpath exports keep boundaries predictable |
+| Run the first service | [Quickstart](/en/guide/quickstart) |
+| Understand the request model | [Context and Responses](/en/guide/context) |
+| Understand contract propagation | [Type Flow](/en/guide/type-flow) |
+| Build a REST API | [REST API Recipe](/en/recipes/rest-api) |
+| Build a typed client workflow | [Typed RPC App Recipe](/en/recipes/typed-rpc-app) |
+| Assemble a production middleware stack | [Middleware Cookbook](/en/recipes/middleware-cookbook) |
+| Port an existing service from another framework | [Migration Guide](/en/guide/migration) |
+| Look up exports and modules | [Reference](/en/reference/) |
 
-## Reading path
+## Reference areas
 
-1. Start with [Quickstart](/en/guide/quickstart).
-2. Read [Routing and Composition](/en/guide/routing) and [Context and Responses](/en/guide/context).
-3. Connect [Validator](/en/validator), [RPC](/en/rpc), and [OpenAPI](/en/openapi).
-4. Move to [Middleware and Type Accumulation](/en/guide/production), [Testing and Quality](/en/guide/testing), and [Deployment and Runtimes](/en/guide/deployment).
-5. Use [FAQ](/en/guide/faq) for positioning and migration questions.
-
-## Capability map
-
-| Area | Current coverage |
+| Area | Entry |
 | --- | --- |
-| Core | `createOrva()` `group()` `route()` `onError()` `notFound()` |
-| Context | `req` `params` `query` `cookie` `after()` `text/json/html/stream/sse/download` |
-| Middleware | 50+ middleware exports and `orvajs/middlewares/*` subpaths |
-| Validation | built-in `validator()` and `zodValidator()` |
-| Contracts | `createRPC()` `createRPCMetadata()` `createOpenAPIDocument()` |
-| Adapters | Node / Bun / Deno / Cloudflare / Vercel / Netlify / Azure / AWS Lambda |
+| Core framework | [Reference overview](/en/reference/) |
+| Validator | [Validator](/en/validator) |
+| RPC | [RPC](/en/rpc) |
+| OpenAPI | [OpenAPI](/en/openapi) |
+| Middleware | [Middleware catalog](/en/middlewares) |
+| Adapters | [Adapters](/en/adapters) |

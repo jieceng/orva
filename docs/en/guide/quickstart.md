@@ -2,6 +2,15 @@
 
 The goal of this page is to give you a project shape you can keep building on, not just a one-line hello-world.
 
+## What you will learn
+
+On this page you will:
+
+- run a working server
+- shape a small app layout
+- add a baseline middleware stack
+- connect validation and contract outputs
+
 ## Install
 
 ```bash
@@ -9,9 +18,12 @@ pnpm add orvajs
 pnpm add -D typescript tsx
 ```
 
-If you are also running the docs site:
+The published `orvajs` package only includes `dist`, `README.md`, and `LICENSE`. If you want to run the docs site locally, clone the full repository first:
 
 ```bash
+git clone https://github.com/jieceng/orva.git
+cd orva
+pnpm install
 pnpm docs:dev
 ```
 
@@ -73,7 +85,7 @@ export const app = createOrva().use(
   requestId(),
   cors(),
   secureHeaders(),
-  bodyLimit({ maxSize: 1024 * 1024 }),
+  bodyLimit({ maxBytes: 1024 * 1024 }),
   responseTime(),
 );
 ```
@@ -128,3 +140,9 @@ import { requestId } from 'orvajs/middlewares/request-id';
 ```
 
 <OrvaImportPlayground />
+
+## Read next
+
+1. [Context and Responses](/en/guide/context)
+2. [Routing and Composition](/en/guide/routing)
+3. [Type Flow](/en/guide/type-flow)

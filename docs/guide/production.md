@@ -73,7 +73,7 @@ app.use(
   logger(),
   cors(),
   secureHeaders(),
-  bodyLimit({ maxSize: 1024 * 1024 }),
+  bodyLimit({ maxBytes: 1024 * 1024 }),
   responseTime(),
 );
 ```
@@ -85,6 +85,8 @@ Then add more as needed:
 - `etag()`
 - `serveStatic()`
 - `compress()`
+
+If you want pre-grouped stacks instead of assembling one manually, read the [Middleware Cookbook](/recipes/middleware-cookbook).
 
 ## A more complete API entry example
 
@@ -102,8 +104,8 @@ import {
 import { z } from 'zod';
 
 const app = createOrva()
-  .use(requestId(), logger(), secureHeaders(), bodyLimit({ maxSize: 1024 * 1024 }), responseTime())
-  .use(basicAuth({ username: 'admin', password: 'secret' }))
+  .use(requestId(), logger(), secureHeaders(), bodyLimit({ maxBytes: 1024 * 1024 }), responseTime())
+  .use(basicAuth({ users: { admin: 'secret' } }))
   .post(
     '/admin/users',
     zodValidator('json', z.object({
@@ -170,4 +172,4 @@ app.use(async (c, next) => {
 - For published ecosystem packages, prefer `orvajs/middlewares/*` submodule paths.
 - Keep static assets, compression, and cache headers at the edge or boundary layer instead of scattering them into business handlers.
 
-Next, continue with [Testing and Quality](/guide/testing) and [Deployment and Runtimes](/guide/deployment).
+Next, continue with [Middleware Cookbook](/recipes/middleware-cookbook), [Migrate from Express or Hono](/guide/migration), [Testing and Quality](/guide/testing), and [Deployment and Runtimes](/guide/deployment).

@@ -73,7 +73,7 @@ app.use(
   logger(),
   cors(),
   secureHeaders(),
-  bodyLimit({ maxSize: 1024 * 1024 }),
+  bodyLimit({ maxBytes: 1024 * 1024 }),
   responseTime(),
 );
 ```
@@ -85,6 +85,8 @@ app.use(
 - `etag()`
 - `serveStatic()`
 - `compress()`
+
+如果你不想自己从零拼装中间件栈，可以直接继续看 [Middleware Cookbook](/zh/recipes/middleware-cookbook)。
 
 ## 一个更完整的 API 入口示例
 
@@ -102,8 +104,8 @@ import {
 import { z } from 'zod';
 
 const app = createOrva()
-  .use(requestId(), logger(), secureHeaders(), bodyLimit({ maxSize: 1024 * 1024 }), responseTime())
-  .use(basicAuth({ username: 'admin', password: 'secret' }))
+  .use(requestId(), logger(), secureHeaders(), bodyLimit({ maxBytes: 1024 * 1024 }), responseTime())
+  .use(basicAuth({ users: { admin: 'secret' } }))
   .post(
     '/admin/users',
     zodValidator('json', z.object({
@@ -170,4 +172,4 @@ app.use(async (c, next) => {
 - 对外发布的生态包优先使用 `orvajs/middlewares/*` 子模块路径。
 - 静态资源、压缩、缓存头一类能力尽量收敛在边界层，不要分散进业务 handler。
 
-下一步建议继续看 [测试与质量](/zh/guide/testing) 和 [部署与运行时](/zh/guide/deployment)。
+下一步建议继续看 [Middleware Cookbook](/zh/recipes/middleware-cookbook)、[从 Express / Hono 迁移](/zh/guide/migration)、[测试与质量](/zh/guide/testing) 和 [部署与运行时](/zh/guide/deployment)。

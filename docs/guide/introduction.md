@@ -9,6 +9,15 @@
 - OpenAPI documents with reusable component metadata
 - adapters for Node, Bun, Deno, Cloudflare, Vercel, Netlify, Azure, and AWS Lambda
 
+## What to learn on this page
+
+By the end of this page, you should understand:
+
+- what kind of framework `orva` is
+- what problems it is meant to solve
+- why the root entry and subpath exports are intentionally separated
+- why validator, RPC, and OpenAPI are treated as one contract system
+
 ## Design goals
 
 `orva` is trying to do three things well:
@@ -103,4 +112,8 @@ That is one of the main differences between `orva` and lighter routers that stop
 - Existing API services: add validator, error handling, and middleware first, then layer in RPC / OpenAPI.
 - Platform tooling: prefer granular submodule paths such as `orvajs/middlewares/cors`.
 
-Next, read [Quickstart](/guide/quickstart) and [Middleware and Type Accumulation](/guide/production).
+## Read next
+
+1. [Quickstart](/guide/quickstart)
+2. [Context and Responses](/guide/context)
+3. [Type Flow](/guide/type-flow)

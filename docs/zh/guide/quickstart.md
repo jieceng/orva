@@ -2,6 +2,15 @@
 
 这一页的目标不是只返回一个 `Hello World`，而是让你在几分钟内得到一个适合继续扩展的项目骨架。
 
+## 这一页会带你学会什么
+
+在这一页里，你会：
+
+- 跑起一个可工作的服务
+- 建立一个适合扩展的小型目录结构
+- 接上一层基础 middleware
+- 把 validation 和契约输出接起来
+
 ## 安装
 
 ```bash
@@ -103,7 +112,7 @@ export const app = createOrva().use(
   requestId(),
   cors(),
   secureHeaders(),
-  bodyLimit({ maxSize: 1024 * 1024 }),
+  bodyLimit({ maxBytes: 1024 * 1024 }),
   responseTime(),
 );
 ```
@@ -167,5 +176,6 @@ import { requestId } from 'orvajs/middlewares/request-id';
 
 - 看 [路由与组合](/zh/guide/routing)
 - 看 [Context 与响应](/zh/guide/context)
+- 看 [类型链路](/zh/guide/type-flow)
 - 看 [中间件与类型累积](/zh/guide/production)
 - 看 [测试与质量](/zh/guide/testing)

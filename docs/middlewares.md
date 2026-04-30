@@ -2,6 +2,8 @@
 
 `orva` ships with a production-oriented middleware layer, but the ergonomics only matter if you can quickly find the right one. This page is the full catalog for the active release line: every middleware export, what it is for, where to import it from, and the smallest useful example.
 
+If you want recommended stacks by scenario instead of a full catalog, start with the [Middleware Cookbook](/recipes/middleware-cookbook).
+
 <OrvaMiddlewareMap locale="en" />
 
 ## Import styles

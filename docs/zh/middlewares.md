@@ -2,6 +2,8 @@
 
 `orva` 已经有比较完整的中间件层，但前提是这些能力得“找得到、看得懂、拿来就能用”。这页就是当前主线版本的完整目录：每个中间件都包含用途说明、子模块导入路径和最小示例。
 
+如果你更想先拿到“按场景配好的组合”，而不是完整目录，先看 [Middleware Cookbook](/zh/recipes/middleware-cookbook)。
+
 <OrvaMiddlewareMap locale="zh" />
 
 ## 导入方式
