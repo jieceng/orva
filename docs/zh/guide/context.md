@@ -31,12 +31,39 @@ app.get('/stats', (c) => c.json({ start: c.get('requestStart') }));
 
 ## 校验结果读取
 
-validator 成功后，可以通过 `c.valid()` 获取类型化数据：
+validator 成功后，`c.valid()` 会保留每个目标的解析后类型：
 
 ```ts
-app.post('/users', zodValidator('json', schema), (c) => {
-  const body = c.valid('json');
-  return c.json(body, 201);
+app.post(
+  '/users/:id',
+  validator('json', (value: { name?: string }) => ({ name: value.name ?? '' })),
+  validator('param', (value: Record<string, string>) => ({ id: value.id })),
+  validator('query', (value: Record<string, string>) => ({
+    expand: value.expand === '1',
+  })),
+  (c) => {
+    const body = c.valid('json');
+    const params = c.valid('param');
+    const query = c.valid('query');
+
+    return c.json({ body, params, query }, 201);
+  },
+);
+```
+
+如果你更喜欢 helper，也可以这样读写 validated data：
+
+```ts
+import { getValidatedData, setValidatedData } from 'orvajs/validator';
+
+app.post('/users/:id', validator('param', (value) => ({ id: value.id })), (c) => {
+  const params = getValidatedData(c, 'param');
+  setValidatedData(c, 'trace', 'request-1');
+
+  return c.json({
+    id: params.id,
+    trace: c.valid('trace'),
+  });
 });
 ```
 

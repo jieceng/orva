@@ -29,9 +29,14 @@ const app = createOrva().post(
     if (!value.name) throw new Error('name is required');
     return { name: value.name.trim() };
   }),
-  (c) => c.json(c.valid('json'), 201),
+  (c) => {
+    const body = c.valid('json');
+    return c.json(body, 201);
+  },
 );
 ```
+
+这里 `c.valid('json')` 的类型会是 `{ name: string }`。
 
 ## 多目标组合
 
@@ -46,6 +51,39 @@ const app = createOrva().get(
   }),
 );
 ```
+
+## `getValidatedData()` 与 `setValidatedData()`
+
+如果你更喜欢 helper，或者要在同一次请求里动态追加 validated data，可以这样写：
+
+```ts
+import {
+  getValidatedData,
+  setValidatedData,
+  validator,
+} from 'orvajs/validator';
+
+const app = createOrva().post(
+  '/users/:id',
+  validator('json', (value: { name?: string }) => ({ name: value.name ?? '' })),
+  validator('param', (value: Record<string, string>) => ({ id: value.id })),
+  (c) => {
+    const body = c.valid('json');
+    const params = getValidatedData(c, 'param');
+
+    setValidatedData(c, 'trace', 'ok');
+    const trace = c.valid('trace');
+
+    return c.json({ id: params.id, name: body.name, trace });
+  },
+);
+```
+
+类型行为：
+
+- `c.valid('json')` 返回目标对应的解析后输出类型
+- `getValidatedData(c, 'param')` 与 `c.valid('param')` 返回同样的类型
+- `setValidatedData(c, key, value)` 会收窄当前请求上下文，后续 `c.valid(key)` 能直接拿到追加后的类型
 
 ## 自定义输入来源
 
@@ -102,5 +140,20 @@ validator 元数据会继续流向：
 - `createOpenAPIDocument()`
 - `createRPCMetadata()`
 - 路由级输入类型推导
+
+这也意味着 validator 的输出可以直接进入 RPC 客户端入参推导：
+
+```ts
+const app = createOrva().post(
+  '/users',
+  validator('json', (value: any) => ({
+    name: String(value.name ?? ''),
+    age: Number(value.age ?? 0),
+  })),
+  (c) => c.json({ ok: true, user: c.valid('json') }),
+);
+```
+
+对 `createRPC<typeof app>()` 来说，客户端侧的 `body` 会被推成 `{ name: string; age: number }`。
 
 这意味着一个校验声明，不只是一次运行时检查，而是整个契约链的一部分。

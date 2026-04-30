@@ -1,5 +1,12 @@
 import type { MiddlewareHandler, TypedMiddlewareHandler } from '../orva.js';
 import {
+  isParameterTarget,
+  requestBodyContentTypeForTarget,
+} from '../input-contract.js';
+import {
+  getRouteOperationResponses,
+} from '../route-runtime-contract.js';
+import {
   OPENAPI_METADATA,
   type OpenAPICallbackComponent,
   type OpenAPICallbackMetadata,
@@ -254,6 +261,10 @@ interface OpenAPIBuilderContext {
   componentConflicts: Record<OpenAPIComponentSection, OpenAPIComponentConflictStrategy>;
   resolveComponentName: (context: OpenAPIComponentNameContext) => string;
 }
+
+const EMPTY_ROUTE_INPUT_CONTRACT: RouteRuntimeDefinition['contract']['input'] = {
+  parameters: {},
+};
 
 export function describeRoute<Meta extends OpenAPIOperationMetadata>(
   metadata: Meta
@@ -1019,12 +1030,12 @@ function serializeParameterObject(
 }
 
 function toOpenAPIParameters(
-  validators: RouteRuntimeDefinition['validators'],
+  input: RouteRuntimeDefinition['contract']['input'],
   section: ParameterSection,
   parameterMetadata: Record<string, OpenAPIParameterMetadata> | undefined,
   context: OpenAPIBuilderContext
 ): Array<Record<string, unknown>> {
-  const validator = validators.find((item) => item.target === section);
+  const validator = input.parameters[section];
   const schema = normalizeOpenAPISchema(validator, 'input');
   const properties = schema && typeof schema.properties === 'object' && schema.properties
     ? schema.properties as Record<string, unknown>
@@ -1095,14 +1106,14 @@ function registerParameterComponent(
 
 function serializeParameterCollection(
   parameters: OpenAPIParameterCollection | undefined,
-  validators: RouteRuntimeDefinition['validators'],
+  input: RouteRuntimeDefinition['contract']['input'],
   context: OpenAPIBuilderContext
 ): Array<Record<string, unknown>> {
   return [
-    ...toOpenAPIParameters(validators, 'param', parameters?.param, context),
-    ...toOpenAPIParameters(validators, 'query', parameters?.query, context),
-    ...toOpenAPIParameters(validators, 'header', parameters?.header, context),
-    ...toOpenAPIParameters(validators, 'cookie', parameters?.cookie, context),
+    ...toOpenAPIParameters(input, 'param', parameters?.param, context),
+    ...toOpenAPIParameters(input, 'query', parameters?.query, context),
+    ...toOpenAPIParameters(input, 'header', parameters?.header, context),
+    ...toOpenAPIParameters(input, 'cookie', parameters?.cookie, context),
   ];
 }
 
@@ -1111,11 +1122,8 @@ function resolveRequestBodyContentType(
   validator: RouteRuntimeDefinition['validators'][number] | undefined
 ): string {
   return requestMetadata?.contentType
-    ?? (validator?.target === 'form'
-      ? 'multipart/form-data'
-      : validator?.target === 'text'
-        ? 'text/plain'
-        : 'application/json');
+    ?? requestBodyContentTypeForTarget(validator?.target ?? '')
+    ?? 'application/json';
 }
 
 function toOpenAPIRequestBody(
@@ -1500,7 +1508,7 @@ function serializePathItemMetadata(
   path: OpenAPIPathItemMetadata | undefined,
   context: OpenAPIBuilderContext
 ): Record<string, unknown> {
-  const parameters = serializeParameterCollection(path?.parameters, [], context);
+  const parameters = serializeParameterCollection(path?.parameters, EMPTY_ROUTE_INPUT_CONTRACT, context);
 
   return {
     ...(path?.summary ? { summary: path.summary } : {}),
@@ -1572,12 +1580,12 @@ function mergePathItem(
 
 function serializeOperation(
   operation: OpenAPIOperationMetadata | undefined,
-  validators: RouteRuntimeDefinition['validators'],
+  routeContract: RouteRuntimeDefinition['contract'],
   routeInfo: Pick<RouteRuntimeDefinition, 'path' | 'method' | 'middlewareOpenAPI'>,
   context: OpenAPIBuilderContext
 ): Record<string, unknown> {
-  const parameters = serializeParameterCollection(operation?.parameters, validators, context);
-  const bodyValidator = validators.find((item) => item.target === 'json' || item.target === 'form' || item.target === 'text');
+  const parameters = serializeParameterCollection(operation?.parameters, routeContract.input, context);
+  const bodyValidator = routeContract.input.body;
   const requestBody = toOpenAPIRequestBody(operation?.requestBody, bodyValidator, context);
   const security = toOpenAPISecurity(operation, routeInfo.middlewareOpenAPI, context);
   const callbacks = toOpenAPICallbacks(operation?.callbacks, context);
@@ -1596,7 +1604,16 @@ function serializeOperation(
     ...(requestBody ? { requestBody } : {}),
     ...(security ? { security } : {}),
     ...(callbacks ? { callbacks } : {}),
-    responses: toOpenAPIResponses(routeInfo, operation, operation?.responses, validators, context),
+    responses: toOpenAPIResponses(
+      routeInfo,
+      operation,
+      Object.keys(routeContract.responses).length ? routeContract.responses : operation?.responses,
+      [
+        ...Object.values(routeContract.input.parameters).filter(Boolean),
+        ...(bodyValidator ? [bodyValidator] : []),
+      ],
+      context
+    ),
   };
 }
 
@@ -1608,7 +1625,15 @@ function serializeCallbackPathItem(
   const methods = Object.fromEntries(
     HTTP_METHODS.flatMap((method) => {
       const operation = pathItem[method as OpenAPIOperationMethod];
-      return operation ? [[method, serializeOperation(operation, [], { path: '', method: method.toUpperCase(), middlewareOpenAPI: [] }, context)]] : [];
+      return operation ? [[
+        method,
+        serializeOperation(
+          operation,
+          { input: EMPTY_ROUTE_INPUT_CONTRACT, responses: Object.fromEntries(getRouteOperationResponses(operation)) },
+          { path: '', method: method.toUpperCase(), middlewareOpenAPI: [] },
+          context
+        ),
+      ]] : [];
     })
   );
 
@@ -1789,7 +1814,7 @@ export function createOpenAPIDocument(
     mergePathItem(pathItem, pathMetadata);
     pathItem[definition.method.toLowerCase()] = serializeOperation(
       definition.openapi,
-      definition.validators,
+      definition.contract,
       { path: definition.path, method: definition.method, middlewareOpenAPI: definition.middlewareOpenAPI },
       context
     );

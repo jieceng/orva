@@ -31,12 +31,39 @@ app.get('/stats', (c) => c.json({ start: c.get('requestStart') }));
 
 ## Reading validated data
 
-After a validator succeeds, `c.valid()` gives you typed data:
+After validators succeed, `c.valid()` preserves the parsed output type for each target:
 
 ```ts
-app.post('/users', zodValidator('json', schema), (c) => {
-  const body = c.valid('json');
-  return c.json(body, 201);
+app.post(
+  '/users/:id',
+  validator('json', (value: { name?: string }) => ({ name: value.name ?? '' })),
+  validator('param', (value: Record<string, string>) => ({ id: value.id })),
+  validator('query', (value: Record<string, string>) => ({
+    expand: value.expand === '1',
+  })),
+  (c) => {
+    const body = c.valid('json');
+    const params = c.valid('param');
+    const query = c.valid('query');
+
+    return c.json({ body, params, query }, 201);
+  },
+);
+```
+
+Helper functions are available too:
+
+```ts
+import { getValidatedData, setValidatedData } from 'orvajs/validator';
+
+app.post('/users/:id', validator('param', (value) => ({ id: value.id })), (c) => {
+  const params = getValidatedData(c, 'param');
+  setValidatedData(c, 'trace', 'request-1');
+
+  return c.json({
+    id: params.id,
+    trace: c.valid('trace'),
+  });
 });
 ```
 

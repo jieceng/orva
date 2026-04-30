@@ -27,6 +27,61 @@ const user = await client.api.users[':id'].$get({
 
 HTTP 方法通过 `$get`、`$post`、`$put`、`$delete`、`$patch` 这类属性暴露。
 
+## `c.json()` 的响应类型推导
+
+如果服务端路由直接返回 `c.json(...)`，RPC 客户端的响应体类型会自动推导出来：
+
+```ts
+const app = createOrva()
+  .get('/posts', (c) => c.json([{ id: 1, title: 'Post 1' }]))
+  .get('/posts/:id', (c) => c.json({ id: c.params.id, title: 'Post details' }));
+
+const rpc = createRPC<typeof app>({
+  baseURL: 'https://api.example.com',
+});
+
+const posts = await rpc.posts.$get();
+const list = await posts.json();
+
+const post = await rpc.posts[':id'].$get({
+  param: { id: '123' },
+});
+const detail = await post.json();
+```
+
+这里：
+
+- `list` 的类型是 `{ id: number; title: string }[]`
+- `detail` 的类型是 `{ id: string; title: string }`
+
+## validator 输出到 RPC 入参推导
+
+validator 的输出也会流入 RPC 请求参数类型：
+
+```ts
+const app = createOrva().post(
+  '/users',
+  validator('json', (value: any) => ({
+    name: String(value.name ?? ''),
+    age: Number(value.age ?? 0),
+  })),
+  (c) => c.json({ ok: true, user: c.valid('json') }),
+);
+
+const rpc = createRPC<typeof app>({
+  baseURL: 'https://api.example.com',
+});
+
+await rpc.users.$post({
+  body: {
+    name: 'Ada',
+    age: 20,
+  },
+});
+```
+
+这里客户端的 `body` 会被推导成 `{ name: string; age: number }`。
+
 ## 请求选项
 
 ```ts

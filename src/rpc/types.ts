@@ -1,9 +1,7 @@
 // ============ RPC type utilities ============
 
-import type {
-  OperationResponseOutputs,
-} from '../metadata.js';
 import type { Orva, RouteDefinition } from '../orva.js';
+import type { RouteResolvedResponses } from '../route-contract.js';
 
 type UnionToIntersection<U> = (
   U extends unknown ? (arg: U) => void : never
@@ -11,14 +9,7 @@ type UnionToIntersection<U> = (
 
 type Simplify<T> = { [K in keyof T]: T[K] } & {};
 type IsOkStatus<Status extends number> = `${Status}` extends `2${string}` ? true : false;
-type FallbackResponses<Output> = { 200: Output };
-type RouteResponses<Route> = Route extends RouteDefinition<any, any, any, infer Output, infer Operation, infer Responses extends Record<number, unknown>>
-  ? keyof Responses extends never
-    ? keyof OperationResponseOutputs<Operation> extends never
-      ? FallbackResponses<Output>
-      : OperationResponseOutputs<Operation>
-    : Responses
-  : FallbackResponses<unknown>;
+type RouteResponses<Route> = RouteResolvedResponses<Route>;
 type ResponseUnion<Responses extends Record<number, unknown>> = {
   [Status in keyof Responses & number]: RPCResponse<Status, Responses[Status]>;
 }[keyof Responses & number];

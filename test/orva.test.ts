@@ -23,6 +23,10 @@ test('matches static, param, wildcard routes and supports HEAD fallback', async 
   assert.equal(file.status, 200);
   assert.equal(await file.text(), 'docs/readme.md');
 
+  const encodedFile = await app.fetch(new Request('https://example.com/files/docs/a%2Fb/readme.md'));
+  assert.equal(encodedFile.status, 200);
+  assert.equal(await encodedFile.text(), 'docs/a/b/readme.md');
+
   const head = await app.fetch(new Request('https://example.com/hello', { method: 'HEAD' }));
   assert.equal(head.status, 200);
   assert.equal(await head.text(), 'world');

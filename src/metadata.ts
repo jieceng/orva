@@ -269,12 +269,23 @@ export interface OpenAPIMiddlewareMetadata {
   responseStatuses?: number[];
 }
 
+export interface RouteInputRuntimeDefinition {
+  parameters: Partial<Record<'query' | 'param' | 'header' | 'cookie', ValidatorContractMetadata>>;
+  body?: ValidatorContractMetadata;
+}
+
+export interface RouteContractRuntimeDefinition {
+  input: RouteInputRuntimeDefinition;
+  responses: Record<number, OpenAPIResponseMetadata<any>>;
+}
+
 export interface RouteRuntimeDefinition {
   method: string;
   path: string;
   validators: ValidatorContractMetadata[];
   openapi?: OpenAPIOperationMetadata | undefined;
   middlewareOpenAPI?: OpenAPIMiddlewareMetadata[] | undefined;
+  contract: RouteContractRuntimeDefinition;
 }
 
 export type OpenAPIResponses = Record<number, OpenAPIResponseMetadata<any>>;

@@ -45,6 +45,46 @@ import { serveNode } from 'orvajs/adapters/node';
 import { cors } from 'orvajs/middlewares/cors';
 ```
 
+## 类型化 validator 与 RPC
+
+validator 的输出会同时流入路由 handler 上下文和 RPC 客户端入参：
+
+```ts
+import { createOrva } from 'orvajs';
+import { createRPC } from 'orvajs/rpc';
+import { validator } from 'orvajs/validator';
+
+const app = createOrva()
+  .get('/posts/:id', (c) => c.json({ id: c.params.id, title: 'Post details' }))
+  .post(
+    '/users',
+    validator('json', (value: any) => ({
+      name: String(value.name ?? ''),
+      age: Number(value.age ?? 0),
+    })),
+    (c) => c.json({ ok: true, user: c.valid('json') }),
+  );
+
+const rpc = createRPC<typeof app>({
+  baseURL: 'https://api.example.com',
+});
+
+const post = await rpc.posts[':id'].$get({ param: { id: '123' } });
+const detail = await post.json();
+
+await rpc.users.$post({
+  body: {
+    name: 'Ada',
+    age: 20,
+  },
+});
+```
+
+这里：
+
+- `detail` 会被推导成 `{ id: string; title: string }`
+- `rpc.users.$post()` 的 `body` 会被推导成 `{ name: string; age: number }`
+
 ## 常用链接
 
 - GitHub: `https://github.com/jieceng/orva`

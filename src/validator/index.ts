@@ -3,6 +3,7 @@ import type {
   TypedMiddlewareHandler,
 } from '../orva.js';
 import { parseCookieHeader } from '../cookies.js';
+import type { ValidatorRPCInputMapping } from '../input-contract.js';
 import {
   VALIDATOR_METADATA,
   type OpenAPIResponseMetadata,
@@ -22,23 +23,6 @@ export interface ValidatorValueMap {
 
 export type ValidatorInput<Target extends string> =
   Target extends keyof ValidatorValueMap ? ValidatorValueMap[Target] : unknown;
-
-type IsAny<T> = 0 extends (1 & T) ? true : false;
-type IsExactlyUnknown<T> = IsAny<T> extends true ? false : unknown extends T ? ([T] extends [unknown] ? true : false) : false;
-type ValidatorRPCPayload<Input, Output> =
-  IsAny<Input> extends true ? Output :
-  IsExactlyUnknown<Input> extends true ? Output :
-  Input;
-
-type ValidatorRPCInputMapping<Target extends string, Input, Output> =
-  Target extends 'json' ? { body: ValidatorRPCPayload<Input, Output> } :
-  Target extends 'form' ? { body: ValidatorRPCPayload<Input, Output> } :
-  Target extends 'text' ? { body: ValidatorRPCPayload<Input, Output> } :
-  Target extends 'query' ? { query?: Input } :
-  Target extends 'param' ? { param?: Input } :
-  Target extends 'header' ? { headers?: Input } :
-  Target extends 'cookie' ? { cookie?: Input } :
-  {};
 
 export interface ValidatorOptions<
   T extends object,
@@ -132,11 +116,16 @@ export function validator<
   }) as ValidatorHandler<T, Target, Input, Output>;
 }
 
-export function setValidatedData<T extends object>(
-  context: Context<T>,
-  target: string,
-  value: unknown
-): void {
+export function setValidatedData<
+  T extends object,
+  V extends Record<string, unknown>,
+  K extends string,
+  Value,
+>(
+  context: Context<T, V>,
+  target: K,
+  value: Value
+): asserts context is Context<T, V & Record<K, Value>> {
   context.setValid(target, value);
 }
 
