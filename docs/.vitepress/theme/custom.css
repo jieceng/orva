@@ -528,8 +528,21 @@ html[lang='zh-CN'] .VPHome .VPHero .main::before {
   pointer-events: none;
 }
 
-.VPSidebar {
-  background: transparent !important;
+@media (min-width: 960px) {
+  .VPSidebar {
+    background: transparent !important;
+  }
+}
+
+@media (max-width: 959px) {
+  .VPSidebar {
+    background: rgba(255, 250, 244, 0.98) !important;
+    backdrop-filter: blur(18px);
+  }
+
+  .dark .VPSidebar {
+    background: rgba(9, 13, 22, 0.96) !important;
+  }
 }
 
 .VPSidebar .orva-code-language-toggle {
