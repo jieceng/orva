@@ -1,6 +1,7 @@
 import DefaultTheme from 'vitepress/theme';
 import type { Theme } from 'vitepress';
 import { h } from 'vue';
+import OrvaHeroDepthScene from './components/OrvaHeroDepthScene.vue';
 import NanoContractPipeline from './components/NanoContractPipeline.vue';
 import NanoImportPlayground from './components/NanoImportPlayground.vue';
 import OrvaCodeLanguageToggle from './components/OrvaCodeLanguageToggle.vue';
@@ -69,12 +70,14 @@ function installCodeLanguageSwitches() {
 export default {
   extends: DefaultTheme,
   Layout: () => h(DefaultTheme.Layout, null, {
+    'home-hero-info-after': () => h(OrvaHeroDepthScene),
     'sidebar-nav-before': () => h(OrvaCodeLanguageToggle),
   }),
   enhanceApp({ app, router }) {
     app.component('OrvaContractPipeline', NanoContractPipeline);
     app.component('OrvaImportPlayground', NanoImportPlayground);
     app.component('OrvaCodeLanguageToggle', OrvaCodeLanguageToggle);
+    app.component('OrvaHeroDepthScene', OrvaHeroDepthScene);
     app.component('OrvaMiddlewareMap', OrvaMiddlewareMap);
     app.component('NanoContractPipeline', NanoContractPipeline);
     app.component('NanoImportPlayground', NanoImportPlayground);

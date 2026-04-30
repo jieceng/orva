@@ -200,6 +200,7 @@ body {
     linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(250, 252, 255, 0.92));
   box-shadow: 0 34px 84px rgba(15, 23, 42, 0.1);
   overflow: hidden;
+  transform-style: preserve-3d;
 }
 
 .VPHome .VPHero.has-image .container {
@@ -248,10 +249,182 @@ html[lang='zh-CN'] .VPHome .VPHero .main::before {
   border-color: rgba(45, 212, 191, 0.18);
 }
 
+.orva-hero-depth-scene {
+  display: none;
+}
+
 @media (min-width: 960px) {
   .VPHero {
     padding: calc(var(--orva-nav-height) + 56px) 40px 56px !important;
   }
+}
+
+@media (min-width: 1100px) {
+  .VPHero .main {
+    min-height: 430px;
+    padding-right: 380px;
+  }
+
+  .orva-hero-depth-scene {
+    position: absolute;
+    top: 34px;
+    right: 26px;
+    display: block;
+    width: 320px;
+    height: 300px;
+    pointer-events: none;
+    perspective: 1400px;
+  }
+}
+
+.orva-hero-depth-stage {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  animation: orva-depth-float 9s ease-in-out infinite;
+}
+
+.VPHero .main:hover .orva-hero-depth-stage {
+  transform: rotateX(3deg) rotateY(-6deg);
+}
+
+.orva-hero-depth-orbit {
+  position: absolute;
+  inset: 50% auto auto 50%;
+  border: 1px solid rgba(15, 118, 110, 0.12);
+  border-radius: 999px;
+  transform-style: preserve-3d;
+}
+
+.orva-hero-depth-orbit.orbit-a {
+  width: 250px;
+  height: 250px;
+  margin: -125px 0 0 -125px;
+  transform: rotateX(72deg) rotateZ(18deg) translateZ(0);
+}
+
+.orva-hero-depth-orbit.orbit-b {
+  width: 170px;
+  height: 170px;
+  margin: -85px 0 0 -85px;
+  border-color: rgba(249, 115, 22, 0.16);
+  transform: rotateX(70deg) rotateY(22deg) rotateZ(-24deg) translateZ(20px);
+}
+
+.orva-hero-depth-card {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 18px 18px 16px;
+  border: 1px solid rgba(255, 255, 255, 0.56);
+  border-radius: 24px;
+  color: #0f172a;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.86), rgba(244, 248, 255, 0.72));
+  box-shadow:
+    0 22px 44px rgba(15, 23, 42, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(20px);
+  transform-style: preserve-3d;
+}
+
+.orva-hero-depth-card strong {
+  font-size: 1.02rem;
+  font-weight: 800;
+  line-height: 1.15;
+}
+
+.orva-hero-depth-card .eyebrow,
+.orva-hero-depth-card .meta {
+  display: block;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.orva-hero-depth-card .eyebrow {
+  color: #0f766e;
+}
+
+.orva-hero-depth-card .meta {
+  color: rgba(15, 23, 42, 0.58);
+}
+
+.orva-hero-depth-card.card-core {
+  top: 22px;
+  right: 18px;
+  width: 220px;
+  transform: translate3d(0, 0, 80px) rotateX(58deg) rotateZ(-26deg);
+}
+
+.orva-hero-depth-card.card-contract {
+  top: 120px;
+  right: 74px;
+  width: 210px;
+  transform: translate3d(0, 0, 24px) rotateX(58deg) rotateZ(-26deg);
+}
+
+.orva-hero-depth-chip {
+  position: absolute;
+  padding: 0.52rem 0.82rem;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  color: #0f172a;
+  background: rgba(255, 255, 255, 0.82);
+  box-shadow: 0 16px 28px rgba(15, 23, 42, 0.1);
+  backdrop-filter: blur(16px);
+  text-transform: lowercase;
+}
+
+.orva-hero-depth-chip.chip-validator {
+  top: 76px;
+  left: 24px;
+  transform: translate3d(0, 0, 120px) rotateX(62deg) rotateZ(-20deg);
+}
+
+.orva-hero-depth-chip.chip-runtime {
+  right: 12px;
+  bottom: 40px;
+  transform: translate3d(0, 0, 46px) rotateX(60deg) rotateZ(-18deg);
+}
+
+.dark .orva-hero-depth-card {
+  border-color: rgba(148, 163, 184, 0.22);
+  color: #e2e8f0;
+  background:
+    linear-gradient(180deg, rgba(30, 41, 59, 0.78), rgba(15, 23, 42, 0.72));
+  box-shadow:
+    0 24px 44px rgba(2, 6, 23, 0.28),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+.dark .orva-hero-depth-card .eyebrow {
+  color: #67e8f9;
+}
+
+.dark .orva-hero-depth-card .meta {
+  color: rgba(226, 232, 240, 0.66);
+}
+
+.dark .orva-hero-depth-chip {
+  border-color: rgba(148, 163, 184, 0.18);
+  color: #e2e8f0;
+  background: rgba(15, 23, 42, 0.72);
+  box-shadow: 0 18px 28px rgba(2, 6, 23, 0.24);
+}
+
+.dark .orva-hero-depth-orbit.orbit-a {
+  border-color: rgba(103, 232, 249, 0.14);
+}
+
+.dark .orva-hero-depth-orbit.orbit-b {
+  border-color: rgba(251, 146, 60, 0.18);
 }
 
 .VPHero .name,
@@ -332,6 +505,16 @@ html[lang='zh-CN'] .VPHome .VPHero .main::before {
   position: relative;
   overflow: hidden;
   border-radius: 26px !important;
+  transform-style: preserve-3d;
+  transition:
+    transform 240ms ease,
+    box-shadow 240ms ease,
+    border-color 240ms ease;
+}
+
+.VPHome .VPFeature:hover {
+  transform: perspective(1200px) translateY(-8px) rotateX(6deg) rotateY(-4deg);
+  box-shadow: 0 28px 58px rgba(15, 23, 42, 0.12);
 }
 
 .VPFeature::after {
@@ -428,6 +611,10 @@ html[lang='zh-CN'] .VPHome .VPHero .main::before {
 .dark .nano-card {
   border-color: rgba(148, 163, 184, 0.16);
   box-shadow: 0 24px 64px rgba(2, 6, 23, 0.36);
+}
+
+.dark .VPHome .VPFeature:hover {
+  box-shadow: 0 30px 66px rgba(2, 6, 23, 0.42);
 }
 
 .vp-doc a {
@@ -585,6 +772,28 @@ html[lang='zh-CN'] .VPHome .VPHero .main::before {
   .VPHero .main {
     padding: 28px 22px;
     border-radius: 28px;
+  }
+}
+
+@keyframes orva-depth-float {
+  0%,
+  100% {
+    transform: translateY(0) rotateZ(0deg);
+  }
+
+  50% {
+    transform: translateY(-10px) rotateZ(-1.4deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .orva-hero-depth-stage {
+    animation: none;
+  }
+
+  .VPHome .VPFeature:hover,
+  .VPHero .main:hover .orva-hero-depth-stage {
+    transform: none;
   }
 }
 
