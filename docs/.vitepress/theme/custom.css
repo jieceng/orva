@@ -311,6 +311,50 @@ html[lang='zh-CN'] .VPHome .VPHero .main::before {
   background: transparent !important;
 }
 
+.VPSidebar .orva-code-language-toggle {
+  display: inline-flex;
+  gap: 6px;
+  position: relative;
+  z-index: 2;
+  margin: 14px 0 14px;
+  padding: 4px;
+  border-radius: 999px;
+  background: rgba(15, 23, 42, 0.05);
+  pointer-events: auto;
+}
+
+.dark .VPSidebar .orva-code-language-toggle {
+  background: rgba(148, 163, 184, 0.08);
+}
+
+.orva-code-language-toggle__button {
+  min-width: 2.5rem;
+  padding: 0.3rem 0.62rem;
+  border: 0;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: var(--vp-c-text-2);
+  background: transparent;
+  cursor: pointer;
+  transition:
+    background-color 180ms ease,
+    color 180ms ease,
+    transform 180ms ease,
+    box-shadow 180ms ease;
+}
+
+.orva-code-language-toggle__button:hover {
+  color: var(--vp-c-text-1);
+  transform: translateY(-1px);
+}
+
+.orva-code-language-toggle__button.is-active {
+  color: #ffffff;
+  background: linear-gradient(135deg, #0f766e, #155e75);
+  box-shadow: 0 6px 14px rgba(15, 118, 110, 0.22);
+}
+
 .VPSidebarItem .item {
   border-radius: 14px;
 }
@@ -433,6 +477,22 @@ html[lang='zh-CN'] .VPHome .VPHero .main::before {
 
 .vp-doc div[class*='language-'] {
   border-radius: 22px;
+}
+
+.vp-doc .orva-code-switch {
+  margin: 22px 0;
+}
+
+.vp-doc .orva-code-switch-panel[hidden] {
+  display: none !important;
+}
+
+.vp-doc .orva-code-switch-panel > div[class*='language-'] {
+  margin: 0;
+}
+
+.vp-doc .orva-code-switch-panel .lang {
+  display: none;
 }
 
 .vp-doc .custom-block {

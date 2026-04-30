@@ -1,12 +1,12 @@
-# REST API Recipe
+# REST API 实践示例
 
-这个 recipe 展示一套最小但已经具备生产感的服务结构。
+这一页演示一套足够精简、但已经具备生产可用思路的 REST API 服务结构。
 
-## 你会做出什么
+## 你将构建什么
 
 - 分组 API 路由
 - 请求校验
-- request id 和安全头
+- 请求 ID 与安全响应头
 - 一致的错误响应
 
 ## 第一步：创建应用
@@ -49,7 +49,7 @@ export const usersApp = createOrva()
   );
 ```
 
-## 第三步：挂载路由
+## 第三步：挂载路由组
 
 ```ts
 import { app } from './app';
@@ -58,11 +58,11 @@ import { usersApp } from './routes/users';
 app.route('/api/users', usersApp);
 ```
 
-## 这个 recipe 想让你学会什么
+## 这一页的重点
 
-- 根应用适合承载共享 middleware 和全局错误处理。
+- 根应用适合放共享中间件和全局错误处理。
 - 路由分组最好按业务域拆分。
-- 请求输入应尽量由 validator 定义，而不是再重复声明一套 body 类型。
+- 请求输入最好交给 validator 定义，而不是再额外维护一套重复的 body 类型。
 
 ## 下一步
 

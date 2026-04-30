@@ -1,7 +1,50 @@
+import { transformSync } from 'esbuild';
 import { defineConfig } from 'vitepress';
 
 const repoUrl = 'https://github.com/jieceng/orva';
 const docsBase = process.env.ORVA_DOCS_BASE ?? (process.env.GITHUB_ACTIONS ? '/orva/' : '/');
+const switchableCodeLanguages = new Set(['ts', 'tsx', 'typescript']);
+
+function parseFenceInfo(info: string) {
+  const trimmed = info.trim();
+
+  if (!trimmed) {
+    return { language: '', suffix: '' };
+  }
+
+  const match = trimmed.match(/^([^\s{[\]]+)([\s\S]*)$/);
+
+  if (!match) {
+    return { language: trimmed, suffix: '' };
+  }
+
+  return {
+    language: match[1].toLowerCase(),
+    suffix: match[2] ?? '',
+  };
+}
+
+function cloneFenceToken(token: any) {
+  const cloned = new token.constructor(token.type, token.tag, token.nesting);
+  Object.assign(cloned, token);
+  return cloned;
+}
+
+function transpileExampleToJs(source: string, language: string) {
+  try {
+    const result = transformSync(source, {
+      loader: language === 'tsx' ? 'tsx' : 'ts',
+      format: 'esm',
+      target: 'es2020',
+      sourcemap: false,
+      minify: false,
+    });
+
+    return result.code.trim();
+  } catch {
+    return null;
+  }
+}
 
 const algoliaEnabled = Boolean(
   process.env.ORVA_DOCSEARCH_APP_ID
@@ -116,11 +159,11 @@ function createZhSidebar(prefix = '/zh') {
       ],
     },
     {
-      text: 'Recipes',
+      text: '实践',
       items: [
-        { text: 'REST API', link: `${prefix}/recipes/rest-api` },
-        { text: 'Typed RPC App', link: `${prefix}/recipes/typed-rpc-app` },
-        { text: 'Middleware Cookbook', link: `${prefix}/recipes/middleware-cookbook` },
+        { text: 'REST API 实践', link: `${prefix}/recipes/rest-api` },
+        { text: '类型安全 RPC 应用', link: `${prefix}/recipes/typed-rpc-app` },
+        { text: '中间件实践手册', link: `${prefix}/recipes/middleware-cookbook` },
       ],
     },
     {
@@ -128,7 +171,7 @@ function createZhSidebar(prefix = '/zh') {
       items: [
         { text: '总览', link: `${prefix}/reference/` },
         { text: '中间件目录', link: `${prefix}/middlewares` },
-        { text: 'Validator', link: `${prefix}/validator` },
+        { text: '校验', link: `${prefix}/validator` },
         { text: 'RPC', link: `${prefix}/rpc` },
         { text: 'OpenAPI', link: `${prefix}/openapi` },
         { text: '适配器', link: `${prefix}/adapters` },
@@ -184,10 +227,10 @@ function createZhThemeConfig() {
     siteTitle: 'orva',
     nav: [
       { text: '指南', link: '/zh/guide/introduction' },
-      { text: 'Recipes', link: '/zh/recipes/rest-api' },
+      { text: '实践', link: '/zh/recipes/rest-api' },
       { text: '参考', link: '/zh/reference/' },
       { text: '中间件', link: '/zh/middlewares' },
-      { text: 'Validator', link: '/zh/validator' },
+      { text: '校验', link: '/zh/validator' },
     ],
     sidebar: {
       '/zh/': createZhSidebar('/zh'),
@@ -269,6 +312,7 @@ export default defineConfig({
     config(md) {
       const defaultTableOpen = md.renderer.rules.table_open;
       const defaultTableClose = md.renderer.rules.table_close;
+      const defaultFence = md.renderer.rules.fence;
 
       md.renderer.rules.table_open = (tokens, idx, options, env, self) => {
         const tableOpen = defaultTableOpen
@@ -284,6 +328,47 @@ export default defineConfig({
           : self.renderToken(tokens, idx, options);
 
         return `${tableClose}</div>`;
+      };
+
+      md.renderer.rules.fence = (tokens, idx, options, env, self) => {
+        const token = tokens[idx];
+        const { language, suffix } = parseFenceInfo(token.info ?? '');
+
+        if (!switchableCodeLanguages.has(language)) {
+          return defaultFence
+            ? defaultFence(tokens, idx, options, env, self)
+            : self.renderToken(tokens, idx, options);
+        }
+
+        const jsCode = transpileExampleToJs(token.content, language);
+
+        if (!jsCode) {
+          return defaultFence
+            ? defaultFence(tokens, idx, options, env, self)
+            : self.renderToken(tokens, idx, options);
+        }
+
+        const tsToken = cloneFenceToken(token);
+        const jsToken = cloneFenceToken(token);
+        jsToken.info = `js${suffix}`;
+        jsToken.content = `${jsCode}\n`;
+
+        const tsHtml = defaultFence
+          ? defaultFence([tsToken], 0, options, env, self)
+          : self.renderToken([tsToken], 0, options);
+        const jsHtml = defaultFence
+          ? defaultFence([jsToken], 0, options, env, self)
+          : self.renderToken([jsToken], 0, options);
+
+        return `
+<div class="orva-code-switch" data-code-switch>
+  <div class="orva-code-switch-panel is-active" data-code-switch-panel="ts">
+    ${tsHtml}
+  </div>
+  <div class="orva-code-switch-panel" data-code-switch-panel="js" hidden>
+    ${jsHtml}
+  </div>
+</div>`;
       };
     },
   },

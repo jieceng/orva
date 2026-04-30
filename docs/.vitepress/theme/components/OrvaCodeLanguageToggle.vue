@@ -1,0 +1,20 @@
+<template>
+  <div class="orva-code-language-toggle" role="group" aria-label="Code example language">
+    <button
+      class="orva-code-language-toggle__button"
+      type="button"
+      data-code-language-option="ts"
+      aria-pressed="true"
+    >
+      TS
+    </button>
+    <button
+      class="orva-code-language-toggle__button"
+      type="button"
+      data-code-language-option="js"
+      aria-pressed="false"
+    >
+      JS
+    </button>
+  </div>
+</template>
