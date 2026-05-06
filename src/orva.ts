@@ -219,34 +219,6 @@ type MergeMiddlewareAddedVars<M extends readonly unknown[]> = Simplify<
 type MergeMiddlewareValidatedData<M extends readonly unknown[]> = Simplify<
   PrettifyIntersection<ExtractMiddlewareAddedValidated<M[number]>>
 >;
-type ValidMiddlewareTuple<
-  T extends object,
-  M extends readonly unknown[],
-> = M extends readonly []
-  ? []
-  : M extends readonly [infer Head, ...infer Tail]
-    ? Head extends MiddlewareHandler<T, any>
-      ? [Head, ...ValidMiddlewareTuple<T, Tail>]
-      : never
-    : never;
-type RouteMiddlewaresTuple<Handlers extends readonly unknown[]> =
-  Handlers extends readonly [...infer Middlewares, infer _Handler]
-    ? Middlewares
-    : never;
-type RouteFinalHandler<Handlers extends readonly unknown[]> =
-  Handlers extends readonly [...infer _Middlewares, infer FinalHandler]
-    ? FinalHandler
-    : never;
-type ValidRouteHandlerTuple<
-  T extends object,
-  V extends ValidatedData,
-  GM extends readonly unknown[],
-  Handlers extends readonly unknown[],
-> = Handlers extends readonly [...infer Middlewares, infer FinalHandler]
-  ? FinalHandler extends Handler<T, Simplify<V & MergeMiddlewareValidatedData<[...GM, ...Middlewares]>>>
-    ? [...ValidMiddlewareTuple<T, Middlewares>, FinalHandler]
-    : never
-  : never;
 
 export function defineMiddleware<
   AddedVars extends object = {},
