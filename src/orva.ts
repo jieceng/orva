@@ -9,7 +9,6 @@ import {
   type ValidatorContractMetadata,
 } from './metadata.js';
 import type {
-  InferHandlerResult,
   InferRouteOutput,
   InferRouteResponses,
 } from './route-contract.js';

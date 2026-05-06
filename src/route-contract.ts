@@ -13,11 +13,6 @@ type TypedResponseLike = Response & {
 
 type FallbackResponses<Output> = { 200: Output };
 
-export type InferHandlerResult<H extends (...args: any[]) => unknown> =
-  Awaited<ReturnType<H>> extends Response | TypedResponseLike
-    ? Awaited<ReturnType<H>>
-    : never;
-
 export type TypedResponseMetadata<ResponseLike> =
   ResponseLike extends Response & {
     readonly __orvaTypedResponse__?: {
