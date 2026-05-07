@@ -1,4 +1,4 @@
-import type { MiddlewareHandler } from '../orva.js';
+import type { MiddlewareHandler } from '../core/index.js';
 import {
   OPENAPI_MIDDLEWARE_METADATA,
   type OpenAPIMiddlewareMetadata,

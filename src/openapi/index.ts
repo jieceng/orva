@@ -1,4 +1,4 @@
-import type { MiddlewareHandler, TypedMiddlewareHandler } from '../orva.js';
+import type { MiddlewareHandler, TypedMiddlewareHandler } from '../core/index.js';
 import {
   isParameterTarget,
   requestBodyContentTypeForTarget,

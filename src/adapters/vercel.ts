@@ -1,4 +1,4 @@
-import { Orva } from '../orva.js';
+import { Orva } from '../core/index.js';
 
 export interface VercelEdgeContext {
   params?: Record<string, string>;

@@ -1,7 +1,7 @@
 import type {
   Context,
   TypedMiddlewareHandler,
-} from '../orva.js';
+} from '../core/index.js';
 import { parseCookieHeader } from '../cookies.js';
 import type { ValidatorRPCInputMapping } from '../input-contract.js';
 import {

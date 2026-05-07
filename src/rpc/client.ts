@@ -1,7 +1,7 @@
 // ============ RPC client implementation ============
 
 import type { OrvaRPC, RPCRequestOptions, RPCResponse } from './types.js';
-import type { Orva } from '../orva.js';
+import type { Orva } from '../core/index.js';
 
 export interface RPCClientOptions {
   baseURL: string;

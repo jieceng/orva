@@ -1,7 +1,7 @@
 import { createServer, IncomingMessage, ServerResponse } from 'node:http';
 import { Readable } from 'node:stream';
 import { Socket } from 'node:net';
-import { Orva, EnhancedRequest, FastResponse } from '../orva.js';
+import { Orva, EnhancedRequest, FastResponse } from '../core/index.js';
 
 export interface NodeServerOptions {
   hostname?: string;

@@ -1,6 +1,6 @@
 // ============ RPC type utilities ============
 
-import type { Orva, RouteDefinition } from '../orva.js';
+import type { Orva, RouteDefinition } from '../core/index.js';
 import type { RouteResolvedResponses } from '../route-contract.js';
 
 type UnionToIntersection<U> = (

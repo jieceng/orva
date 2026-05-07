@@ -19,6 +19,6 @@ export {
   type RouteDefinition,
   type RouteRegistry,
   defineMiddleware,
-} from './orva.js';
+} from './core/index.js';
 
-export { Orva as default } from './orva.js';
+export { Orva as default } from './core/index.js';

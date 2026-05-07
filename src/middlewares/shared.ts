@@ -1,4 +1,4 @@
-import type { Context, MiddlewareHandler } from '../orva.js';
+import type { Context, MiddlewareHandler } from '../core/index.js';
 import type { CookieOptions, DeleteCookieOptions } from '../cookies.js';
 
 export type MiddlewareVars = object;

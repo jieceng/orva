@@ -1,6 +1,6 @@
 import { z, ZodError, type ZodType, type input as ZodInput, type output as ZodOutput } from 'zod';
 
-import type { Context } from '../orva.js';
+import type { Context } from '../core/index.js';
 import {
   type ValidatorHandler,
   type ValidatorOptions,

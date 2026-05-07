@@ -1,4 +1,4 @@
-import type { MiddlewareHandler } from '../orva.js';
+import type { MiddlewareHandler } from '../core/index.js';
 import type { CompressOptions, MiddlewareVars } from './shared.js';
 
 function isCompressibleContentType(contentType: string | null): boolean {
